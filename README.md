@@ -1,2 +1,14 @@
-# portfolio
-A portfolio, I hope I spelled that right, it seems everyone has to have one of these nowadays, huh?
+<p align="center">
+    <img src="images/logo.png" alt="Logo" width="200px">
+    <h1 align="center">
+        Oussama Essamadi
+        <br>
+    </h1>
+    <p align="center">
+        <i align="center"><small>Web • Desktop • Mobile</small></i>
+    </p>
+    <hr>
+</p>
+
+## Description
+
