@@ -1,0 +1,18 @@
+/*----------[Navbar]-----------*/
+nav ul.navitems li.brand {
+	padding: 11.3px;
+	
+	font-size: 20px;
+}
+
+nav ul.navitems li.brand img {
+	position: absolute;
+	top: 50%;
+	left: 50px;
+	transform: translateY(-50%);
+	width: 30px;
+}
+
+/*----------[Header]-----------*/
+header.landleg { padding: 100px 10vw; }
+header.landleg h1 { line-height: normal; }
