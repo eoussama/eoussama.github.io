@@ -1959,6 +1959,11 @@ form.form-group input.form-control, form.form-group select.form-control, form.fo
 .text-uppercase { text-transform: uppercase }
 .text-shadow { text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.4) }
 
+.text-lineheight-normal { line-height: normal; }
+.text-lineheight-1 { line-height: 1.7rem; }
+.text-lineheight-2 { line-height: 2rem; }
+.text-lineheight-3 { line-height: 2.5rem; }
+
 .text-light-weak { color: var(--lightColorWeak) !important; }
 .text-light-lighten { color: var(--lightColorLighten) !important; }
 .text-light { color: var(--lightColor) !important; }
