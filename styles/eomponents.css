@@ -1786,10 +1786,12 @@ nav.navbar {
 	width: 100%;
 	min-height: 50px;
 	padding: 0px 80px;
-	box-sizing: border-box;
-	overflow: hidden;
+	
 	background-color: var(--lightColor);
 	box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
+	
+	box-sizing: border-box;
+	overflow: hidden;
 	z-index: 90;
 }
 
@@ -1798,6 +1800,10 @@ ul.navitems { list-style-type: none; }
 li.navitem {
 	float: left;
 	padding: 11.3px;
+	
+	user-select: none;
+	cursor: pointer;
+	
 	transition-property: background-color;
 	transition-duration: .5s;
 }
@@ -1805,6 +1811,21 @@ li.navitem {
 ul.navitems a {
 	color: var(--darkColor);
 	font-weight: bold;
+}
+
+li.navitem.brand span.title {
+	margin-left: 45px;
+	
+	font-size: 1.5em;
+}
+
+li.navitem.brand:hover { background-color: inherit; }
+
+li.navitem.brand img.logo {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 40px;
 }
 
 li.navitem:hover { background-color: #cecece; }
