@@ -1,18 +1,16 @@
-/*----------[Navbar]-----------*/
-nav ul.navitems li.brand {
-	padding: 11.3px;
-	
-	font-size: 20px;
-}
-
-nav ul.navitems li.brand img {
-	position: absolute;
-	top: 50%;
-	left: 50px;
-	transform: translateY(-50%);
-	width: 30px;
-}
+::selection { background-color: var(--grayColorWeak); }
 
 /*----------[Header]-----------*/
-header.landleg { padding: 100px 10vw; }
-header.landleg h1 { line-height: normal; }
+header.landleg {
+	height: 350px;
+	padding: 100px 10vw;
+	
+	box-sizing: border-box;
+}
+
+header.landleg h1 {
+	line-height: normal;
+	text-align: center;
+	
+	text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+}
