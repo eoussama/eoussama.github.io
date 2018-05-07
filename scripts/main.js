@@ -20,6 +20,7 @@ window.addEventListener('load', () => {
 	helloTW.type({
 		callback: () => {
 			helloTW.delete({
+				delay: 1500,
 				callback: () => {
 					helloTW.setText('My name is Oussama Essamadi');
 					helloTW.type({
