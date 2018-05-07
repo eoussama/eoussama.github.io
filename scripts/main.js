@@ -1,89 +1,50 @@
 window.addEventListener('load', () => {
 	const
-		helloThere = document.getElementById('helloThere'),
-		code = document.getElementById('code');
+		helloTW = new TypeWriter({
+			target: document.getElementById('helloThere'),
+			text: 'Hello, there!',
+			time: 120,
+			audio: true,
+			cursor: {
+				activated: true
+			}
+		}),
+		codeTW = new TypeWriter({
+			target: document.getElementById('code'),
+			text: `and I code in ${LANGUAGES[getNextLang()]}`,
+			time: 120,
+			audio: true
+		});
 	
-	typewriter({
-		element: helloThere,
-		text: 'Hello, there!',
-		time: 100,
-		audio: true,
-		cursor: {
-			activated: true,
-			type: 1
-		},
+	TypeWriter.volume = 0.4;
+	helloTW.type({
 		callback: () => {
-			
-			setTimeout(() => {
-				typewriter({
-					element: helloThere,
-					text: 'Hello, there!',
-					time: 70,
-					forward: false,
-					audio: true,
-					cursor: {
-						activated: true,
-						type: 1
-					},
-					callback: () => {
-						typewriter({
-							element: helloThere,
-							text: 'My name is Oussama Essamadi',
-							time: 100,
-							audio: true,
-							cursor: {
-								activated: true,
-								type: 1
-							},
-							callback: () => {
-								helloThere.classList.remove('cursor');
-								typewriter({
-									element: code,
-									text: 'I code in ',
-									time: 100,
-									audio: true,
-									cursor: {
-										activated: true,
-										type: 1
-									},
-									callback: () => {
-										let langs = document.createElement('span');
-
-										helloThere.classList.remove('cursor');
-										langs.id = "langs";
-										langs.classList.add('text-gray-strong');
-										code.appendChild(langs);
-										
-										typewriter({
-											element: langs,
-											text: getNextLang(),
-											time: 100,
-											audio: true,
+			helloTW.delete({
+				callback: () => {
+					helloTW.setText('My name is Oussama Essamadi');
+					helloTW.type({
+						callback: () => {
+							helloTW.setCursor();
+							codeTW.setCursor();
+							codeTW.type({
+								callback: () => {
+									setInterval(() => {
+										codeTW.delete({
+											chars: LANGUAGES[lang].length,
 											callback: () => {
-												setInterval(() => {
-													typewriter({
-														element: langs,
-														text: getPrevLang(),
-														time: 100,
-														forward: false,
-														callback: () => {
-															typewriter({
-																element: langs,
-																text: getNextLang(),
-																time: 100
-															});
-														}
-													});
-												}, 3000);
+												codeTW.setText(`and I code in ${LANGUAGES[getNextLang()]}`);
+												codeTW.type({
+													start: codeTW.index + 1
+												})
 											}
 										});
-									}
-								});
-							}
-						});
-					}
-				});
-			}, 1000);
+									}, 5000);
+								}
+							});
+						}
+					});
+				}
+			})
 		}
 	});
 });
@@ -107,20 +68,18 @@ const
 	];
 
 var
-	lang = 0;
+	lang = -1;
 
 function getNextLang() {
-	let __lang = LANGUAGES[lang];
-	if(lang++ >= LANGUAGES.length)
+	if(lang++ === LANGUAGES.length - 1)
 		lang = 0;
-	
-	return __lang;
+
+	return lang;
 }
 
 function getPrevLang() {
-	let __index = lang;
-	if(--__index < 0)
-		__lang = LANGUAGES.length - 1;
+	if(lang-- < 0)
+		lang = LANGUAGES.length - 1;
 	
-	return LANGUAGES[__index];
+	return lang;
 }

@@ -1,3 +1,12 @@
+/*
+															Title: 			TypeWriterJS
+															Version: 		3.2.2
+															Author: 		Eoussama
+															Description: 	JS library for typewriter animations
+															License:		Apache v2.0
+
+*/
+
 const 
 	CURSOR_STYLE = `
 		#ELEMENT_ID.cursor::after {
@@ -16,71 +25,209 @@ const
 			to { opacity: 1; }
 		}
 	`,
-	  __audio = [new Audio('sounds/type_1.mp3'), new Audio('sounds/type_1.mp3'), new Audio('sounds/type_2.mp3'), new Audio('sounds/type_1.mp3'), new Audio('sounds/type_3.mp3'), new Audio('sounds/type_1.mp3')];
-	  
-for(__a of __audio) __a.volume = 0.4;
+	  AUDIO = [new Audio('sounds/type_1.mp3'), new Audio('sounds/type_1.mp3'), new Audio('sounds/type_2.mp3'), new Audio('sounds/type_1.mp3'), new Audio('sounds/type_3.mp3'), new Audio('sounds/type_1.mp3')];
 
-function typewriter({element = 'undefined', text = element.textContent.trim(), time = 30, audio = false, forward = true, cursor = 'undefined', loop = false, callback = () => {}}) {
-	let
-		__index = 0,
-		__timer = null,
-		__rand = 0;
+class TypeWriter {
 	
-	element.textContent = forward === true ? '' : text;
-	
-	if(cursor !== 'undefined') {
-		cursor.activated = typeof(cursor.activated) == 'undefined' ? false : cursor.activated;
-		cursor.type = typeof(cursor.type) == 'undefined' ? 1 : cursor.type > 2 || cursor.type < 1 ? 1 : cursor.type;
+	constructor({target = 'undefined', text = target.textContent.trim(), time = 30, audio = false, cursor = {activated: false, type: 1}}) {
+		this.target = target;
+		this.text = text;
+		this.time = time;
+		this.audio = audio;
+		this.cursor = cursor;
 		
-		if(cursor.activated === true) {
-			let style = document.createElement('style');
+		this.timer = null;
+		this.index = 0;
+		this.finished = true;
+		this.paused = false;
+		this.loop = false;
+		this.start = 0;
+		this.chars = 0;
+		this.delay = 0;
+		this.callbacks = [];
+		
+		if(this.cursor.activated === true)
+			this.setCursor({activated: true, type: 1});
+	}
+	
+	static get volume() { 
+		return AUDIO[0].volume;
+	}
+	
+	static set volume(vol) {
+		if(vol > 1.0) {
+			vol = 1.0;
+			console.warn('The volume must be lower than or equal 1.0');
+		}
 
-			style.innerHTML = CURSOR_STYLE;
-			style.innerHTML = style.innerHTML.replace('ELEMENT_ID', element.id);
-			style.innerHTML = cursor.type == 1 ? style.innerHTML.replace('CURSOT_TYPE', '_') : style.innerHTML.replace('CURSOT_TYPE', '|');
+		if(vol < 0.0) {
+			vol = 0.0;
+			console.warn('The volume must be greater than or equal to 0.0');
+		}
 
-			document.getElementsByTagName('head')[0].appendChild(style);
-			element.classList.add('cursor');
+		for(let __a of AUDIO)
+			__a.volume = vol;
+	}
+	
+	type({callback = () => {}, start = 0, chars = this.text.trim().length, delay = 0, loop = false} = {callback: () => {}, start: 0, chars: this.text.trim().length, delay: 0, loop: false}) {
+		let __rand = 0;
+		
+		this.start = start;
+		this.chars = chars;
+		this.delay = delay;
+		this.callbacks[0] = callback;
+		this.finished = false;
+		this.paused = false;
+		this.loop = loop;
+		
+		setTimeout(() => {
+			
+			this.target.textContent = this.text.substring(0, this.start);
+			this.index = this.start;
+
+			this.timer = setInterval(() => {
+				if(this.index >= this.text.length || this.index >= this.start + this.chars) {
+					if(this.loop === false) {
+						clearInterval(this.timer);
+						this.stop();
+					} else {
+						this.pause();
+						setTimeout(() => {
+							this.resume();
+							this.target.textContent = this.text.substring(0, this.start);
+							this.index = this.start;
+						}, this.delay);
+					}
+					
+					this.callbacks[0]();
+				} else {
+					this.target.textContent += this.text[this.index++];
+					if(this.audio !== false) {
+						__rand = Math.floor(Math.random() * AUDIO.length);
+						AUDIO[__rand].play();
+					}
+				}
+			}, this.time);
+		}, delay);
+	}
+	
+	delete({callback = () => {}, chars = this.text.trim().length, delay = 0} = {callback: () => {}, chars: this.text.trim().length, delay: 0}) {
+		let __rand = 0, start = 0;
+		
+		this.chars = chars;
+		this.delay = delay;
+		this.callbacks[1] = callback;
+		this.finished = false;
+		this.paused = false;
+		
+		setTimeout(() => {
+			
+			start = this.index = this.target.textContent.trim().length - 1;
+
+			this.timer = setInterval(() => {
+				if(this.index < 0 || this.index <= start - this.chars) {
+					clearInterval(this.timer);
+					this.stop();
+					this.callbacks[1]();
+				} else {
+					this.target.textContent = this.text.substring(0, this.index--);
+					if(this.audio !== false)
+						AUDIO[0].play();
+				}
+			}, this.time);
+		}, delay);
+	}
+	
+	stop() {
+		if(this.timer !== null) {
+			clearInterval(this.timer);
+			this.timer = null;
+			this.finished = true;
+			this.paused = false;
 		}
 	}
 	
-	
-	if(forward === true) {
-		__timer = setInterval(() => {
-			if(__index >= text.length) {
-				clearInterval(__timer);
-				callback();
-				if(loop === true)
-					typewriter({element: element, text: text, time: time, audio: audio, forward: forward, cursor: cursor, loop: loop, callback: callback});
-			}
-			else {
-				element.textContent += text[__index++];
-				if(audio !== false) {
-					__rand = Math.floor(Math.random() * __audio.length);
-					__audio[__rand].play();
-				}
-			}
-		}, time);
+	pause() {
+		if(this.timer !== null && this.paused === false) {
+			clearInterval(this.timer);
+			this.timer = null;
+			this.paused = true;
+		}
 	}
 	
-	else {
-		__index = text.length - 1;
-		
-		__timer = setInterval(() => {
-			if(element.textContent.length <= 0) {
-				clearInterval(__timer);
-				callback();
-				if(loop === true)
-					typewriter({element: element, text: text, time: time, audio: audio, forward: forward, cursor: cursor, loop: loop, callback: callback});
-			}
-			else {
-				element.textContent = element.textContent.substring(0, __index--);
-				if(audio !== false) __audio[0].play();
-			}
-		}, time);
-	}
-	
-	return {element: element, text: text, time: time, audio: audio, forward: forward, cursor: cursor, loop, callback: callback, timer: __timer};
-}
+	resume() {
+		if(this.paused === true && this.timer === null) {
+			let __rand = 0;
+			
+			this.paused = false;
+			setTimeout(() => {
 
-stoptypewriter = (tw) => clearInterval(tw.timer);
+				if(this.index >= this.text.trim()) {
+					this.target.textContent = this.text.substring(0, this.start);
+					this.index = this.start;
+				}
+
+				this.timer = setInterval(() => {
+					if(this.index >= this.text.length || this.index >= this.start + this.chars) {
+						if(this.loop === false) {
+							this.stop();
+						} else {
+							this.pause();
+							setTimeout(() => {
+								this.resume();
+								this.target.textContent = this.text.substring(0, this.start);
+								this.index = this.start;
+							}, this.delay);
+						}
+
+						this.callbacks[0]();
+					} else {
+						this.target.textContent += this.text[this.index++];
+						if(this.audio !== false) {
+							__rand = Math.floor(Math.random() * AUDIO.length);
+							AUDIO[__rand].play();
+						}
+					}
+				}, this.time);
+			}, 0);
+		}
+	}
+	
+	setText(text = this.target.textContent.trim()) {
+		this.text = text.trim();
+	}
+	
+	setAudio(audio = !this.audio) {
+		this.audio = audio;
+	}
+	
+	setLoop(loop = !this.loop) {
+		this.loop = loop;
+	}
+	
+	setTime(time = 30) {
+		this.time = time;
+	}
+	
+	setCursor({activated, type} = {activated: !this.cursor.activated, type: 1}) {
+		this.cursor.activated = activated;
+		this.cursor.type = type;
+
+		if(this.cursor.activated === true) {
+			let style = document.createElement('style');
+			
+			style.id = this.target.id+'_STYLE';
+			style.innerHTML = CURSOR_STYLE;
+			style.innerHTML = style.innerHTML.replace('ELEMENT_ID', this.target.id);
+			style.innerHTML = this.cursor.type == 1 ? style.innerHTML.replace('CURSOT_TYPE', '_') : style.innerHTML.replace('CURSOT_TYPE', '|');
+			document.getElementsByTagName('head')[0].appendChild(style);	
+			style.innerHTML = this.cursor.type == 1 ? style.innerHTML.replace('CURSOT_TYPE', '_') : style.innerHTML.replace('CURSOT_TYPE', '|');
+			
+			if(!this.target.classList.contains('cursor'))
+				this.target.classList.add('cursor');
+		} else {
+			if(this.target.classList.contains('cursor'))
+				this.target.classList.remove('cursor');
+		}
+	}
+}
