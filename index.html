@@ -2,6 +2,7 @@
 
 <html lang="en">
 	<head>
+		<meta charset="utf-8">
 		<meta name="author" content="Eoussama">
 		<meta name="application-name" content="Personal portfolio">
 		<meta name="description" content="A portfolio, I hope I spelled that right, it seems everyone has to have one of these nowadays, huh?">
@@ -9,6 +10,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<link rel="icon" href="images/logo.png">
+		<link rel="stylesheet" type="text/css" href="fonts/font-awesome/css/fontawesome-all.min.css">
 		<link rel="stylesheet" type="text/css" href="styles/eomponents.css">
 		<link rel="stylesheet" type="text/css" href="styles/main.css">
 
@@ -16,35 +18,108 @@
 	</head>
 	
 	<body>
-		<nav class="navbar dark fixed">
+		<nav class="navbar dark fixed right">
 			<ul class="navitems">
-				<a href="#" class="pull-left">
-					<li class="navitem brand"><img class="logo" src="images/logo.png" alt="Logo"> <span class="title">Eoussama</span></li>
+				<a href="#">
+					<li class="navitem brand pull-left">
+						<img class="logo" src="images/logo.png" alt="Logo">
+						<span class="title">Eoussama</span>
+					</li>
 				</a>
-				<a href="#" class="pull-right">
+				<a href="#">
 					<li class="navitem">About</li>
 				</a>
-				<a href="#" class="pull-right">
+				<a href="mailto:oussama.essamadi@gmail.com?Subject=Greetings">
 					<li class="navitem">Contact</li>
 				</a>
-				<a href="#" class="pull-right">
+				<a href="#">
 					<li class="navitem">Projects</li>
 				</a>
 			</ul>
 		</nav>
 		
-		<header class="landleg text-justify">
-			<h1 class="lead text-dark" id="helloThere"></h1>
+		<header class="landleg text-center">
+			<video autoplay loop src="videos/monitor-coding.mp4"></video>
+			<h1 class="lead-4 text-dark" id="helloThere"></h1>
 			<h1 class="text-gray" id="code"></h1>
 		</header>
 	
 		<main class="container">
-						
+			
 		</main>
 	
-		<footer>
-			
+		<footer class="container bg-dark text-light">
+			<div class="footer-logo">
+				<img src="images/logo.png" alt="Eoussama Logo" width="200">
+				<h1 class="mt-1">Eoussama</h1>
+			</div>
+
+			<hr class="light fade">
+
+			<div class="flex flex-gap-6 flex-gap-skip mt-3">
+				<div class="col">
+					<h4>Who I am</h4>
+					<div class="flex">
+						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid modi quibusdam dolor error. Ut cumque tempore molestias sint earum blanditiis?</p>
+					</div>
+				</div>
+				<div class="col">
+					<h4>What I do</h4>
+					<p>
+						Lorem, ipsum dolor sit amet consectetur adipisicing elit. Consectetur vitae omnis sunt mollitia voluptates molestias rem similique, exercitationem at pariatur eaque quas nam nostrum consequuntur tempore eos unde perspiciatis non.
+					</p>
+				</div>
+				<div class="col">
+					<H4>How to reach me</H4>
+					<p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Expedita a optio atque hic impedit, neque beatae iusto libero inventore placeat non, ullam et voluptatibus sed!</p>
+				</div>
+			</div>
+
+			<hr class="light fade">
+
+			<h3 class="text-center mt-3">Social links</h3>
+			<div class="flex footer-social-links flex-gap-skip">
+				<div class="col">
+					<a href="https://www.youtube.com/channel/UCw2ptm5qXBr61Jn8QingQFQ" target="_blank">
+						<div class="social-link">
+							<i class="fab fa-youtube fa-lg"></i>
+						</div>
+					</a>
+				</div>
+				<div class="col">
+					<a href="https://twitter.com/OussamaGtacj" target="_blank">
+						<div class="social-link">
+							<i class="fab fa-twitter fa-lg"></i>
+						</div>
+					</a>
+				</div>
+				<div class="col">
+					<a href="https://www.facebook.com/oussama.essamadi" target="_blank">
+						<div class="social-link">
+							<i class="fab fa-facebook fa-lg"></i>
+						</div>
+					</a>
+				</div>
+				<div class="col">
+					<a href="https://www.linkedin.com/in/oussama-essamadi-a59326155/" target="_blank">
+						<div class="social-link">
+							<i class="fab fa-linkedin fa-lg"></i>
+						</div>
+					</a>
+				</div>
+				<div class="col">
+					<a href="https://github.com/EOussama/" target="_blank">
+						<div class="social-link">
+							<i class="fab fa-github fa-lg"></i>
+						</div>
+					</a>
+				</div>
+			</div>
+
 		</footer>
+		<div class="copyright bg-dark-darken text-light">
+			<p class="text-center"><small>All right reserved &copy; 2018</small></p>
+		</div>
 		
 		<script type="text/javascript" src="scripts/typewriter.js"></script>
 		<script type="text/javascript" src="scripts/eomponents.js"></script>
