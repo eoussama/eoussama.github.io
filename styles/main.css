@@ -75,3 +75,7 @@ div.copyright {
 	height: 40px;
 }
 /* #endregion */
+
+@media(max-width: 845px) {
+	div.footer-social-links.flex { flex-direction: row; }
+}

@@ -16,7 +16,7 @@ window.addEventListener('load', () => {
 			audio: true
 		});
 	
-	TypeWriter.volume = 0.4;
+	TypeWriter.volume = 0.2;
 	helloTW.type({
 		callback: () => {
 			helloTW.delete({
