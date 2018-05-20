@@ -52,6 +52,7 @@ window.addEventListener('load', () => {
 
 const
 	LANGUAGES = [
+		'Bash',
 		'BATCH',
 		'C',
 		'C++',
