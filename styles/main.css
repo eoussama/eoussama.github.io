@@ -35,7 +35,10 @@ footer div.footer-logo  {
 }
 
 div.footer-social-links {
-	width: 400px;
+	display: flex;
+	justify-content: space-between;
+
+	width: 350px;
 	margin: auto;
 }
 
