@@ -1,5 +1,21 @@
 ::selection { background-color: var(--grayColorWeak); }
 
+body {
+	transition-property: opacity;
+	transition-duration: 1s;
+}
+
+body.load {
+	width: 100vw;
+	height: 100vh;
+
+	background-color: var(--lightColor);
+
+	overflow: hidden;
+}
+
+body.load > * { display: none; }
+
 /* #region header */
 header.landleg {
 	height: 95vh;

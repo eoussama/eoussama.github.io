@@ -48,6 +48,12 @@ window.addEventListener('load', () => {
 			})
 		}
 	});
+
+	document.body.style.opacity = '0';
+	setTimeout(() => {
+		document.body.style.opacity = '1';
+		document.body.classList.remove('load', 'spinner-3');
+	}, 1000);
 });
 
 const
