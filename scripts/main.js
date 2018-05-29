@@ -15,44 +15,46 @@ window.addEventListener('load', () => {
 			time: 120,
 			audio: true
 		});
-	
+
 	TypeWriter.volume = 0.2;
-	helloTW.type({
-		callback: () => {
-			helloTW.delete({
-				delay: 1500,
+	document.body.style.opacity = '0';
+	setTimeout(() => {
+		document.body.style.opacity = '1';
+		document.body.classList.remove('load', 'spinner-3');
+
+		setTimeout(() => {
+			helloTW.type({
 				callback: () => {
-					helloTW.setText('My name is Oussama Essamadi');
-					helloTW.type({
+					helloTW.delete({
+						delay: 1500,
 						callback: () => {
-							helloTW.setCursor();
-							codeTW.setCursor();
-							codeTW.type({
+							helloTW.setText('My name is Oussama Essamadi');
+							helloTW.type({
 								callback: () => {
-									setInterval(() => {
-										codeTW.delete({
-											chars: LANGUAGES[lang].length,
-											callback: () => {
-												codeTW.setText(`and I code in ${LANGUAGES[getNextLang()]}`);
-												codeTW.type({
-													start: codeTW.index + 1
-												})
-											}
-										});
-									}, 5000);
+									helloTW.setCursor();
+									codeTW.setCursor();
+									codeTW.type({
+										callback: () => {
+											setInterval(() => {
+												codeTW.delete({
+													chars: LANGUAGES[lang].length,
+													callback: () => {
+														codeTW.setText(`and I code in ${LANGUAGES[getNextLang()]}`);
+														codeTW.type({
+															start: codeTW.index + 1
+														});
+													}
+												});
+											}, 5000);
+										}
+									});
 								}
 							});
 						}
 					});
 				}
-			})
-		}
-	});
-
-	document.body.style.opacity = '0';
-	setTimeout(() => {
-		document.body.style.opacity = '1';
-		document.body.classList.remove('load', 'spinner-3');
+			});
+		}, 500);
 	}, 1000);
 });
 
