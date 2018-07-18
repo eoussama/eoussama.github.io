@@ -25,7 +25,7 @@ const
 			to { opacity: 1; }
 		}
 	`,
-	  AUDIO = [new Audio('sounds/type_1.mp3'), new Audio('sounds/type_1.mp3'), new Audio('sounds/type_2.mp3'), new Audio('sounds/type_1.mp3'), new Audio('sounds/type_3.mp3'), new Audio('sounds/type_1.mp3')];
+	  AUDIO = [new Audio('assets/sounds/type_1.mp3'), new Audio('assets/sounds/type_1.mp3'), new Audio('assets/sounds/type_2.mp3'), new Audio('assets/sounds/type_1.mp3'), new Audio('assets/sounds/type_3.mp3'), new Audio('assets/sounds/type_1.mp3')];
 
 var
 	isTabFocused = true;

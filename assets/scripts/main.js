@@ -14,10 +14,13 @@ window.addEventListener('load', () => {
 			text: `and I code in ${LANGUAGES[getNextLang()]}`,
 			time: 120,
 			audio: true
-		});
+		}),
+		copyDate = document.getElementById('copyDate');
 
-	TypeWriter.volume = 0.2;
 	document.body.style.opacity = '0';
+
+	// Typewriter animation
+	TypeWriter.volume = 0.2;
 	setTimeout(() => {
 		document.body.style.opacity = '1';
 		document.body.classList.remove('load', 'spinner-3');
@@ -56,6 +59,16 @@ window.addEventListener('load', () => {
 			});
 		}, 500);
 	}, 1000);
+
+	// CopyRight date
+	var
+		currYear = (new Date()).getFullYear(),
+		initYear = 2018;
+	
+	if (currYear === initYear)
+		copyDate.textContent = initYear;
+	else
+		copyDate.textContent = `${initYear} - ${currYear}`;
 });
 
 const
