@@ -12,12 +12,19 @@
 
 ::-webkit-scrollbar-track { background-color: var(--darkColorWeak); }
 
+body, html { background-color: var(--grayColorWeak); }
+
 body {
 	transition-property: opacity;
 	transition-duration: 1s;
 }
 
-body.load {
+body.load::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+
 	width: 100vw;
 	height: 150vh;
 

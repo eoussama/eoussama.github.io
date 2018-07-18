@@ -1,10 +1,9 @@
 window.addEventListener('load', () => {
-
 	const
 		helloTW = new TypeWriter({
 			target: document.getElementById('helloThere'),
 			text: 'Hello, there!',
-			time: 10,
+			time: 120,
 			audio: true,
 			cursor: {
 				activated: true
@@ -13,7 +12,7 @@ window.addEventListener('load', () => {
 		codeTW = new TypeWriter({
 			target: document.getElementById('code'),
 			text: `and I code in ${LANGUAGES[getNextLang()]}`,
-			time: 10,
+			time: 120,
 			audio: true
 		}),
 		navbar = document.querySelector('nav.navbar'),
@@ -21,7 +20,8 @@ window.addEventListener('load', () => {
 		btnMute = document.getElementById('mute'),
 		muteIcon = btnMute.querySelector('i.fa');
 
-	
+	window.scroll(0, 0);
+	document.body.style.opacity = '0';
 	navbar.style.opacity = '0';
 	navbar.style.top = '-55px';
 	document.body.style.overflow = 'hidden';
@@ -29,6 +29,7 @@ window.addEventListener('load', () => {
 	// Typewriter animation
 	TypeWriter.volume = 0.2;
 	setTimeout(() => {
+		document.body.style.opacity = '1';
 		document.body.classList.remove('load', 'spinner-3');
 
 		setTimeout(() => {
