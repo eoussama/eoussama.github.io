@@ -2,7 +2,7 @@ button#mute {
     display: none;
     position: absolute;
 
-    top: 53%;
+    top: 180px;
     left: 50%;
 
     width: 50px;
@@ -21,7 +21,7 @@ button#mute {
     transition-duration: 0.4s;
 
     animation-name: displayMuteBtn;
-    animation-duration: 0.6s;
+    animation-duration: 0.8s;
     animation-fill-mode: forwards;
 }
 
@@ -31,7 +31,7 @@ button#mute:focus { outline: none; }
 
 @keyframes displayMuteBtn {
     from {
-        margin-top: 15px;
+        margin-top: 20px;
         opacity: 0;
     }
 

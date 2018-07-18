@@ -15,9 +15,14 @@ window.addEventListener('load', () => {
 			time: 120,
 			audio: true
 		}),
+		navbar = document.querySelector('nav.navbar'),
 		copyDate = document.getElementById('copyDate'),
 		btnMute = document.getElementById('mute');
 
+	
+	navbar.style.opacity = '0';
+	navbar.style.top = '-55px';
+	document.body.style.overflowY = 'hidden';
 	document.body.style.opacity = '0';
 
 	// Typewriter animation
@@ -51,7 +56,12 @@ window.addEventListener('load', () => {
 												});
 											}, 5000);
 
+											navbar.style.transitionProperty = 'opacity top';
+											navbar.style.transitionDuration = '0.8s';
+											navbar.style.top = '0';
+											navbar.style.opacity = '1';
 											btnMute.style.display = 'block';
+											document.body.style.overflowY = 'auto';
 										}
 									});
 								}

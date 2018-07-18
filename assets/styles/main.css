@@ -32,11 +32,20 @@ body.load > * { display: none; }
 
 /* #region header */
 header.landleg {
-	height: 95vh;
-	padding: 30vh 10vw;
+	display: flex;
+
+	height: 100vh;
 	
 	box-sizing: border-box;
 	overflow: hidden;
+	transform: translateY(-50px);
+}
+
+header.landleg div.landleg-content {
+	align-self: center;
+	position: relative;
+	
+	margin: auto;
 }
 
 header.landleg h1 {
@@ -47,9 +56,9 @@ header.landleg h1 {
 
 header.landleg video {
 	position: absolute;
-	top: 0px;
-	left: 0px;
-	width: 100%;
+	align-self: center;
+	
+	left: 0;
 
 	opacity: 0.2;
 }
