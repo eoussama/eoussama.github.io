@@ -18,10 +18,11 @@ window.addEventListener('load', () => {
 		navbar = document.querySelector('nav.navbar'),
 		copyDate = document.getElementById('copyDate'),
 		btnMute = document.getElementById('mute'),
-		muteIcon = btnMute.querySelector('i.fa');
+		muteIcon = btnMute.querySelector('i.fa'),
+		mainContent = document.getElementById('main-content');
 
 	window.scroll(0, 0);
-	document.body.style.opacity = '0';
+	mainContent.style.opacity = '0';
 	navbar.style.opacity = '0';
 	navbar.style.top = '-55px';
 	document.body.style.overflow = 'hidden';
@@ -29,8 +30,8 @@ window.addEventListener('load', () => {
 	// Typewriter animation
 	TypeWriter.volume = 0.2;
 	setTimeout(() => {
-		document.body.style.opacity = '1';
-		document.body.classList.remove('load', 'spinner-3');
+		mainContent.style.opacity = '1';
+		mainContent.classList.remove('load', 'spinner-3');
 
 		setTimeout(() => {
 			helloTW.type({

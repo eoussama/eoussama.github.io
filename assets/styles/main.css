@@ -15,11 +15,13 @@
 body, html { background-color: var(--grayColorWeak); }
 
 body {
+	overflow: hidden;
+
 	transition-property: opacity;
 	transition-duration: 1s;
 }
 
-body.load::before {
+div#main-content.load::before {
 	content: '';
 	position: absolute;
 	top: 0;
@@ -33,7 +35,7 @@ body.load::before {
 	overflow: hidden;
 }
 
-body.load * { display: none !important; }
+div#main-content.load * { display: none !important; }
 /* #endregion */
 
 
