@@ -19,14 +19,14 @@ body {
 
 body.load {
 	width: 100vw;
-	height: 100vh;
+	height: 150vh;
 
 	background-color: var(--lightColor);
 
 	overflow: hidden;
 }
 
-body.load > * { display: none; }
+body.load * { display: none !important; }
 /* #endregion */
 
 

@@ -1,4 +1,5 @@
 window.addEventListener('load', () => {
+
 	const
 		helloTW = new TypeWriter({
 			target: document.getElementById('helloThere'),
@@ -22,13 +23,11 @@ window.addEventListener('load', () => {
 	
 	navbar.style.opacity = '0';
 	navbar.style.top = '-55px';
-	document.body.style.overflowY = 'hidden';
-	document.body.style.opacity = '0';
+	document.body.style.overflow = 'hidden';
 
 	// Typewriter animation
 	TypeWriter.volume = 0.2;
 	setTimeout(() => {
-		document.body.style.opacity = '1';
 		document.body.classList.remove('load', 'spinner-3');
 
 		setTimeout(() => {
@@ -89,7 +88,7 @@ window.addEventListener('load', () => {
 			TypeWriter.volume = 0.2;
 		else
 			TypeWriter.volume = 0;
-	});
+	});	
 });
 
 const

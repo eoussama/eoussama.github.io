@@ -2765,7 +2765,7 @@ div.progressTrack.xl div.progressBar span.progressValue { font-size: 16px; }
 	animation-timing-function: linear;
 }
 
-.spinner-3::before {
+.spinner-3::after {
 	content: '';
 	
 	width: 50px;
