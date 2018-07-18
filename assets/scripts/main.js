@@ -15,7 +15,8 @@ window.addEventListener('load', () => {
 			time: 120,
 			audio: true
 		}),
-		copyDate = document.getElementById('copyDate');
+		copyDate = document.getElementById('copyDate'),
+		btnMute = document.getElementById('mute');
 
 	document.body.style.opacity = '0';
 
@@ -49,6 +50,8 @@ window.addEventListener('load', () => {
 													}
 												});
 											}, 5000);
+
+											btnMute.style.display = 'block';
 										}
 									});
 								}
@@ -69,6 +72,14 @@ window.addEventListener('load', () => {
 		copyDate.textContent = initYear;
 	else
 		copyDate.textContent = `${initYear} - ${currYear}`;
+
+	// Mute button
+	btnMute.addEventListener('click', () => {
+		if (TypeWriter.volume == 0)
+			TypeWriter.volume = 0.2;
+		else
+			TypeWriter.volume = 0;
+	});
 });
 
 const
