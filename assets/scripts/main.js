@@ -11,7 +11,7 @@ window.addEventListener('load', () => {
 		}),
 		codeTW = new TypeWriter({
 			target: document.getElementById('code'),
-			text: `and I code in ${LANGUAGES[getNextLang()]}`,
+			text: `and I code in ${getRandLang()}`,
 			time: 120,
 			audio: true
 		}),
@@ -48,9 +48,9 @@ window.addEventListener('load', () => {
 										callback: () => {
 											setInterval(() => {
 												codeTW.delete({
-													chars: LANGUAGES[lang].length,
+													chars: LANGUAGES[_lang].length,
 													callback: () => {
-														codeTW.setText(`and I code in ${LANGUAGES[getNextLang()]}`);
+														codeTW.setText(`and I code in ${getRandLang()}`);
 														codeTW.type({
 															start: codeTW.index + 1
 														});
@@ -118,19 +118,10 @@ const
 		'Visual Basic'
 	];
 
-var
-	lang = -1;
+var	_lang = -1;
 
-function getNextLang() {
-	if(lang++ === LANGUAGES.length - 1)
-		lang = 0;
+function getRandLang() {
+	_lang = Math.floor(Math.random() * LANGUAGES.length);
 
-	return lang;
-}
-
-function getPrevLang() {
-	if(lang-- < 0)
-		lang = LANGUAGES.length - 1;
-	
-	return lang;
+	return LANGUAGES[_lang];
 }
