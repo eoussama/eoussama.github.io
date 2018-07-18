@@ -4,7 +4,7 @@ window.addEventListener('load', () => {
 		helloTW = new TypeWriter({
 			target: document.getElementById('helloThere'),
 			text: 'Hello, there!',
-			time: 120,
+			time: 10,
 			audio: true,
 			cursor: {
 				activated: true
@@ -13,12 +13,13 @@ window.addEventListener('load', () => {
 		codeTW = new TypeWriter({
 			target: document.getElementById('code'),
 			text: `and I code in ${LANGUAGES[getNextLang()]}`,
-			time: 120,
+			time: 10,
 			audio: true
 		}),
 		navbar = document.querySelector('nav.navbar'),
 		copyDate = document.getElementById('copyDate'),
-		btnMute = document.getElementById('mute');
+		btnMute = document.getElementById('mute'),
+		muteIcon = btnMute.querySelector('i.fa');
 
 	
 	navbar.style.opacity = '0';
@@ -84,10 +85,15 @@ window.addEventListener('load', () => {
 
 	// Mute button
 	btnMute.addEventListener('click', () => {
-		if (TypeWriter.volume == 0)
+		if (TypeWriter.volume == 0) {
 			TypeWriter.volume = 0.2;
-		else
+			muteIcon.classList.remove('fa-volume-off');
+			muteIcon.classList.add('fa-volume-up');
+		} else {
 			TypeWriter.volume = 0;
+			muteIcon.classList.remove('fa-volume-up');
+			muteIcon.classList.add('fa-volume-off');
+		}
 	});	
 });
 

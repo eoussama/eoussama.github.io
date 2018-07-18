@@ -8,24 +8,34 @@ button#mute {
     width: 50px;
     height: 50px;
 
-    border: 1px solid var(--grayColorLighten);
+    border: none;
     border-radius: 3px;
 
-    background-color: var(--grayColor);
+    background-color: var(--grayColorWeak);
 
-    opacity: 0.4;
     transform: translateX(-50%);
     cursor: pointer;
 
-    transition-property: background-color;
+    transition-property: opacity background-color;
     transition-duration: 0.4s;
 
     animation-name: displayMuteBtn;
     animation-duration: 0.8s;
-    animation-fill-mode: forwards;
+    animation-fill-mode: both;
 }
 
-button#mute:hover { background-color: var(--grayColorLighten); }
+button#mute > i {
+    color: var(--grayColorLighten);
+
+    transition-property: color;
+    transition-duration: 0.4s;
+}
+
+button#mute:hover {
+    background-color: var(--grayColorLighten);
+}
+
+button#mute:hover > i { color: var(--darkColor); }
 
 button#mute:focus { outline: none; }
 
@@ -37,6 +47,6 @@ button#mute:focus { outline: none; }
 
     to {
         margin-top: 0px;
-        opacity: 0.4;
+        opacity: 1;
     }
 }
