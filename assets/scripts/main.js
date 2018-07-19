@@ -77,8 +77,8 @@ window.addEventListener('load', () => {
 
 	// CopyRight date
 	var
-		currYear = (new Date()).getFullYear(),
-		initYear = 2018;
+		initYear = 2018,
+		currYear = (new Date()).getFullYear();
 	
 	if (currYear === initYear)
 		copyDate.textContent = initYear;
