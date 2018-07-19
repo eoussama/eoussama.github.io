@@ -72,7 +72,29 @@ header.landleg video {
 	opacity: 0.2;
 }
 
-nav a li.navitem.brand:hover { background-color: transparent !important; }
+nav.above {
+	box-shadow: none !important;
+	
+	background-color: transparent !important;
+
+	opacity: 0.4 !important;
+}
+
+nav.above:hover { opacity: 1 !important; }
+
+nav.above li {
+	color: var(--grayColor) !important;
+
+	transition-property: color;
+	transition-duration: 0.4s;
+}
+
+nav a li:hover {
+	background-color: transparent !important;
+	color: var(--darkColor) !important;
+}
+
+nav.above a li.navitem.brand { display: none; }
 /* #endregion */
 
 /* #region footer */
