@@ -20,7 +20,6 @@ window.addEventListener('scroll', () => {
         navbar.classList.remove('gray');
         navbar.classList.add('dark');
     } else if (headerEle.offsetHeight >= window.scrollY && navbar.classList.contains('below')) {
-        console.log('fadeOut');
         navbar.classList.add('fadeOut');
         setTimeout(() => {
             navbar.classList.remove('fadeOut');
