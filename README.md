@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="images/logo.png" alt="Logo" width="200px">
+    <img src="assets/images/logo.png" alt="Logo" width="200px">
     <h1 align="center">
         Oussama Essamadi
         <br>
