@@ -31,9 +31,7 @@ button#mute > i {
     transition-duration: 0.4s;
 }
 
-button#mute:hover {
-    background-color: var(--grayColorLighten);
-}
+button#mute:hover { background-color: var(--lightColorDarken); }
 
 button#mute:hover > i { color: var(--darkColor); }
 
