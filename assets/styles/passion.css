@@ -7,19 +7,58 @@ div.passion-panel div.passion {
 }
 
 div.passion-panel div.passion h5 {
+    border: 3px solid currentColor;
     color: var(--darkColor);
     font-size: 40px;
     left: 50%;
+    opacity: 0;
+    padding: 15px 30px;
     position: absolute;
-    top: 50%;
+    top: 30%;
     transform: translate(-50%, -50%);
+    transition-property: top, opacity;
+    transition-duration: .5s;
+    white-space: nowrap;
+    z-index: 4;
+}
+
+div.passion-panel div.passion p {
+    color: var(--darkColor);
+    height: 0;
+    position: absolute;
+    text-align: center;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, .3);
+    margin: 0;
+    opacity: 0;
+    transition-property: opacity, height;
+    transition-duration: .5s;
+    width: 100%;
     z-index: 4;
 }
 
 div.passion-panel div.passion img {
     height: 100%;
-    filter: grayscale(100%);
+    filter: grayscale(100%) blur(3px);
     opacity: .6;
+    transition-property: opacity, transform;
+    transition-duration: .5s;
     width: 100%;
     z-index: 3;
+}
+
+div.passion-panel div.passion:hover img {
+    opacity: 1;
+    filter: grayscale(0) blur(5px);
+    transform: scale(1.03);
+}
+
+div.passion-panel div.passion:hover h5 {
+    opacity: 1;
+    top: 35%;
+}
+
+div.passion-panel div.passion:hover p {
+    height: 120px;
+    opacity: 1;
 }
