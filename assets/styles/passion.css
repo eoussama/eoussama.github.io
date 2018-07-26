@@ -1,0 +1,25 @@
+div.passion-panel div.passion {
+    cursor: pointer;
+    border: 1px solid var(--darkColorWeak);
+    height: 350px;
+    overflow: hidden;
+    position: relative;
+}
+
+div.passion-panel div.passion h5 {
+    color: var(--darkColor);
+    font-size: 40px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+}
+
+div.passion-panel div.passion img {
+    height: 100%;
+    filter: grayscale(100%);
+    opacity: .6;
+    width: 100%;
+    z-index: 3;
+}
