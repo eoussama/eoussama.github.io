@@ -6,6 +6,18 @@ div.passion-panel div.passion {
     position: relative;
 }
 
+div.passion-panel div.passion h4 {
+    color: var(--darkColor);
+    font-size: 50px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition-property: transform, opacity;
+    transition-duration: .5s;
+    white-space: nowrap;
+}
+
 div.passion-panel div.passion h5 {
     border: 3px solid currentColor;
     color: var(--darkColor);
@@ -56,6 +68,11 @@ div.passion-panel div.passion:hover img {
 div.passion-panel div.passion:hover h5 {
     opacity: 1;
     top: 35%;
+}
+
+div.passion-panel div.passion:hover h4 {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5);
 }
 
 div.passion-panel div.passion:hover p {
