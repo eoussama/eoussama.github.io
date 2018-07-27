@@ -3,7 +3,7 @@ window.addEventListener('load', () => {
 		helloTW = new TypeWriter({
 			target: document.getElementById('helloThere'),
 			text: 'Hello, there!',
-			time: 5,
+			time: 120,
 			audio: true,
 			cursor: {
 				activated: true
@@ -12,7 +12,7 @@ window.addEventListener('load', () => {
 		codeTW = new TypeWriter({
 			target: document.getElementById('code'),
 			text: `and I code in ${getRandLang()}`,
-			time: 5,
+			time: 120,
 			audio: true
 		}),
 		navbar = document.querySelector('nav.navbar'),
@@ -48,7 +48,7 @@ window.addEventListener('load', () => {
 										callback: () => {
 											setInterval(() => {
 												codeTW.delete({
-													chars: LANGUAGES[_lang].length,
+													chars: LANGUAGES[_temp].length,
 													callback: () => {
 														codeTW.setText(`and I code in ${getRandLang()}`);
 														codeTW.type({
@@ -118,10 +118,17 @@ const
 		'Visual Basic'
 	];
 
-var	_lang = -1;
+var	_lang = -1, _temp = -1;
 
 function getRandLang() {
-	_lang = Math.floor(Math.random() * LANGUAGES.length);
+	_temp = Math.floor(Math.random() * LANGUAGES.length);
+
+	while(true) {
+		if(_temp !== _lang) {
+			_lang = _temp;
+			break;
+		}
+	}
 
 	return LANGUAGES[_lang];
 }
