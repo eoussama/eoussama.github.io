@@ -48,7 +48,7 @@ window.addEventListener('load', () => {
 										callback: () => {
 											setInterval(() => {
 												codeTW.delete({
-													chars: LANGUAGES[_temp].length,
+													chars: LANGUAGES[_lang].length,
 													callback: () => {
 														codeTW.setText(`and I code in ${getRandLang()}`);
 														codeTW.type({
@@ -118,17 +118,10 @@ const
 		'Visual Basic'
 	];
 
-var	_lang = -1, _temp = -1;
+var	_lang = -1;
 
 function getRandLang() {
-	_temp = Math.floor(Math.random() * LANGUAGES.length);
-
-	while(true) {
-		if(_temp !== _lang) {
-			_lang = _temp;
-			break;
-		}
-	}
+	_lang = Math.floor(Math.random() * LANGUAGES.length);
 
 	return LANGUAGES[_lang];
 }
