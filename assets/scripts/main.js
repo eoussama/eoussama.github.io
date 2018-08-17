@@ -3,7 +3,7 @@ window.addEventListener('load', () => {
 		helloTW = new TypeWriter({
 			target: document.getElementById('helloThere'),
 			text: 'Hello, there!',
-			time: 10,
+			time: 120,
 			audio: true,
 			cursor: {
 				activated: true
@@ -12,7 +12,7 @@ window.addEventListener('load', () => {
 		codeTW = new TypeWriter({
 			target: document.getElementById('code'),
 			text: `and I code in ${getRandLang()}`,
-			time: 10,
+			time: 120,
 			audio: true
 		}),
 		navbar = document.querySelector('nav.navbar'),
@@ -48,7 +48,7 @@ window.addEventListener('load', () => {
 										callback: () => {
 											setInterval(() => {
 												codeTW.delete({
-													chars: LANGUAGES[_lang].length,
+													chars: LANGUAGES[_lang].lang.length,
 													callback: () => {
 														codeTW.setText(`and I code in ${getRandLang()}`);
 														codeTW.type({
@@ -96,32 +96,15 @@ window.addEventListener('load', () => {
 			muteIcon.classList.remove('fa-volume-up');
 			muteIcon.classList.add('fa-volume-off');
 		}
-	});	
-});
+	});
 
-const
-	LANGUAGES = [
-		'Bash',
-		'BATCH',
-		'C',
-		'C++',
-		'C#',
-		'CSS',
-		'Java',
-		'Javascript',
-		'HTML',
-		'Lua',
-		'Python',
-		'PHP',
-		'Pawn',
-		'SQL',
-		'Visual Basic'
-	];
+	CreateSkillBoxes();
+});
 
 var	_lang = -1;
 
 function getRandLang() {
 	_lang = Math.floor(Math.random() * LANGUAGES.length);
 
-	return LANGUAGES[_lang];
+	return LANGUAGES[_lang].lang;
 }

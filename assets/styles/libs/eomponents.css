@@ -2511,7 +2511,7 @@ form.form-group input.form-control, form.form-group select.form-control, form.fo
 .bg-green-darken { background-color: var(--greenColorDarken) !important; }
 .bg-green-strong { background-color: var(--greenColorStrong) !important; }
 
-.bg-yellow-weak { background-color: var(--yellowColorWeak !important); }
+.bg-yellow-weak { background-color: var(--yellowColorWeak) !important; }
 .bg-yellow-lighten { background-color: var(--yellowColorLighten) !important; }
 .bg-yellow { background-color: var(--yellowColor) !important; }
 .bg-yellow-darken { background-color: var(--yellowColorDarken) !important; }
@@ -2704,7 +2704,7 @@ div.progressTrack.stripped.stripped-animation div.progressBar::before {
 	to { background-position: 100vw; }
 }
 
-div.progressTrack.animation div.progressBar{
+div.progressTrack.animation div.progressBar {
 	transition-property: width;
 	transition-duration: .3s;
 	transition-timing-function: ease-in-out;
@@ -2888,28 +2888,28 @@ div.dropdown .btn-piano .btn {
 /* #region Media */
 @media(max-width: 1100px) {
 	.grid { grid-template-columns: repeat(3, 1fr); }
-	.grid.grid.grid-elements-4 { grid-template-columns: repeat(3, 1fr); !important; }
-	.grid.grid.grid-elements-5 { grid-template-columns: repeat(3, 1fr); !important; }
-	.grid.grid.grid-elements-6 { grid-template-columns: repeat(3, 1fr); !important; }
-	.grid.grid.grid-elements-7 { grid-template-columns: repeat(3, 1fr); !important; }
-	.grid.grid.grid-elements-8 { grid-template-columns: repeat(3, 1fr); !important; }
-	.grid.grid.grid-elements-9 { grid-template-columns: repeat(3, 1fr); !important; }
-	.grid.grid.grid-elements-10 { grid-template-columns: repeat(3, 1fr); !important; }
-	.grid.grid.grid-elements-11 { grid-template-columns: repeat(3, 1fr); !important; }
-	.grid.grid.grid-elements-12 { grid-template-columns: repeat(3, 1fr); !important; }
+	.grid.grid.grid-elements-4 { grid-template-columns: repeat(3, 1fr) !important; }
+	.grid.grid.grid-elements-5 { grid-template-columns: repeat(3, 1fr) !important; }
+	.grid.grid.grid-elements-6 { grid-template-columns: repeat(3, 1fr) !important; }
+	.grid.grid.grid-elements-7 { grid-template-columns: repeat(3, 1fr) !important; }
+	.grid.grid.grid-elements-8 { grid-template-columns: repeat(3, 1fr) !important; }
+	.grid.grid.grid-elements-9 { grid-template-columns: repeat(3, 1fr) !important; }
+	.grid.grid.grid-elements-10 { grid-template-columns: repeat(3, 1fr) !important; }
+	.grid.grid.grid-elements-11 { grid-template-columns: repeat(3, 1fr) !important; }
+	.grid.grid.grid-elements-12 { grid-template-columns: repeat(3, 1fr) !important; }
 }
 
 @media(max-width: 700px) {
 	.grid { grid-template-columns: repeat(2, 1fr); }
-	.grid.grid.grid-elements-4 { grid-template-columns: repeat(2, 1fr); !important; }
-	.grid.grid.grid-elements-5 { grid-template-columns: repeat(2, 1fr); !important; }
-	.grid.grid.grid-elements-6 { grid-template-columns: repeat(2, 1fr); !important; }
-	.grid.grid.grid-elements-7 { grid-template-columns: repeat(2, 1fr); !important; }
-	.grid.grid.grid-elements-8 { grid-template-columns: repeat(2, 1fr); !important; }
-	.grid.grid.grid-elements-9 { grid-template-columns: repeat(2, 1fr); !important; }
-	.grid.grid.grid-elements-10 { grid-template-columns: repeat(2, 1fr); !important; }
-	.grid.grid.grid-elements-11 { grid-template-columns: repeat(2, 1fr); !important; }
-	.grid.grid.grid-elements-12 { grid-template-columns: repeat(2, 1fr); !important; }
+	.grid.grid.grid-elements-4 { grid-template-columns: repeat(2, 1fr) !important; }
+	.grid.grid.grid-elements-5 { grid-template-columns: repeat(2, 1fr) !important; }
+	.grid.grid.grid-elements-6 { grid-template-columns: repeat(2, 1fr) !important; }
+	.grid.grid.grid-elements-7 { grid-template-columns: repeat(2, 1fr) !important; }
+	.grid.grid.grid-elements-8 { grid-template-columns: repeat(2, 1fr) !important; }
+	.grid.grid.grid-elements-9 { grid-template-columns: repeat(2, 1fr) !important; }
+	.grid.grid.grid-elements-10 { grid-template-columns: repeat(2, 1fr) !important; }
+	.grid.grid.grid-elements-11 { grid-template-columns: repeat(2, 1fr) !important; }
+	.grid.grid.grid-elements-12 { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
 @media(max-width: 600px) {
