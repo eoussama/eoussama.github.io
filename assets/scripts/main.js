@@ -3,7 +3,7 @@ window.addEventListener('load', () => {
 		helloTW = new TypeWriter({
 			target: document.getElementById('helloThere'),
 			text: 'Hello, there!',
-			time: 10,
+			time: 120,
 			audio: true,
 			cursor: {
 				activated: true
@@ -12,7 +12,7 @@ window.addEventListener('load', () => {
 		codeTW = new TypeWriter({
 			target: document.getElementById('code'),
 			text: `and I code in ${getRandLang()}`,
-			time: 10,
+			time: 120,
 			audio: true
 		}),
 		navbar = document.querySelector('nav.navbar'),
@@ -20,6 +20,8 @@ window.addEventListener('load', () => {
 		btnMute = document.getElementById('mute'),
 		muteIcon = btnMute.querySelector('i.fa'),
 		btnScrollDown = document.getElementById('scrollDown'),
+		btnAboutScroll = document.getElementById('aboutScroll'),
+		btnSkillsScroll = document.getElementById('skillsScroll'),
 		mainContent = document.getElementById('main-content');
 
 	window.scroll(0, 0);
@@ -87,7 +89,6 @@ window.addEventListener('load', () => {
 	else
 		copyDate.textContent = `${initYear} - ${currYear}`;
 
-	// Mute button
 	btnMute.addEventListener('click', () => {
 		if (TypeWriter.volume == 0) {
 			TypeWriter.volume = 0.2;
@@ -98,6 +99,30 @@ window.addEventListener('load', () => {
 			muteIcon.classList.remove('fa-volume-up');
 			muteIcon.classList.add('fa-volume-off');
 		}
+	});
+
+	btnScrollDown.addEventListener('click', () => {
+		window.scrollTo({
+			top: document.querySelector('header.landleg').offsetHeight + 1,
+			left: 0,
+			behavior: 'smooth'
+		});
+	});
+
+	btnAboutScroll.addEventListener('click', () => {
+		window.scrollTo({
+			top: document.getElementById('about').offsetTop - 50,
+			left: 0,
+			behavior: 'smooth'
+		});
+	});
+
+	btnSkillsScroll.addEventListener('click', () => {
+		window.scrollTo({
+			top: document.querySelector('div.skills-panel').offsetTop - 80,
+			left: 0,
+			behavior: 'smooth'
+		});
 	});
 
 	CreateSkillBoxes();
