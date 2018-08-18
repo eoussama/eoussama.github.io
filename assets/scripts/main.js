@@ -3,7 +3,7 @@ window.addEventListener('load', () => {
 		helloTW = new TypeWriter({
 			target: document.getElementById('helloThere'),
 			text: 'Hello, there!',
-			time: 120,
+			time: 10,
 			audio: true,
 			cursor: {
 				activated: true
@@ -12,13 +12,14 @@ window.addEventListener('load', () => {
 		codeTW = new TypeWriter({
 			target: document.getElementById('code'),
 			text: `and I code in ${getRandLang()}`,
-			time: 120,
+			time: 10,
 			audio: true
 		}),
 		navbar = document.querySelector('nav.navbar'),
 		copyDate = document.getElementById('copyDate'),
 		btnMute = document.getElementById('mute'),
 		muteIcon = btnMute.querySelector('i.fa'),
+		btnScrollDown = document.getElementById('scrollDown'),
 		mainContent = document.getElementById('main-content');
 
 	window.scroll(0, 0);
@@ -63,6 +64,7 @@ window.addEventListener('load', () => {
 											navbar.style.top = '0';
 											navbar.style.opacity = '1';
 											btnMute.style.display = 'block';
+											btnScrollDown.style.display = 'block';
 											document.body.style.overflowY = 'auto';
 										}
 									});

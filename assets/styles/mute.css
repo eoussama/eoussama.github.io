@@ -1,9 +1,10 @@
-button#mute {
-    display: none;
-    position: absolute;
+div#controlBtns {
+    width: 100px;
+    margin: 50px auto 0 auto;
+}
 
-    top: 180px;
-    left: 50%;
+button.controlBtn {
+    display: none;
 
     width: 50px;
     height: 50px;
@@ -13,7 +14,6 @@ button#mute {
 
     background-color: var(--grayColorWeak);
 
-    transform: translateX(-50%);
     cursor: pointer;
 
     transition-property: opacity background-color;
@@ -24,18 +24,18 @@ button#mute {
     animation-fill-mode: both;
 }
 
-button#mute > i {
+button.controlBtn > i {
     color: var(--grayColorLighten);
 
     transition-property: color;
     transition-duration: 0.4s;
 }
 
-button#mute:hover { background-color: var(--lightColorDarken); }
+button.controlBtn:hover { background-color: var(--lightColorDarken); }
 
-button#mute:hover > i { color: var(--darkColor); }
+button.controlBtn:hover > i { color: var(--darkColor); }
 
-button#mute:focus { outline: none; }
+button.controlBtn:focus { outline: none; }
 
 @keyframes displayMuteBtn {
     from {
