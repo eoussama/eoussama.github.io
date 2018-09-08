@@ -3,7 +3,7 @@ window.addEventListener('load', () => {
 		helloTW = new TypeWriter({
 			target: document.getElementById('helloThere'),
 			text: 'Hello, there!',
-			time: 120,
+			time: 10,
 			audio: true,
 			cursor: {
 				activated: true
@@ -12,7 +12,7 @@ window.addEventListener('load', () => {
 		codeTW = new TypeWriter({
 			target: document.getElementById('code'),
 			text: `and I code in ${getRandLang()}`,
-			time: 120,
+			time: 10,
 			audio: true
 		}),
 		navbar = document.querySelector('nav.navbar'),
@@ -125,7 +125,15 @@ window.addEventListener('load', () => {
 		});
 	});
 
-	CreateSkillBoxes();
+	CreateSkillBoxes();	
+
+	window.sr = ScrollReveal({ reset: true });
+	sr.reveal('.passion-panel > .lead-5', { delay: 50 });
+	sr.reveal('.passion:first-of-type', { delay: 200 });
+	sr.reveal('.passion:nth-of-type(2)', { delay: 400 });
+	sr.reveal('.passion:last-of-type', { delay: 600 });
+	sr.reveal('.skills-panel > .lead-5', { delay: 50 });
+	sr.reveal('.skill-box', { delay: 200 });
 });
 
 var	_lang = -1;
