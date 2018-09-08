@@ -21,7 +21,7 @@ div.skills-panel div.skill-box {
 }
 
 div.skills-panel div.skill-box:hover {
-    background-color: var(--darkColorLighten) !important;
+    background-color: var(--darkColorWeak) !important;
 }
 
 div.skills-panel div.progressTrack {
