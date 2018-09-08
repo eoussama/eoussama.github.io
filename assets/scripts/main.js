@@ -3,7 +3,7 @@ window.addEventListener('load', () => {
 		helloTW = new TypeWriter({
 			target: document.getElementById('helloThere'),
 			text: 'Hello, there!',
-			time: 10,
+			time: 120,
 			audio: true,
 			cursor: {
 				activated: true
@@ -12,7 +12,7 @@ window.addEventListener('load', () => {
 		codeTW = new TypeWriter({
 			target: document.getElementById('code'),
 			text: `and I code in ${getRandLang()}`,
-			time: 10,
+			time: 120,
 			audio: true
 		}),
 		navbar = document.querySelector('nav.navbar'),
