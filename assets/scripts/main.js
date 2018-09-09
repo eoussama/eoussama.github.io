@@ -134,7 +134,17 @@ window.addEventListener('load', () => {
 		sr.reveal('.passion:nth-of-type(2)', { delay: 400 });
 		sr.reveal('.passion:last-of-type', { delay: 600 });
 		sr.reveal('.skills-panel > .lead-5', { delay: 50 });
-		sr.reveal('.skill-box', { delay: 200 });
+		sr.reveal('.skill-box', {
+			delay: 200,
+			beforeReveal: (box) => {
+				setProgressBar(box.querySelector('.progressBar'), 0);
+				box.querySelector('span').textContent = '0%';
+			},
+			afterReveal: (box) => {
+				setProgressBar(box.querySelector('.progressBar'), box.dataset.prog);
+				animateValue(box, 0, box.dataset.prog, 300);
+			}
+		});
 	}, 1000);
 });
 
@@ -144,4 +154,20 @@ function getRandLang() {
 	_lang = Math.floor(Math.random() * LANGUAGES.length);
 
 	return LANGUAGES[_lang].lang;
+}
+
+function animateValue(ele, start, end, duration) {
+	var current = start;
+	const
+		range = end - start,
+		increment = end > start? 1 : -1,
+		stepTime = Math.abs(Math.floor(duration / range)),
+		obj = ele.querySelector('span'),
+		timer = setInterval(function() {
+			current += increment;
+			obj.textContent = current + '%';
+			if (current == end) {
+				clearInterval(timer);
+			}
+		}, stepTime);
 }

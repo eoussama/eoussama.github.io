@@ -40,6 +40,7 @@ function CreateSkillBoxes() {
         progBar.classList.add('progressBar');
         skillVal.classList.add('skill-val' ,'flex-section-1');
 
+        skillBox.dataset.prog = lang.lvl;
         progBar.style.backgroundColor = h5.style.color = skillVal.style.backgroundColor = lang.color;
         h5.textContent = lang.lang;
         skillSpan.textContent = lang.lvl + '%';
