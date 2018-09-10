@@ -125,7 +125,7 @@ window.addEventListener('load', () => {
 		});
 	});
 
-	CreateSkillBoxes();	
+	CreateSkillBoxes();
 
 	setTimeout(() => {
 		window.sr = ScrollReveal({ reset: true });
