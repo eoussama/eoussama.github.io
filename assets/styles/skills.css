@@ -1,5 +1,6 @@
 div.skills-panel {
     margin-top: 100px;
+    perspective: 3000px;
 }
 
 div.skills-panel h5 {
@@ -21,7 +22,7 @@ div.skills-panel div.skill-box {
 }
 
 div.skills-panel div.skill-box:hover {
-    background-color: var(--darkColorWeak) !important;
+    background-color: var(--lightColorDarken) !important;
 }
 
 div.skills-panel div.progressTrack {
@@ -43,4 +44,51 @@ div.skills-panel div.skill-val span {
     transform: translate(-50%, -50%);
     font-weight: bold;
     font-size: 25px;
+}
+
+div#skill-info {
+    animation-duration: .3s;
+    animation-fill-mode: forwards;
+    animation-name: skill-info-anim;
+    background-color: var(--lightColorDarken);
+    border: 1px solid rgba(0, 0, 0, .05);
+    box-shadow: 2px 1px 3px rgba(0, 0, 0, .1);
+    box-sizing: border-box;
+    display: none;
+    height: 0;
+    left: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    transform: rotateX(-90deg);
+    transform-origin: top;
+    width: 400px;
+    z-index: 10;
+}
+
+@keyframes skill-info-anim {
+    to {
+        height: auto;
+        opacity: 1;
+        transform: rotateX(0);
+    }
+}
+
+div.skill-info-lvl {
+    display: grid;
+    grid-gap: 3px;
+    grid-template-columns: 6fr 1fr;
+}
+
+div.skill-info-frameworks {
+    display: none;
+    grid-gap: 3px;
+    grid-template-columns: 1fr 6fr;
+}
+
+div.skill-info-frameworks-fms span.cig {
+    float: right;
+    margin: 0 0 3px 3px;
 }
