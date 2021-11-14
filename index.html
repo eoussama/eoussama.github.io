@@ -1,207 +1,42 @@
 <!DOCTYPE html>
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="author" content="Eoussama">
-		<meta name="application-name" content="Personal portfolio">
-		<meta name="description" content="A portfolio, I hope I spelled that right, it seems everyone has to have one of these nowadays, huh?">
-		<meta name="keywords" content="portfolio, landing-page">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<link rel="icon" href="assets/images/logo.png">
-		<link rel="stylesheet" type="text/css" href="assets/fonts/libs/font-awesome/css/fontawesome-all.min.css">
-		<link rel="stylesheet" type="text/css" href="assets/styles/libs/eomponents.css">
-		<link rel="stylesheet" type="text/css" href="assets/styles/noscript.css">
-		<link rel="stylesheet" type="text/css" href="assets/styles/nav.css">
-		<link rel="stylesheet" type="text/css" href="assets/styles/main.css">
-		<link rel="stylesheet" type="text/css" href="assets/styles/mute.css">
-		<link rel="stylesheet" type="text/css" href="assets/styles/passion.css">
-		<link rel="stylesheet" type="text/css" href="assets/styles/skills.css">
+<head>
+	<meta charset="utf-8">
+	<meta name="author" content="EOussama">
+	<meta name="application-name" content="Portfolio">
+	<meta name="description" content="My barebone portfolio page.">
+	<meta name="keywords" content="portfolio, landing-page">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<title>Eoussama</title>
+	<link rel="icon" href="assets/images/logo.png">
+	<title>EOussama</title>
 
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-125493683-1"></script>
-		<script>
-  			window.dataLayer = window.dataLayer || [];
-  			function gtag(){dataLayer.push(arguments);}
-  			gtag('js', new Date());
-  			gtag('config', 'UA-125493683-1');
-		</script>
-	</head>
-		
-	<body>
-		<noscript>
-			<div id="js-flash">
-				<div class="wrapper">
-					<i class="fa fa-exclamation-triangle fa-lg text-dark text-center"></i>
-					<h1 class="text-dark text-center">This web page requires Javascript to be enabled!</h1>
-				</div>
-			</div>
-		</noscript>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-125493683-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+		gtag('config', 'UA-125493683-1');
+	</script>
+</head>
 
-		<div id="main-content" class="load spinner-3">
-			<nav class="navbar gray right above">
-				<ul class="navitems">
-					<a href="https://eoussama.github.io">
-						<li class="navitem brand pull-left">
-							<img class="logo" src="assets/images/logo.png" alt="Logo">
-							<span class="title">Eoussama</span>
-						</li>
-					</a>
+<body>
+	<main>
+		<p>Hello, I'm Oussama Essamadi, EOussama for short, you can get in touch with me on:</p>
+		<ul>
+			<li><a href="https://eoussama.github.io/" target="_blank">Portfolio</a></li>
+			<li> <a href="https://github.com/EOussama" target="_blank">Github</a></li>
+			<li> <a href="https://www.linkedin.com/in/oussama-essamadi-a59326155/" target="_blank">Linkedin</a></li>
+			<li> <a href="https://twitter.com/OussamaGtacj" target="_blank">Twitter</a></li>
+			<li> <a href="https://www.facebook.com/oussama.essamadi" target="_blank">Facebook</a></li>
+			<li> <a href="https://www.youtube.com/channel/UCw2ptm5qXBr61Jn8QingQFQ" target="_blank">Youtube</a></li>
+			<li> <a href="https://disqus.com/by/oussamaessamadi/" target="_blank">Disqus</a></li>
+			<li> Reach me on Discord at <b>Oussama#9634</b></li>
+		</ul>
+	</main>
+</body>
 
-					<a id="skillsScroll">
-						<li class="navitem">Skills</li>
-					</a>
-
-					<a>
-						<li class="navitem">Projects</li>
-					</a>
-
-					<a id="aboutScroll">
-						<li class="navitem">About</li>
-					</a>
-
-					<a href="mailto:oussama.essamadi@gmail.com?Subject=Greetings">
-						<li class="navitem">Contact</li>
-					</a>
-				</ul>
-			</nav>
-			
-			<header class="landleg text-center">
-				<video autoplay loop src="assets/videos/monitor-coding.mp4"></video>
-				<div class="landleg-content">
-					<h1 class="lead-4 text-dark" id="helloThere"></h1>
-					<h1 class="text-gray" id="code"></h1>
-					<div id="controlBtns" class="flex flex-gap-1 flex-gap-skip">
-						<button id="mute" class="controlBtn"><i class="fa fa-volume-up fa-lg"></i></button>
-						<button id="scrollDown" class="controlBtn"><i class="fa fa-chevron-down fa-lg"></i></button>
-					</div>
-				</div>
-			</header>
-		
-			<main class="container">
-				<div class="bg-image"></div>
-
-				<div class="passion-panel">
-					<h2 class="lead-5 text-dark text-center">Passionate about making apps for</h2>
-					<div class="flex flex-unify flex-gap-3 flex-gap-skip mt-3">
-						<div class="passion">
-							<h4>Android</h4>
-							<h5>Android</h5>
-							<p>Making generic everyday use apps for Android using <b>Android studio</b>.</p>
-							<img src="assets/images/smartphone.jpg" alt="Smartphone stock image">
-						</div>
-						<div class="passion">
-							<h4>The Web</h4>
-							<h5>The Web</h5>
-							<p>Basic to complex static and dynamic web applications with a strong sense of modern design in both the <b>MEAN</b> and <b>LAMP</b> stacks.</p>
-							<img src="assets/images/web.jpg" alt="Web stock image">
-						</div>
-						<div class="passion">
-							<h4>Desktop</h4>
-							<h5>Desktop</h5>
-							<p>Producing solid desktop/laptop applications mostly in the <b>.NET</b> framework.</p>
-							<img src="assets/images/desktop.jpg" alt="Desktop stock image">
-						</div>
-					</div>
-				</div>
-
-				<div class="skills-panel">
-					<h2 class="lead-5 text-dark text-center">Familiar with</h2>
-					<div id="skill-info">
-						<p class="text-bold">Lorem ipsum dolor, sit amet consectetur adipisicing elit.</p>
-						<hr class="gray">
-						<div class="skill-info-lvl">
-							<small>Familiarity:</small> <span class="skill-info-lvl-per cig dark invert text-center"></span>
-							<small>Level:</small> <span class="skill-info-lvl-name cig dark invert text-center"></span>
-							<small>Experience:</small> <span class="skill-info-lvl-exp cig dark invert text-center"></span>
-						</div>
-						<hr class="gray">
-						<div class="skill-info-frameworks">
-							<small>Frameworks:</small> <div class="skill-info-frameworks-fms"></div>
-						</div>
-					</div>
-					<div class="grid grid-elements-3 grid-gap-1"></div>
-				</div>
-			</main>
-		
-			<footer class="container bg-dark text-light" id="about">
-				<div class="footer-logo">
-					<img src="assets/images/logo.png" alt="Eoussama Logo" width="150">
-					<h1 class="mt-1">Eoussama</h1>
-				</div>
-	
-				<hr class="light fade">
-	
-				<div class="flex flex-unify flex-gap-6 flex-gap-skip mt-3">
-					<div class="col">
-						<h4>Who I am</h4>
-						<p>I, <b>Oussama Essamadi</b>, am a very straightforward dude, easily picking up new stuff and expanding my IT knowledge every day, I like to draw, watch anime, and more often programme every-day-use mini-software.</p>
-					</div>
-					<div class="col flex-section-2">
-						<h4>What I do</h4>
-						<p>What was mostly just me pretending to be a know it all developer became my everyday passion, I work almost daily on mini-projects, I also work voluntarily on some private game mode development on the side of it all, thus far, I possess a decent amount of knowledge on several programming languages, and fluent in most of them.</p>
-					</div>
-					<div class="col">
-						<H4>How to reach me</H4>
-						<p>I try to cut myself off from reach when I'm working on something of much interest to me, and that happens to be all the time, I still daily check my social accounts for any potential reach, if you have something to say, please feel free to <a href="mailto:oussama.essamadi@gmail.com?Subject=Greetings">do so</a>.</p>
-					</div>
-				</div>
-	
-				<hr class="light fade">
-	
-				<h3 class="text-center mt-3">Social links</h3>
-				<div class="footer-social-links">
-					<div class="col">
-						<a href="https://www.youtube.com/channel/UCw2ptm5qXBr61Jn8QingQFQ" target="_blank">
-							<div class="social-link">
-								<i class="fab fa-youtube fa-lg"></i>
-							</div>
-						</a>
-					</div>
-					<div class="col">
-						<a href="https://twitter.com/OussamaGtacj" target="_blank">
-							<div class="social-link">
-								<i class="fab fa-twitter fa-lg"></i>
-							</div>
-						</a>
-					</div>
-					<div class="col">
-						<a href="https://www.facebook.com/oussama.essamadi" target="_blank">
-							<div class="social-link">
-								<i class="fab fa-facebook fa-lg"></i>
-							</div>
-						</a>
-					</div>
-					<div class="col">
-						<a href="https://www.linkedin.com/in/oussama-essamadi-a59326155/" target="_blank">
-							<div class="social-link">
-								<i class="fab fa-linkedin fa-lg"></i>
-							</div>
-						</a>
-					</div>
-					<div class="col">
-						<a href="https://github.com/EOussama/" target="_blank">
-							<div class="social-link">
-								<i class="fab fa-github fa-lg"></i>
-							</div>
-						</a>
-					</div>
-				</div>
-	
-			</footer>
-			<div class="copyright bg-dark-darken text-light">
-				<p class="text-center text-gray"><small>All rights reserved &copy; <span id="copyDate">2018</span></small></p>
-			</div>
-			
-			<script src="assets/scripts/libs/scrollreveal.min.js"></script>
-			<script src="assets/scripts/libs/typewriter.js"></script>
-			<script src="assets/scripts/libs/eomponents.js"></script>
-			<script src="assets/scripts/main.js"></script>
-			<script src="assets/scripts/nav.js"></script>
-			<script src="assets/scripts/skills.js"></script>
-		</div>
-	</body>
 </html>
