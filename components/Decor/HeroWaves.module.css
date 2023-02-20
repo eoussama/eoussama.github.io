@@ -1,0 +1,120 @@
+.waves {
+	display: none;
+}
+
+.tablet,
+.phone {
+	display: none;
+}
+
+.top,
+.foot {
+	width: 100%;
+	height: auto;
+	margin-bottom: -1px;
+}
+
+.back {
+	fill: var(--wave-back);
+}
+
+.front {
+	fill: var(--wave-front);
+}
+
+.band {
+	position: relative;
+	overflow: hidden;
+	background: var(--wave-front);
+}
+
+.particles {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0.55;
+}
+
+/* "Waves move": both layers sway gently, out of step with each other. */
+.back,
+.front {
+	transform-box: fill-box;
+	transform-origin: 50% 100%;
+	animation: sway 9s ease-in-out infinite alternate;
+}
+
+.front {
+	animation-duration: 7s;
+	animation-direction: alternate-reverse;
+}
+
+@keyframes sway {
+	from {
+		transform: translateX(-2.5%) scaleX(1.06) scaleY(0.94);
+	}
+	to {
+		transform: translateX(2.5%) scaleX(1.06) scaleY(1.04);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.back,
+	.front {
+		animation: none;
+	}
+}
+
+.footFill {
+	fill: var(--wave-foot);
+}
+
+@media (min-width: 720px) and (max-width: 1199px) {
+	.waves,
+	.tablet {
+		display: block;
+	}
+
+	.tablet .top {
+		aspect-ratio: 1024 / 333;
+	}
+
+	.tablet .band {
+		height: calc(517 / 1024 * 100vw);
+		background: var(--wave-front);
+	}
+
+	.tablet .foot {
+		aspect-ratio: 1024 / 152;
+	}
+}
+
+@media (max-width: 719px) {
+	.waves,
+	.phone {
+		display: block;
+	}
+
+	.phone .back {
+		fill: var(--phone-wave-back);
+	}
+
+	.phone .front,
+	.phone .footFill,
+	.phone .band {
+		fill: var(--phone-wave-front);
+		background: var(--phone-wave-front);
+	}
+
+	.phone .top {
+		aspect-ratio: 414 / 113;
+	}
+
+	.phone .band {
+		height: calc(200 / 414 * 100vw);
+	}
+
+	.phone .foot {
+		aspect-ratio: 414 / 78;
+	}
+}

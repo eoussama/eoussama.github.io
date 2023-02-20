@@ -1,0 +1,68 @@
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 19px;
+}
+
+.list {
+	display: grid;
+	gap: 25px;
+}
+
+.link {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.circle {
+	display: grid;
+	place-items: center;
+	border: 1px solid currentColor;
+	border-radius: 50%;
+}
+
+.row .circle {
+	width: 40px;
+	height: 40px;
+	transition: background-color 0.15s ease;
+}
+
+.row .link:hover .circle {
+	background: rgb(255 255 255 / 12%);
+}
+
+.list .circle {
+	width: 24px;
+	height: 24px;
+	border-width: 0.75px;
+}
+
+.handle {
+	font-size: 12px;
+	font-weight: 300;
+}
+
+.list .link:hover .handle {
+	text-decoration: underline;
+}
+
+@media (max-width: 719px) {
+	.row {
+		gap: 9.5px;
+	}
+
+	.row .circle {
+		width: 20px;
+		height: 20px;
+		border-width: 0.5px;
+	}
+
+	.row .circle svg {
+		width: 11px;
+		height: 11px;
+	}
+}

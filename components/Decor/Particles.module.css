@@ -1,0 +1,29 @@
+.particle {
+	opacity: var(--opacity);
+	transform-box: fill-box;
+	transform-origin: center;
+	animation: drift var(--duration) linear var(--delay) infinite;
+}
+
+@keyframes drift {
+	0% {
+		opacity: 0;
+		transform: translate(0, 0) scale(0.8);
+	}
+	15% {
+		opacity: var(--opacity);
+	}
+	85% {
+		opacity: var(--opacity);
+	}
+	100% {
+		opacity: 0;
+		transform: translate(var(--dx), var(--dy)) scale(1.1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.particle {
+		animation: none;
+	}
+}

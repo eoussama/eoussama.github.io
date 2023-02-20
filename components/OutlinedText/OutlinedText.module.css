@@ -1,0 +1,52 @@
+.text {
+	position: relative;
+	display: inline-grid;
+	font-weight: 900;
+	white-space: pre-line;
+}
+
+.back,
+.middle,
+.front {
+	grid-area: 1 / 1;
+}
+
+.front {
+	position: relative;
+	color: var(--title-fill);
+}
+
+.back,
+.middle {
+	color: transparent;
+	user-select: none;
+	pointer-events: none;
+}
+
+.back,
+.middle {
+	transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.middle {
+	transform: translate(var(--middle-x), var(--middle-y));
+	-webkit-text-stroke: 1px var(--title-middle);
+}
+
+.back {
+	transform: translate(var(--back-x), var(--back-y));
+	-webkit-text-stroke: 1px var(--title-back);
+}
+
+/* "Outline gets compressed on hover": the outlines slide onto the text. */
+.text:hover .middle,
+.text:hover .back {
+	transform: translate(0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.back,
+	.middle {
+		transition: none;
+	}
+}

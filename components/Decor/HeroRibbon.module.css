@@ -1,0 +1,11 @@
+.dark {
+	display: none;
+}
+
+:global([data-theme='dark']) .light {
+	display: none;
+}
+
+:global([data-theme='dark']) .dark {
+	display: inline;
+}

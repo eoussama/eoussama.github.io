@@ -1,0 +1,74 @@
+.header {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	height: var(--header-height);
+	background: var(--header-bg);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+}
+
+.inner {
+	display: flex;
+	align-items: center;
+	height: 100%;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	color: var(--text);
+	text-decoration: none;
+}
+
+.nav {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-left: auto;
+}
+
+.nav ul {
+	display: flex;
+	gap: 16px;
+}
+
+.link {
+	position: relative;
+	display: block;
+	padding: 4px 0;
+	color: var(--nav);
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+
+.link:hover,
+.link[aria-current] {
+	color: var(--nav-active);
+}
+
+/* The 14×4 pill under the current section. */
+.link[aria-current]::after {
+	content: '';
+	position: absolute;
+	left: 50%;
+	bottom: -6px;
+	width: 14px;
+	height: 4px;
+	border-radius: 2px;
+	background: currentColor;
+	transform: translateX(-50%);
+}
+
+@media (max-width: 719px) {
+	.brand,
+	.nav {
+		display: none;
+	}
+
+	/* "Has blur": the phone header stays translucent over the page. */
+	:global([data-theme='dark']) .header {
+		background: rgb(18 26 41 / 70%);
+	}
+}

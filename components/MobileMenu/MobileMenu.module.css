@@ -1,0 +1,257 @@
+.trigger {
+	display: none;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	margin-left: -8px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--nav-active);
+	cursor: pointer;
+}
+
+@media (max-width: 719px) {
+	.trigger {
+		display: grid;
+	}
+}
+
+.backdrop {
+	position: fixed;
+	inset: 0;
+	min-height: 100dvh;
+	background: rgb(43 56 85 / 20%);
+	opacity: calc(1 - var(--drawer-swipe-progress, 0));
+	transition: opacity 400ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:global([data-theme='dark']) .backdrop {
+	background: rgb(43 56 85 / 50%);
+}
+
+.backdrop[data-starting-style],
+.backdrop[data-ending-style] {
+	opacity: 0;
+}
+
+.backdrop[data-swiping] {
+	transition-duration: 0ms;
+}
+
+.viewport {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	justify-content: flex-start;
+}
+
+.popup {
+	--menu-bg: #ffffff;
+	--menu-fg: #2b3855;
+	--menu-panel: #1f2c48;
+	--menu-foot: #182540;
+	--menu-wave-back: #3c4b6d;
+	--menu-wave-middle: #303e5f;
+
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	width: min(309px, 100vw - 48px);
+	height: 100%;
+	overflow: hidden auto;
+	overscroll-behavior: contain;
+	border-radius: 0 31px 31px 0;
+	background: var(--menu-bg);
+	color: var(--menu-fg);
+	box-shadow: 0 4px 4px rgb(0 0 0 / 25%);
+	outline: 0;
+	transform: translateX(var(--drawer-swipe-movement-x, 0));
+	transition: transform 400ms cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:global([data-theme='dark']) .popup {
+	--menu-bg: #111928;
+	--menu-fg: #ffffff;
+	--menu-panel: #151f32;
+	--menu-foot: #0e172c;
+	--menu-wave-back: #2a3854;
+	--menu-wave-middle: #1e2b43;
+}
+
+.popup[data-starting-style],
+.popup[data-ending-style] {
+	transform: translateX(-100%);
+}
+
+.popup[data-swiping] {
+	transition-duration: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.popup,
+	.backdrop {
+		transition-duration: 0ms;
+	}
+}
+
+.top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 18px 20px 0 23px;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	font-size: 16px;
+	color: inherit;
+	text-decoration: none;
+}
+
+.close {
+	display: grid;
+	place-items: center;
+	width: 40px;
+	height: 40px;
+	margin-right: -8px;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+}
+
+.nav {
+	display: grid;
+	gap: 18px;
+	padding: 45px 0 0 41px;
+}
+
+/* "Items slide in one by one". */
+.item {
+	animation: slide-in 0.45s cubic-bezier(0.32, 0.72, 0, 1) backwards;
+	animation-delay: calc(0.12s + var(--index) * 0.08s);
+}
+
+@keyframes slide-in {
+	from {
+		opacity: 0;
+		transform: translateX(-24px);
+	}
+}
+
+/* "Waves move". */
+.waveBack,
+.waveMiddle,
+.waveFront {
+	transform-box: fill-box;
+	transform-origin: 50% 100%;
+	animation: sway 8s ease-in-out infinite alternate;
+}
+
+.waveMiddle {
+	animation-duration: 6.5s;
+	animation-direction: alternate-reverse;
+}
+
+.waveFront {
+	animation-duration: 10s;
+}
+
+@keyframes sway {
+	from {
+		transform: translateX(-3%) scaleX(1.08);
+	}
+	to {
+		transform: translateX(3%) scaleX(1.08);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.item,
+	.waveBack,
+	.waveMiddle,
+	.waveFront {
+		animation: none;
+	}
+}
+
+.link {
+	position: relative;
+	display: block;
+	font-size: 13px;
+	color: inherit;
+	opacity: 0.5;
+	text-decoration: none;
+}
+
+.link[aria-current] {
+	opacity: 1;
+}
+
+.link[aria-current]::before {
+	content: '';
+	position: absolute;
+	left: -18px;
+	top: 50%;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: currentColor;
+	transform: translateY(-50%);
+}
+
+.waves {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 309 / 135;
+	margin-top: 22px;
+	flex: none;
+}
+
+.waveBack {
+	fill: var(--menu-wave-back);
+}
+
+.waveMiddle {
+	fill: var(--menu-wave-middle);
+}
+
+.waveFront {
+	fill: var(--menu-panel);
+}
+
+.panel {
+	flex: 1;
+	padding: 24px 0 24px 34px;
+	background: var(--menu-panel);
+	color: #ffffff;
+}
+
+.email {
+	display: block;
+	margin: 0 -10px 34px -4px;
+	font-size: 13px;
+	font-weight: 300;
+	color: inherit;
+	text-decoration: none;
+}
+
+.foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 48px;
+	padding: 0 24px;
+	background: var(--menu-foot);
+	color: #ffffff;
+	font-size: 11px;
+	font-weight: 300;
+}
+
+.theme {
+	color: rgb(255 255 255 / 80%);
+}

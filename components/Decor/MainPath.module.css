@@ -1,0 +1,21 @@
+.path {
+	display: none;
+}
+
+@media (min-width: 1200px) {
+	.path {
+		position: absolute;
+		/* Same place as in the 1440px design, which starts 137px above Skills. */
+		top: -137px;
+		left: calc(50% - 720px - 42.25px);
+		display: block;
+		width: 1445.25px;
+		height: 1669.5px;
+		z-index: -1;
+		pointer-events: none;
+		fill: none;
+		stroke: var(--path);
+		stroke-width: 15;
+		stroke-linecap: round;
+	}
+}

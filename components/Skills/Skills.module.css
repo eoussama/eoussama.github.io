@@ -1,0 +1,452 @@
+.skills {
+	position: relative;
+	padding-top: 88px;
+}
+
+.inner {
+	position: relative;
+}
+
+.backdrop,
+.stack,
+.dots {
+	display: none;
+}
+
+/* ---------- Cards (tabs) ---------- */
+
+.cards {
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	margin-top: 48px;
+	padding: 17px 18px 0 17px;
+}
+
+.card {
+	position: relative;
+	flex: none;
+	width: 360px;
+	height: 299px;
+	padding: 0;
+	border: 0;
+	border-radius: 24px;
+	background: none;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.card:focus-visible {
+	outline-offset: 24px;
+}
+
+.layerBack,
+.layerFront {
+	position: absolute;
+	inset: 0;
+	border-radius: 24px;
+	opacity: 0;
+	transition:
+		opacity 0.25s ease,
+		transform 0.25s ease;
+}
+
+.layerBack {
+	background: var(--navy);
+}
+
+.layerFront {
+	background: var(--yellow);
+}
+
+.card[data-active] .layerBack {
+	opacity: 1;
+	transform: translate(-18px, -17px);
+}
+
+.card[data-active] .layerFront {
+	opacity: 1;
+	transform: translate(17px, 17px);
+}
+
+.photo {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	border-radius: 24px;
+	background: var(--navy);
+	transition: background-color 0.25s ease;
+}
+
+.photo img {
+	object-fit: cover;
+	opacity: 0.2;
+	transition:
+		opacity 0.25s ease,
+		transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* "Image zooms in when hovered". */
+.card:hover .photo img {
+	transform: scale(1.08);
+}
+
+.card[data-active] .photo {
+	background: var(--yellow);
+}
+
+.card[data-active] .photo img {
+	opacity: 0.6;
+}
+
+.pattern {
+	position: absolute;
+	inset: 0;
+	color: var(--navy);
+	opacity: 0;
+	transition: opacity 0.25s ease;
+}
+
+.card[data-active] .pattern {
+	opacity: 0.15;
+}
+
+.label {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	color: transparent;
+	font-size: 40px;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	-webkit-text-stroke: 1px rgb(246 239 120 / 70%);
+	transition: opacity 0.25s ease;
+}
+
+.card[data-active] .label {
+	opacity: 0;
+}
+
+.card:not([data-active]):hover .photo img {
+	opacity: 0.32;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.card:hover .photo img {
+		transform: none;
+	}
+}
+
+/* ---------- Panel ---------- */
+
+.panel {
+	margin-top: 49px;
+	padding-left: 24px;
+	color: var(--heading);
+}
+
+.panelTitle {
+	font-size: 40px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.panelText {
+	display: grid;
+	gap: 8px;
+	max-width: 656px;
+	margin-top: 15px;
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 22.5px;
+}
+
+.tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 13px;
+	margin-top: 17px;
+	color: var(--chip);
+}
+
+/* ---------- Tablet: a carousel centred on the active card ---------- */
+
+@media (min-width: 720px) and (max-width: 1199px) {
+	.skills {
+		padding-top: 0;
+		/* The blurred backdrop starts under the band's closing wave, as in the design. */
+		margin-top: calc(-196 / 1024 * 100vw);
+		padding-block: calc(270 / 1024 * 100vw) 60px;
+	}
+
+	.backdrop {
+		position: absolute;
+		inset: 0;
+		display: block;
+		overflow: hidden;
+		z-index: -1;
+		opacity: 0.5;
+		mask-image: linear-gradient(to bottom, transparent 0%, #000 20%, #000 70%, transparent 100%);
+	}
+
+	.backdrop img {
+		object-fit: cover;
+		filter: blur(7.5px) grayscale(1);
+		transform: scale(1.05);
+	}
+
+	.cards {
+		display: block;
+		height: 297px;
+		margin-top: 70px;
+		margin-inline: calc(-1 * var(--gutter));
+		padding: 0;
+		overflow: hidden;
+	}
+
+	.card {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		width: min(620px, 100% - 2 * 154px);
+		height: 297px;
+		border-radius: 16px;
+		transform: translateX(calc(-50% + var(--slot) * (100% + 55px)));
+		transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+	}
+
+	.layerBack,
+	.layerFront,
+	.pattern {
+		display: none;
+	}
+
+	.photo {
+		border-radius: 16px;
+	}
+
+	.card[data-active] .label {
+		opacity: 1;
+		color: var(--navy);
+		-webkit-text-stroke: 0;
+	}
+
+	.panel {
+		max-width: 520px;
+		margin: 16px auto 0;
+		padding: 0;
+		text-align: center;
+	}
+
+	.panelTitle {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+
+	.panelText {
+		display: block;
+		margin-top: 0;
+		font-size: 14px;
+		line-height: 21px;
+	}
+
+	.panelText p {
+		display: inline;
+	}
+
+	.panelText p + p::before {
+		content: ' ';
+	}
+
+	.tags {
+		justify-content: center;
+		gap: 8px;
+		margin-top: 12px;
+	}
+
+	.dots {
+		display: flex;
+		justify-content: center;
+		gap: 6px;
+		margin-top: 20px;
+	}
+
+	.dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 4px;
+		background: rgb(43 56 85 / 20%);
+		transition:
+			width 0.25s ease,
+			background-color 0.25s ease;
+	}
+
+	.dot[data-active] {
+		width: 20px;
+		background: var(--navy);
+	}
+
+	:global([data-theme='dark']) .dot {
+		background: rgb(246 239 120 / 25%);
+	}
+
+	:global([data-theme='dark']) .dot[data-active] {
+		background: var(--yellow);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.card {
+			transition: none;
+		}
+	}
+}
+
+/* ---------- Phone: stacked cards ---------- */
+
+@media (max-width: 719px) {
+	.skills {
+		padding-top: 36px;
+	}
+
+	.tabs {
+		display: none;
+	}
+
+	.stack {
+		display: grid;
+		gap: 46px;
+		margin-top: 60px;
+		padding-inline: 16px;
+	}
+
+	.stackCard {
+		position: relative;
+		perspective: 900px;
+		--radius: 2px 24px 2px 150px;
+		--card: #2c3956;
+		--fg: #c1c1c1;
+		--stroke: var(--yellow);
+		--shift-x: 8px;
+	}
+
+	.stackCard:nth-child(2) {
+		--radius: 24px 2px 150px 2px;
+		--card: var(--yellow);
+		--fg: #2c3956;
+		--stroke: #2c3956;
+		--shift-x: -8px;
+	}
+
+	.stackCard:nth-child(3) {
+		--radius: 150px 2px 24px 2px;
+		--shift-x: -8px;
+	}
+
+	.stackLayer {
+		position: absolute;
+		inset: 0;
+		border-radius: var(--radius);
+		background: var(--card);
+		opacity: 0.5;
+		transform: translate(var(--shift-x), -7px);
+	}
+
+	.stackLayer + .stackLayer {
+		opacity: 0.25;
+		transform: translate(calc(var(--shift-x) * 2), -15px);
+	}
+
+	.stackBody {
+		position: relative;
+		transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+		transform-style: preserve-3d;
+		transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		min-height: 247px;
+		padding: 30px 26px 22px;
+		overflow: hidden;
+		border-radius: var(--radius);
+		background: var(--card);
+		color: var(--fg);
+		font-size: 12.5px;
+		font-weight: 500;
+		line-height: 18.75px;
+	}
+
+	.stackPhoto {
+		object-fit: cover;
+		opacity: 0.2;
+	}
+
+	.stackLabel,
+	.stackText,
+	.stackTags {
+		position: relative;
+	}
+
+	.stackCard[data-tilting] .stackBody {
+		transition-duration: 0.08s;
+	}
+
+	/* "Tilt with 3D text": the label floats above the card. */
+	.stackLabel {
+		transform: translateZ(40px);
+		color: transparent;
+		font-size: 40px;
+		font-weight: 700;
+		line-height: 1;
+		-webkit-text-stroke: 1px var(--stroke);
+	}
+
+	.stackText {
+		display: grid;
+		gap: 12px;
+		transform: translateZ(14px);
+	}
+
+	.stackTags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+	}
+
+	/* Mobile: text on the right, label bottom-right. */
+	.stackCard:nth-child(1) .stackBody {
+		align-items: flex-end;
+		padding-left: 70px;
+		text-align: right;
+	}
+
+	.stackCard:nth-child(1) .stackLabel {
+		order: 3;
+	}
+
+	/* UX: text on the left, label bottom-left. */
+	.stackCard:nth-child(2) .stackBody {
+		padding-right: 70px;
+	}
+
+	.stackCard:nth-child(2) .stackLabel {
+		order: 3;
+	}
+
+	/* Web: label top-right, centred text. */
+	.stackCard:nth-child(3) .stackBody {
+		padding-top: 22px;
+		text-align: center;
+	}
+
+	.stackCard:nth-child(3) .stackLabel {
+		align-self: flex-end;
+	}
+
+	.stackCard:nth-child(3) .stackTags {
+		justify-content: center;
+	}
+}

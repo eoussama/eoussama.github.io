@@ -1,0 +1,128 @@
+.row + .row {
+	margin-top: 30px;
+}
+
+.title {
+	color: var(--muted-heading);
+	font-size: 36px;
+	font-weight: 700;
+	line-height: 1.1;
+}
+
+.empty {
+	margin-top: 24px;
+	color: var(--card-meta);
+}
+
+.root {
+	position: relative;
+	margin-top: 20px;
+}
+
+.viewport {
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+	scroll-snap-type: x mandatory;
+	scroll-padding-inline: calc((100% - min(100% - 2 * var(--gutter), var(--container))) / 2);
+	scrollbar-width: none;
+}
+
+.viewport::-webkit-scrollbar {
+	display: none;
+}
+
+/* Cards start at the content edge and run off the right side of the page. */
+.track {
+	display: grid;
+	grid-auto-flow: column;
+	gap: 28px 43px;
+	width: max-content;
+	padding-block: 12px 18px;
+	padding-inline: calc((100vw - min(100vw - 2 * var(--gutter), var(--container))) / 2);
+}
+
+.track > li {
+	scroll-snap-align: start;
+}
+
+.scrollbar {
+	display: none;
+}
+
+.scroll {
+	position: absolute;
+	top: 12px;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 62px;
+	height: 62px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: #ffffff;
+	box-shadow: 0 4px 4px rgb(0 0 0 / 25%);
+	color: rgb(0 0 0 / 46%);
+	cursor: pointer;
+	opacity: 0.5;
+	translate: 0 calc(137px - 31px);
+	transition: opacity 0.2s ease;
+}
+
+.scroll:hover,
+.scroll:focus-visible {
+	opacity: 0.9;
+}
+
+.next {
+	right: 21px;
+}
+
+.previous {
+	left: 21px;
+}
+
+/* Hidden when there is nothing more to scroll to, in that direction. */
+.root:not([data-overflow-x-end]) .next,
+.root:not([data-overflow-x-start]) .previous {
+	opacity: 0;
+	visibility: hidden;
+}
+
+@media (max-width: 1199px) {
+	.row + .row {
+		margin-top: 40px;
+	}
+
+	.track {
+		grid-template-rows: repeat(var(--rows, 1), auto);
+	}
+
+	.title {
+		font-size: 30px;
+	}
+
+	.track {
+		padding-block: 8px 14px;
+		gap: 28px 29px;
+	}
+
+	.scroll {
+		display: none;
+	}
+}
+
+@media (max-width: 719px) {
+	.title {
+		font-size: 18px;
+		text-align: center;
+	}
+
+	.root {
+		margin-top: 14px;
+	}
+
+	.track {
+		gap: 14px 12px;
+	}
+}
