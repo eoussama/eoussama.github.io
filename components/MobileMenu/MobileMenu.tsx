@@ -2,7 +2,6 @@
 
 import { useState, type CSSProperties } from 'react';
 import { Drawer } from '@base-ui/react/drawer';
-import { MENU_WAVES } from '@/components/Decor/shapes';
 import { BurgerIcon } from '@/components/BurgerIcon/BurgerIcon';
 import { Logo } from '@/components/Logo/Logo';
 import { SocialLinks } from '@/components/SocialLinks/SocialLinks';
@@ -10,6 +9,29 @@ import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle';
 import { PROFILE } from '@/data/profile';
 import { SECTIONS } from '@/data/sections';
 import styles from './MobileMenu.module.css';
+
+/*
+ * The menu's three waves: plain sine waves with one peak across the menu, at the
+ * mockup's heights. Each is two widths long and slides by one width, so it flows
+ * continuously without a seam. Values in px of a 309 × 135 box.
+ */
+const MENU_WIDTH = 309;
+const MENU_WAVE_HEIGHT = 135;
+const MENU_WAVES = [
+	{ className: styles.waveBack, mean: 46, amplitude: 28, phase: 0 },
+	{ className: styles.waveMiddle, mean: 74, amplitude: 22, phase: 0.6 },
+	{ className: styles.waveFront, mean: 96, amplitude: 22, phase: 1.2 },
+];
+
+function menuWavePath(mean: number, amplitude: number, phase: number) {
+	const steps = 80;
+	const points = Array.from({ length: steps * 2 + 1 }, (_, i) => {
+		const x = (MENU_WIDTH * i) / steps;
+		const y = mean + amplitude * Math.sin((2 * Math.PI * x) / MENU_WIDTH + phase * Math.PI);
+		return `${x.toFixed(1)} ${y.toFixed(1)}`;
+	});
+	return `M${points.join(' L')} V${MENU_WAVE_HEIGHT} H0 Z`;
+}
 
 export function MobileMenu({ active }: { active: string }) {
 	const [open, setOpen] = useState(false);
@@ -52,10 +74,16 @@ export function MobileMenu({ active }: { active: string }) {
 							</ul>
 						</nav>
 
-						<svg className={styles.waves} viewBox={MENU_WAVES.viewBox} preserveAspectRatio="none" aria-hidden="true">
-							<path className={styles.waveBack} d={MENU_WAVES.back} />
-							<path className={styles.waveMiddle} d={MENU_WAVES.middle} />
-							<path className={styles.waveFront} d={MENU_WAVES.front} />
+						<svg
+							className={styles.waves}
+							viewBox={`0 0 ${MENU_WIDTH} ${MENU_WAVE_HEIGHT}`}
+							preserveAspectRatio="none"
+							aria-hidden="true"
+							style={{ '--period': `${-MENU_WIDTH}px` } as CSSProperties}
+						>
+							{MENU_WAVES.map(({ className, mean, amplitude, phase }) => (
+								<path key={className} className={className} d={menuWavePath(mean, amplitude, phase)} />
+							))}
 						</svg>
 
 						<div className={styles.panel}>

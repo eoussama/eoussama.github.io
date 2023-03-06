@@ -36,37 +36,38 @@
 	opacity: 0.55;
 }
 
-/* "Waves move": both layers sway gently, out of step with each other. */
-.back,
-.front {
-	transform-box: fill-box;
-	transform-origin: 50% 100%;
-	animation: sway 9s ease-in-out infinite alternate;
+/*
+ * "Waves move": each wave is two periods long and slides by exactly one period, so it
+ * flows continuously without a seam. The layers go opposite ways at different speeds.
+ */
+.back {
+	animation: flow 16s linear infinite;
 }
 
 .front {
-	animation-duration: 7s;
-	animation-direction: alternate-reverse;
+	animation: flow 11s linear infinite reverse;
 }
 
-@keyframes sway {
+@keyframes flow {
 	from {
-		transform: translateX(-2.5%) scaleX(1.06) scaleY(0.94);
+		transform: translateX(0);
 	}
 	to {
-		transform: translateX(2.5%) scaleX(1.06) scaleY(1.04);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.back,
-	.front {
-		animation: none;
+		transform: translateX(var(--period));
 	}
 }
 
 .footFill {
 	fill: var(--wave-foot);
+	animation: flow 13s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.back,
+	.front,
+	.footFill {
+		animation: none;
+	}
 }
 
 @media (min-width: 720px) and (max-width: 1199px) {

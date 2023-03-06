@@ -19,6 +19,7 @@ type ProjectRowProps = {
 
 export function ProjectRow({ id, title, projects, rows, query }: ProjectRowProps) {
 	const viewport = useRef<HTMLDivElement>(null);
+	const rowCount = Math.min(rows, projects.length);
 
 	const scrollByCard = (direction: 1 | -1) => {
 		const el = viewport.current;
@@ -40,9 +41,9 @@ export function ProjectRow({ id, title, projects, rows, query }: ProjectRowProps
 				<ScrollArea.Root className={styles.root}>
 					<ScrollArea.Viewport ref={viewport} className={styles.viewport}>
 						<ScrollArea.Content>
-							<ul className={styles.track} style={{ '--rows': Math.min(rows, projects.length) } as CSSProperties}>
-								{projects.map((project) => (
-									<li key={project.url}>
+							<ul className={styles.track} style={{ '--rows': rowCount } as CSSProperties}>
+								{projects.map((project, index) => (
+									<li key={project.url} data-last-row={index % rowCount === rowCount - 1 || undefined}>
 										<ProjectCard project={project} />
 									</li>
 								))}

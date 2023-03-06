@@ -5,17 +5,34 @@
 @media (min-width: 1200px) {
 	.path {
 		position: absolute;
-		/* Same place as in the 1440px design, which starts 137px above Skills. */
-		top: -137px;
+		/* Same horizontal place as in the 1440px design. */
 		left: calc(50% - 720px - 42.25px);
 		display: block;
 		width: 1445.25px;
-		height: 1669.5px;
 		z-index: -1;
+		overflow: visible;
 		pointer-events: none;
-		fill: none;
-		stroke: var(--path);
-		stroke-width: 15;
-		stroke-linecap: round;
+	}
+}
+
+.dashes {
+	fill: none;
+	stroke: var(--path);
+	stroke-width: 15;
+	stroke-linecap: round;
+}
+
+/* A solid copy of the route, used as a mask that grows along the path. */
+.reveal {
+	fill: none;
+	stroke: #ffffff;
+	stroke-width: 40;
+	stroke-dasharray: 1 1;
+	stroke-dashoffset: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.reveal {
+		stroke-dashoffset: 0;
 	}
 }

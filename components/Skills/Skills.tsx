@@ -1,24 +1,125 @@
 'use client';
 
-import { useRef, useState, type CSSProperties } from 'react';
+import { useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent } from 'react';
 import Image from 'next/image';
 import { Tabs } from '@base-ui/react/tabs';
 import { Chip } from '@/components/Chip/Chip';
 import { SectionTitle } from '@/components/SectionTitle/SectionTitle';
 import { TextPattern } from '@/components/TextPattern/TextPattern';
 import { SKILLS } from '@/data/skills';
-import { useAutoAdvance } from '@/lib/useAutoAdvance';
+import { useCarouselPause } from '@/lib/useCarouselPause';
+import { useReducedMotion } from '@/lib/useReducedMotion';
 import { tiltHandlers } from '@/lib/useTilt';
 import styles from './Skills.module.css';
 
-export function Skills() {
-	const [active, setActive] = useState(SKILLS[0].id);
-	const activeIndex = SKILLS.findIndex((skill) => skill.id === active);
+const COUNT = SKILLS.length;
 
-	// "Auto carousel": rotate through the skills until the visitor picks one.
+export function Skills() {
+	/*
+	 * Position on the tablet carousel's track, which holds the cards three times over
+	 * (a copy, the real tabs, a copy). The real tabs are 3–5; the track always slides
+	 * to the neighbouring position, and when it lands on a copy it jumps, without
+	 * animating, to the identical real card. So it scrolls one way forever, seamlessly.
+	 */
+	const [pos, setPos] = useState(COUNT);
+	const [instant, setInstant] = useState(false);
+	const activeIndex = pos % COUNT;
+	const active = SKILLS[activeIndex].id;
+
 	const tabsRef = useRef<HTMLDivElement>(null);
-	const auto = useAutoAdvance(tabsRef, () => setActive(SKILLS[(activeIndex + 1) % SKILLS.length].id));
+	const trackRef = useRef<HTMLDivElement>(null);
 	const tilt = tiltHandlers();
+
+	const move = (delta: number) => {
+		// Without a sliding track (desktop, reduced motion) there is no transition to wait
+		// for: go straight to the real card.
+		const track = trackRef.current;
+		const slides = track && parseFloat(getComputedStyle(track).transitionDuration) > 0;
+		setInstant(!slides);
+		setPos((current) => (slides ? current + delta : COUNT + (((current + delta) % COUNT) + COUNT) % COUNT));
+	};
+
+	/*
+	 * "Auto carousel": a faint layer grows across the active card; when it fills, the
+	 * next skill comes up. The layer's animation is the timer, so pausing it (hover,
+	 * keyboard focus, off screen) pauses the carousel, and any move starts it afresh.
+	 */
+	const paused = useCarouselPause(tabsRef);
+	const autoplay = !useReducedMotion();
+
+	/** Go to a skill by the shortest way round (next, or previous). */
+	const select = (id: string) => {
+		const target = SKILLS.findIndex((skill) => skill.id === id);
+		const forward = (target - activeIndex + COUNT) % COUNT;
+		if (forward) move(forward <= COUNT / 2 ? forward : forward - COUNT);
+	};
+
+	const settle = () => {
+		if (pos >= 2 * COUNT || pos < COUNT) {
+			setInstant(true);
+			setPos(COUNT + activeIndex);
+		}
+	};
+
+	// Tablet carousel: swipe the cards left or right.
+	const swipeStart = useRef<{ x: number; y: number } | null>(null);
+	const swiped = useRef(false);
+	const swipe = {
+		onPointerDown: (event: PointerEvent<HTMLElement>) => {
+			swipeStart.current = { x: event.clientX, y: event.clientY };
+		},
+		onPointerUp: (event: PointerEvent<HTMLElement>) => {
+			const start = swipeStart.current;
+			swipeStart.current = null;
+			if (!start) return;
+			const dx = event.clientX - start.x;
+			if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(event.clientY - start.y)) {
+				swiped.current = true;
+				move(dx < 0 ? 1 : -1);
+			}
+		},
+		// The click that ends a swipe would select the card it started on: ignore it.
+		onClickCapture: (event: MouseEvent<HTMLElement>) => {
+			if (swiped.current) {
+				swiped.current = false;
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		},
+		onPointerCancel: () => {
+			swipeStart.current = null;
+		},
+	};
+
+	/** `slot` is the card's place on the track; the one at `pos` shows the progress. */
+	const cardContent = (skill: (typeof SKILLS)[number], slot: number) => (
+		<>
+			<span className={styles.layerBack} aria-hidden="true" />
+			<span className={styles.layerFront} aria-hidden="true" />
+			<span className={styles.photo}>
+				<Image src={skill.image} alt="" fill sizes="(min-width: 1200px) 360px, 70vw" />
+				<TextPattern className={styles.pattern} text={skill.label} tileWidth={46} tileHeight={30.42} fontSize={21} fontWeight={700} />
+				{autoplay && slot === pos && (
+					<span key={pos} className={styles.progress} aria-hidden="true" onAnimationEnd={() => move(1)} />
+				)}
+			</span>
+			<span className={styles.label}>{skill.label}</span>
+		</>
+	);
+
+	// Decorative copies on either side of the real tabs (tablet only).
+	const copies = (offset: number) =>
+		SKILLS.map((skill, index) => (
+			<div
+				key={`${offset}-${skill.id}`}
+				className={`${styles.card} ${styles.copy}`}
+				data-active={offset + index === pos || undefined}
+				aria-hidden="true"
+				onClick={() => move(offset + index - pos)}
+			>
+				{cardContent(skill, offset + index)}
+			</div>
+		));
 
 	return (
 		<section id="skills" className={styles.skills} aria-labelledby="skills-title">
@@ -33,34 +134,28 @@ export function Skills() {
 				<Tabs.Root
 					ref={tabsRef}
 					className={styles.tabs}
+					data-paused={paused || undefined}
 					value={active}
-					onValueChange={(value) => {
-						auto.stop();
-						setActive(value as string);
-					}}
+					onValueChange={(value) => select(value as string)}
 				>
-					<Tabs.List className={styles.cards} aria-label="Skills">
-						{SKILLS.map((skill, index) => {
-							// Position relative to the active card, for the tablet carousel: -1, 0 or 1.
-							const slot = ((index - activeIndex + SKILLS.length + 1) % SKILLS.length) - 1;
-							return (
-								<Tabs.Tab
-									key={skill.id}
-									value={skill.id}
-									className={styles.card}
-									style={{ '--slot': slot } as CSSProperties}
-								>
-									<span className={styles.layerBack} aria-hidden="true" />
-									<span className={styles.layerFront} aria-hidden="true" />
-									<span className={styles.photo}>
-										<Image src={skill.image} alt="" fill sizes="(min-width: 1200px) 360px, 70vw" />
-										<TextPattern className={styles.pattern} text={skill.label} tileWidth={46} tileHeight={30.42} fontSize={21} fontWeight={700} />
-									</span>
-									<span className={styles.label}>{skill.label}</span>
+					<div className={styles.viewport} {...swipe}>
+						<Tabs.List
+							ref={trackRef}
+							className={styles.cards}
+							aria-label="Skills"
+							data-instant={instant || undefined}
+							style={{ '--pos': pos } as CSSProperties}
+							onTransitionEnd={(event) => event.target === event.currentTarget && settle()}
+						>
+							{copies(0)}
+							{SKILLS.map((skill, index) => (
+								<Tabs.Tab key={skill.id} value={skill.id} className={styles.card}>
+									{cardContent(skill, COUNT + index)}
 								</Tabs.Tab>
-							);
-						})}
-					</Tabs.List>
+							))}
+							{copies(2 * COUNT)}
+						</Tabs.List>
+					</div>
 
 					{SKILLS.map((skill) => (
 						<Tabs.Panel key={skill.id} value={skill.id} className={styles.panel}>
@@ -82,9 +177,17 @@ export function Skills() {
 						</Tabs.Panel>
 					))}
 
+					{/* Tablet pagination. A mouse/touch shortcut: keyboard users have the tabs above. */}
 					<div className={styles.dots} aria-hidden="true">
 						{SKILLS.map((skill) => (
-							<span key={skill.id} className={styles.dot} data-active={skill.id === active || undefined} />
+							<button
+								key={skill.id}
+								type="button"
+								tabIndex={-1}
+								className={styles.dot}
+								data-active={skill.id === active || undefined}
+								onClick={() => select(skill.id)}
+							/>
 						))}
 					</div>
 				</Tabs.Root>

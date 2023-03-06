@@ -98,6 +98,23 @@
 		grid-template-rows: repeat(var(--rows, 1), auto);
 	}
 
+	/* The grid cell keeps the card's resting size; the card can grow beyond it. */
+	.track > li {
+		position: relative;
+		width: 345px;
+		height: 127px;
+	}
+
+	.track > li:hover,
+	.track > li:focus-within {
+		z-index: 2;
+	}
+
+	/* Cards in the bottom row grow upwards, so the carousel's edge never cuts them. */
+	.track > li[data-last-row] > * {
+		inset: auto 0 0;
+	}
+
 	.title {
 		font-size: 30px;
 	}
@@ -124,5 +141,10 @@
 
 	.track {
 		gap: 14px 12px;
+	}
+
+	.track > li {
+		width: min(300px, 78vw);
+		height: 110px;
 	}
 }

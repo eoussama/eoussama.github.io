@@ -22,6 +22,9 @@
 	inset: 0;
 	min-height: 100dvh;
 	background: rgb(43 56 85 / 20%);
+	/* Blurs the page behind the open menu; fades in and out with the backdrop. */
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
 	opacity: calc(1 - var(--drawer-swipe-progress, 0));
 	transition: opacity 400ms cubic-bezier(0.32, 0.72, 0, 1);
 }
@@ -64,7 +67,10 @@
 	border-radius: 0 31px 31px 0;
 	background: var(--menu-bg);
 	color: var(--menu-fg);
-	box-shadow: 0 4px 4px rgb(0 0 0 / 25%);
+	/* Casts onto the page to the right of the menu. */
+	box-shadow:
+		0 4px 4px rgb(0 0 0 / 25%),
+		10px 0 28px rgb(17 25 40 / 28%);
 	outline: 0;
 	transform: translateX(var(--drawer-swipe-movement-x, 0));
 	transition: transform 400ms cubic-bezier(0.32, 0.72, 0, 1);
@@ -143,30 +149,25 @@
 	}
 }
 
-/* "Waves move". */
-.waveBack,
-.waveMiddle,
-.waveFront {
-	transform-box: fill-box;
-	transform-origin: 50% 100%;
-	animation: sway 8s ease-in-out infinite alternate;
+/* "Waves move": each flows sideways continuously, alternating directions. */
+.waveBack {
+	animation: flow 20s linear infinite;
 }
 
 .waveMiddle {
-	animation-duration: 6.5s;
-	animation-direction: alternate-reverse;
+	animation: flow 16s linear infinite reverse;
 }
 
 .waveFront {
-	animation-duration: 10s;
+	animation: flow 24s linear infinite;
 }
 
-@keyframes sway {
+@keyframes flow {
 	from {
-		transform: translateX(-3%) scaleX(1.08);
+		transform: translateX(0);
 	}
 	to {
-		transform: translateX(3%) scaleX(1.08);
+		transform: translateX(var(--period));
 	}
 }
 

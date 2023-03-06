@@ -33,12 +33,18 @@
 	padding: 0 16px 0 39px;
 	border: 1px solid var(--search-border);
 	border-radius: 19.5px;
-	background: transparent;
+	background: var(--search-bg);
 	color: var(--text);
 	font: inherit;
 	font-size: 13px;
 	outline: none;
-	transition: border-color 0.15s ease;
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.input:hover {
+	border-color: var(--search-border-hover);
 }
 
 .input::placeholder {
@@ -47,6 +53,7 @@
 
 .input:focus-visible {
 	border-color: var(--focus);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent);
 }
 
 .rows {

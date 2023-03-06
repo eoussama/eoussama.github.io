@@ -9,7 +9,8 @@
 
 .backdrop,
 .stack,
-.dots {
+.dots,
+.copy {
 	display: none;
 }
 
@@ -81,9 +82,10 @@
 .photo img {
 	object-fit: cover;
 	opacity: 0.2;
+	will-change: transform;
 	transition:
 		opacity 0.25s ease,
-		transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+		transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* "Image zooms in when hovered". */
@@ -99,12 +101,36 @@
 	opacity: 0.6;
 }
 
+/*
+ * The words drift slowly from the top left towards the bottom right. The layer is one
+ * tile (46 × 30.42) bigger on the left and top, and moves by exactly one tile per loop:
+ * seamless.
+ */
 .pattern {
 	position: absolute;
-	inset: 0;
+	inset: -30.42px 0 0 -46px;
+	width: calc(100% + 46px);
+	height: calc(100% + 30.42px);
 	color: var(--navy);
 	opacity: 0;
 	transition: opacity 0.25s ease;
+	animation: pattern-drift 6s linear infinite paused;
+}
+
+.card[data-active] .pattern {
+	animation-play-state: running;
+}
+
+@keyframes pattern-drift {
+	to {
+		transform: translate(46px, 30.42px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pattern {
+		animation: none;
+	}
 }
 
 .card[data-active] .pattern {
@@ -135,6 +161,31 @@
 @media (prefers-reduced-motion: reduce) {
 	.card:hover .photo img {
 		transform: none;
+	}
+}
+
+/*
+ * The auto-carousel timer (tablet only): a faint layer that fills the active card
+ * from the left. Hidden elsewhere, where it never runs, so nothing auto-advances.
+ */
+.progress {
+	display: none;
+	position: absolute;
+	inset: 0;
+	background: rgb(255 255 255 / 22%);
+	transform: scaleX(0);
+	transform-origin: left;
+	animation: progress 6s linear forwards;
+	pointer-events: none;
+}
+
+.tabs[data-paused] .progress {
+	animation-play-state: paused;
+}
+
+@keyframes progress {
+	to {
+		transform: scaleX(1);
 	}
 }
 
@@ -196,24 +247,50 @@
 		transform: scale(1.05);
 	}
 
-	.cards {
-		display: block;
-		height: 297px;
+	/* The window onto the track: full width, so the neighbours peek in at both sides. */
+	.viewport {
 		margin-top: 70px;
 		margin-inline: calc(-1 * var(--gutter));
-		padding: 0;
 		overflow: hidden;
+		touch-action: pan-y;
+		user-select: none;
+	}
+
+	/*
+	 * The track starts at the middle of the window and slides so that card number
+	 * --pos is centred. It always moves sideways to the next card.
+	 */
+	.cards {
+		--card-width: min(620px, 100vw - 2 * 154px);
+		--gap: 55px;
+
+		display: flex;
+		gap: var(--gap);
+		width: max-content;
+		margin: 0 0 0 50%;
+		padding: 0;
+		transform: translateX(calc(-1 * (var(--card-width) / 2 + var(--pos) * (var(--card-width) + var(--gap)))));
+		transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+	}
+
+	.cards[data-instant] {
+		transition: none;
+	}
+
+	.copy {
+		display: block;
+		cursor: pointer;
+	}
+
+	.progress {
+		display: block;
 	}
 
 	.card {
-		position: absolute;
-		top: 0;
-		left: 50%;
-		width: min(620px, 100% - 2 * 154px);
-		height: 297px;
+		width: var(--card-width);
+		height: auto;
+		aspect-ratio: 620 / 297;
 		border-radius: 16px;
-		transform: translateX(calc(-50% + var(--slot) * (100% + 55px)));
-		transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 	}
 
 	.layerBack,
@@ -278,11 +355,22 @@
 	.dot {
 		width: 8px;
 		height: 8px;
+		padding: 0;
+		border: 0;
 		border-radius: 4px;
+		cursor: pointer;
+		position: relative;
 		background: rgb(43 56 85 / 20%);
 		transition:
 			width 0.25s ease,
 			background-color 0.25s ease;
+	}
+
+	/* A comfortable click/tap area around the small dot. */
+	.dot::before {
+		content: '';
+		position: absolute;
+		inset: -10px -4px;
 	}
 
 	.dot[data-active] {
@@ -299,7 +387,7 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.card {
+		.cards {
 			transition: none;
 		}
 	}

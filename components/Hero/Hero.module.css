@@ -52,14 +52,7 @@
 	border-radius: 10px;
 	font-size: 16px;
 	text-decoration: none;
-	transition:
-		transform 0.15s ease,
-		box-shadow 0.15s ease;
-}
-
-.button:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgb(17 25 40 / 18%);
+	transition: background-color 0.25s ease;
 }
 
 .solid {
@@ -68,9 +61,17 @@
 	color: var(--button-solid-fg);
 }
 
+.solid:hover {
+	background: color-mix(in srgb, var(--button-solid-bg) 88%, var(--button-solid-fg));
+}
+
 .outline {
 	background: var(--button-outline-bg);
 	color: var(--button-outline-fg);
+}
+
+.outline:hover {
+	background: color-mix(in srgb, var(--button-outline-fg) 8%, var(--button-outline-bg));
 }
 
 /* Desktop: text on the left, the ribbon fills the section. */
@@ -80,11 +81,10 @@
 		min-height: 900px;
 	}
 
-	/* Above the text: when it slides with the mouse it covers what it passes over. */
+	/* Decorative background, under the text and buttons. */
 	.ribbon {
 		position: absolute;
 		inset: 0;
-		z-index: 1;
 		display: block;
 		width: 100%;
 		height: 100%;

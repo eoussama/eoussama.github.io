@@ -7,12 +7,12 @@ import { Particles } from './Particles';
 import { HERO_RIBBON } from './shapes';
 import styles from './HeroRibbon.module.css';
 
-/** How far (px, in design units) the ribbon may slide either way. */
+/** How far (px, in design units) the particles may slide either way. */
 const RANGE = 56;
 
 /**
  * Desktop hero background: two waves and the particle-filled blob.
- * The ribbon slides with the mouse and covers whatever it passes over.
+ * The ribbon stays put; the particles inside the blob slide with the mouse.
  */
 export function HeroRibbon({ className }: { className?: string }) {
 	const ref = useRef<SVGSVGElement>(null);
@@ -30,7 +30,8 @@ export function HeroRibbon({ className }: { className?: string }) {
 		let frame = 0;
 
 		const tick = () => {
-			current += (target - current) * 0.08;
+			// Small easing factor: the particles trail well behind the mouse and drift slowly.
+			current += (target - current) * 0.012;
 			svg.style.setProperty('--ribbon-shift', `${current.toFixed(2)}px`);
 			frame = Math.abs(target - current) > 0.1 ? requestAnimationFrame(tick) : 0;
 		};
@@ -63,13 +64,25 @@ export function HeroRibbon({ className }: { className?: string }) {
 					<path d={HERO_RIBBON.blob} clipRule="evenodd" />
 				</clipPath>
 			</defs>
-			<g style={{ transform: 'translateX(var(--ribbon-shift, 0px))' }}>
-				<path d={HERO_RIBBON.edge} fill="#4a5979" />
-				<path d={HERO_RIBBON.body} fill="#2b3855" />
-				<g clipPath="url(#hero-blob)">
-					<image className={styles.light} href={particlesLight.src} x={x} y={y} width={width} height={height} preserveAspectRatio="none" />
-					<image className={styles.dark} href={particlesDark.src} x={x} y={y} width={width} height={height} preserveAspectRatio="none" />
-					<Particles x={x + 600} y={y} width={width - 600} height={height} count={46} seed={7} />
+			<path d={HERO_RIBBON.edge} fill="#4a5979" />
+			<path d={HERO_RIBBON.body} fill="#2b3855" />
+			<g clipPath="url(#hero-blob)">
+				<rect x={x} y={y} width={width} height={height} fill="#111928" />
+				{/* Wider than the blob by RANGE on each side, so sliding never shows an edge. */}
+				<g style={{ transform: 'translateX(var(--ribbon-shift, 0px))' }}>
+					{[particlesLight, particlesDark].map((texture, i) => (
+						<image
+							key={texture.src}
+							className={i === 0 ? styles.light : styles.dark}
+							href={texture.src}
+							x={x - RANGE}
+							y={y}
+							width={width + 2 * RANGE}
+							height={height}
+							preserveAspectRatio="xMidYMid slice"
+						/>
+					))}
+					<Particles x={x + 600 - RANGE} y={y} width={width - 600 + 2 * RANGE} height={height} count={60} seed={7} />
 				</g>
 			</g>
 		</svg>

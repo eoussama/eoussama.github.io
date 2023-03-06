@@ -9,6 +9,9 @@ const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFracti
 
 export function ProjectCard({ project }: { project: Project }) {
 	const language = LANGUAGES[project.language];
+	const slash = project.name.indexOf('/');
+	const owner = slash === -1 ? null : project.name.slice(0, slash + 1);
+	const repo = slash === -1 ? project.name : project.name.slice(slash + 1);
 
 	return (
 		<article className={styles.card} style={{ '--language': language.color } as CSSProperties}>
@@ -25,7 +28,8 @@ export function ProjectCard({ project }: { project: Project }) {
 			<header className={styles.header}>
 				<h4 className={styles.title}>
 					<a className={styles.link} href={project.url} target="_blank" rel="noopener noreferrer">
-						{project.name}
+						{owner && <span className={styles.owner}>{owner}</span>}
+						{repo}
 					</a>
 				</h4>
 				<p className={styles.stats}>

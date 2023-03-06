@@ -18,6 +18,10 @@ const TAG = {
 	samadisa: { label: '#samadisa', url: 'https://samadisa.netlify.app' },
 	cryptoKatana: { label: '#crypto-katana-marketplace', url: 'https://crypto-katana.netlify.app' },
 	portfolio: { label: '#portfolio', url: 'https://ouss.es' },
+	phoshare: { label: '#phoshare', url: 'https://phoshare.ouss.es/' },
+	pockinv: { label: '#pockinv', url: 'https://pockinv.ouss.es/' },
+	steamMcl: { label: '#steam-mcl', url: 'https://steam-mcl.ouss.es/' },
+	typewriter: { label: '#typewriter', url: 'https://eo-typewriterjs.ouss.es/' },
 };
 
 export const SKILLS: Skill[] = [
@@ -39,7 +43,7 @@ export const SKILLS: Skill[] = [
 			'People say I’m way too experimental, but I always took that as a compliment.',
 			'I create personalized user experiences across many platforms, breaking out of the universal comfort zone without sacrificing SEO guidelines and industry practices.',
 		],
-		tags: [],
+		tags: [TAG.steamMcl, TAG.typewriter],
 		image: ux,
 	},
 	{
@@ -50,7 +54,7 @@ export const SKILLS: Skill[] = [
 			'Mobile-first is always on the back of my subconsciousness.',
 			'I always default to building PWAs to ensure Android and IOS compatibility on the go, however, when duty calls, I’m your Ionic/React Native guy.',
 		],
-		tags: [TAG.samadisa, TAG.portfolio],
+		tags: [TAG.portfolio, TAG.phoshare, TAG.pockinv],
 		image: mobile,
 	},
 ];

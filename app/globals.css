@@ -29,9 +29,12 @@
 	--chip: #2b3855;
 	--path: rgb(43 56 85 / 10%);
 
-	--search-border: #cbcbcb;
-	--search-icon: #d0d0d0;
-	--search-placeholder: #a7a7a7;
+	/* Darker than the mockup's greys, which were hard to spot. */
+	--search-bg: #ffffff;
+	--search-border: rgb(43 56 85 / 35%);
+	--search-border-hover: rgb(43 56 85 / 60%);
+	--search-icon: #5b6478;
+	--search-placeholder: #6b7385;
 
 	--card-bg: #ffffff;
 	--card-shadow: 0 0 5px rgb(0 0 0 / 25%);
@@ -74,9 +77,11 @@
 
 	--chip: #ffffff;
 
-	--search-border: #2c3648;
-	--search-icon: #2c3648;
-	--search-placeholder: #3f4a5f;
+	--search-bg: rgb(255 255 255 / 4%);
+	--search-border: rgb(255 255 255 / 24%);
+	--search-border-hover: rgb(255 255 255 / 45%);
+	--search-icon: rgb(255 255 255 / 60%);
+	--search-placeholder: rgb(255 255 255 / 55%);
 
 	--card-bg: #111928;
 	--card-text: #ffffff;
@@ -88,11 +93,15 @@
 	--footer-bg: #161f2f;
 	--footer-bar: #111928;
 
-	--wave-back: #141e31;
-	--wave-front: #101b30;
-	--wave-foot: #101b30;
-	--phone-wave-back: #1d2940;
-	--phone-wave-front: #152036;
+	/* The mockup's 10% navy disappears on the dark background. */
+	--path: rgb(74 89 121 / 45%);
+
+	/* Lighter than the mockup's, which almost disappear on the dark background. */
+	--wave-back: #2a3a5c;
+	--wave-front: #1c2944;
+	--wave-foot: #1c2944;
+	--phone-wave-back: #2a3a5c;
+	--phone-wave-front: #1c2944;
 
 	--focus: #f6ef78;
 	color-scheme: dark;

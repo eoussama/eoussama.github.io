@@ -1,4 +1,5 @@
 .footer {
+	position: relative;
 	color: #ffffff;
 }
 
@@ -7,7 +8,25 @@
 	width: 100%;
 	height: 57px;
 	margin-bottom: -1px;
+	overflow: hidden;
 	fill: var(--footer-bg);
+}
+
+/* The wave flows sideways, continuously. */
+.strip {
+	animation: flow 12s linear infinite;
+}
+
+@keyframes flow {
+	to {
+		transform: translateX(var(--period));
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.strip {
+		animation: none;
+	}
 }
 
 .desktop {
