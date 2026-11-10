@@ -5,7 +5,11 @@
 #   /v/<x.y>/    -> each version listed in archive/versions.json, pulled from git
 #   /archive/    -> the version switcher and its manifest
 #
-# Requires: bash, git, perl, tar. The repo must have full history and tags.
+# Versions are plain static files, except those marked "build": "next" in the
+# manifest, which are built with npm and exported for their sub-folder.
+#
+# Requires: bash, git, perl, tar (and node/npm for built versions).
+# The repo must have full history and tags.
 
 set -euo pipefail
 
@@ -45,6 +49,22 @@ strip_repo_files() {
 	find "$dir" -name '*.swp' -delete
 }
 
+# Builds a Next.js version (static export) for /v/<version>/ into a directory.
+build_next() {
+	local ref="$1" dest="$2" version="$3" work
+	work="$(mktemp -d)"
+	export_ref "$ref" "$work"
+	(
+		cd "$work"
+		npm ci --no-audit --no-fund --loglevel=error
+		NEXT_TELEMETRY_DISABLED=1 BASE_PATH="/v/$version" npm run build
+	) >&2 || fail "build of $ref failed"
+	[[ -f "$work/out/index.html" ]] || fail "build of $ref produced no out/index.html"
+	mkdir -p "$dest"
+	cp -R "$work/out/." "$dest/"
+	rm -rf "$work"
+}
+
 # Strips dead analytics, injects the switcher and, for archived versions, noindex.
 patch_html() {
 	local file="$1" noindex="$2"
@@ -58,7 +78,9 @@ patch_html() {
 	grep -qF "$SWITCHER_TAG" "$file" || fail "could not inject switcher into $file"
 
 	if [[ "$noindex" == "yes" ]]; then
-		perl -0pi -e 's{<head>}{<head>\n\t<meta name="robots" content="noindex">}i' "$file"
+		# At the end of <head>: React (in built versions) hydrates the start of <head>
+		# and treats a tag inserted there as a mismatch.
+		perl -0pi -e 's{</head>}{\t<meta name="robots" content="noindex">\n</head>}i' "$file"
 		grep -q 'name="robots" content="noindex"' "$file" || fail "could not add noindex to $file"
 	fi
 
@@ -79,14 +101,26 @@ patch_html "$OUT/index.html" no
 echo "built /  (working tree)"
 
 # Every archived version under /v/<version>/.
-while IFS=$'\t' read -r version ref; do
+while IFS=$'\t' read -r version ref build; do
 	dest="$OUT/v/$version"
-	export_ref "$ref" "$dest"
-	strip_repo_files "$dest"
-	patch_html "$dest/index.html" yes
-	echo "built /v/$version/  ($ref)"
+	case "$build" in
+		static)
+			export_ref "$ref" "$dest"
+			strip_repo_files "$dest"
+			;;
+		next)
+			build_next "$ref" "$dest" "$version"
+			;;
+		*)
+			fail "unknown build type '$build' for $version"
+			;;
+	esac
+	while IFS= read -r -d '' page; do
+		patch_html "$page" yes
+	done < <(find "$dest" -name '*.html' -print0)
+	echo "built /v/$version/  ($ref, $build)"
 done < <(perl -MJSON::PP -0777 -ne '
-	print "$_->{version}\t$_->{ref}\n" for @{ decode_json($_) };
+	print join("\t", $_->{version}, $_->{ref}, $_->{build} // "static"), "\n" for @{ decode_json($_) };
 ' "$MANIFEST")
 
 # /v/ itself has no page of its own; send visitors to the current site.
