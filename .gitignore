@@ -1,1 +1,7 @@
-assets/videos/text-editor.mp4
+# Editor swap/backup files
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
