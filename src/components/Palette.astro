@@ -69,6 +69,7 @@ const groups: { label: string; items: Item[] }[] = [
     label: t.cPosts,
     items: posts.map(post => ({
       label: post.entry.data.title,
+      lang: post.lang === lang ? undefined : post.lang,
       hint: formatDate(post.entry.data.date, lang),
       icon: "z-cross",
       href: localized(lang, postPath(post)),
@@ -98,7 +99,7 @@ const groups: { label: string; items: Item[] }[] = [
   },
   {
     label: t.cVers,
-    items: versions().map(v => ({ label: `${v.name}, ${v.title}`, hint: String(v.year), href: v.href, keywords: "version archive old" })),
+    items: versions(lang).map(v => ({ label: `${v.name}, ${v.title}`, hint: String(v.year), href: v.href, keywords: "version archive old" })),
   },
   {
     label: t.cWhere,

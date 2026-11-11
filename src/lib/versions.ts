@@ -1,4 +1,8 @@
+import type { Lang } from "~/i18n/langs";
+import { ui } from "~/i18n/ui";
+
 import manifest from "../../archive/versions.json";
+
 import pkg from "../../package.json";
 
 import { url } from "./url";
@@ -16,16 +20,18 @@ export type Version = { name: string; title: string; year: number; href: string;
  * Every version of the site, newest first, from the archive manifest the version
  * switcher of the older versions reads too. The current one links to this build.
  *
+ * @param lang - The page's language, for the titles
  * @returns The versions, with their names, titles, years and addresses
  */
-export function versions(): Version[] {
+export function versions(lang: Lang): Version[] {
+  const titles = ui(lang).versionTitles;
   const entries = manifest as Entry[];
   const own = entries.find(v => v.version === CURRENT);
   const list: Version[] = entries
     .filter(v => v.version !== CURRENT)
-    .map(v => ({ name: `v${v.version}`, title: v.title, year: v.year, href: `/v/${v.version}/`, current: false }));
+    .map(v => ({ name: `v${v.version}`, title: titles[v.version] ?? v.title, year: v.year, href: `/v/${v.version}/`, current: false }));
 
-  list.push({ name: `v${CURRENT}`, title: own?.title ?? "Rewrite in Astro", year: own?.year ?? 2026, href: url(), current: true });
+  list.push({ name: `v${CURRENT}`, title: titles[CURRENT] ?? own?.title ?? "Rewrite in Astro", year: own?.year ?? 2026, href: url(), current: true });
 
   const key = (v: Version) => v.name.slice(1).split(".").map(Number);
 

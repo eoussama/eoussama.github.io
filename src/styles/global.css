@@ -2077,6 +2077,17 @@ html {
   line-height: 1.35;
 }
 
+/* Spacing letters apart breaks the joins of Arabic script. */
+:root:is([data-lang="ar"], [data-lang="ary"]) :is(h1, h2, .dr-title, .lab, .pill-btn > span, .kbd) {
+  letter-spacing: 0;
+}
+
+/* Japanese wraps between phrases rather than anywhere, with strict line-break rules. */
+:root[data-lang="ja"] body {
+  line-break: strict;
+  word-break: auto-phrase;
+}
+
 :root:is([data-lang="ar"], [data-lang="ary"]) .lab {
   font-size: 18px;
   line-height: 36px;

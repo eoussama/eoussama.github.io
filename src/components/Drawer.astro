@@ -22,7 +22,7 @@ interface Props {
   open: "" | "work" | "writing";
 }
 
-type Item = { name: string; href: string; kind: string; blurb: string; icon: "z-star" | "z-cross"; facets: Record<string, string> };
+type Item = { name: string; href: string; kind: string; blurb: string; icon: "z-star" | "z-cross"; facets: Record<string, string>; lang?: Lang };
 type Group = { key: string; label: string; options: { value: string; label: string; count: number }[] };
 type Sheet = { list: "work" | "writing"; search: string; items: Item[]; groups: Group[] };
 
@@ -47,6 +47,7 @@ const postItems: Item[] = posts.map(post => ({
   blurb: post.entry.data.summary,
   icon: "z-cross",
   facets: { topic: post.entry.data.tags[0] ?? "", year: String(post.entry.data.date.getUTCFullYear()) },
+  lang: post.lang === lang ? undefined : post.lang,
 }));
 
 /**
@@ -160,8 +161,8 @@ const sheets: Sheet[] = [
           {sheet.items.map((item, i) => (
             <li style={`--i: ${i}`} data-kw={`${item.name} ${item.blurb} ${item.kind} ${Object.values(item.facets).join(" ")}`.toLowerCase()} data-facets={JSON.stringify(item.facets)}>
               <i class:list={["dot", item.icon]}></i>
-              <span class="dr-line"><a class="link dr-name" href={item.href}>{item.name}</a><span class="dr-kind">{item.kind}</span></span>
-              <span class="dr-desc">{item.blurb}</span>
+              <span class="dr-line"><a class="link dr-name" href={item.href} lang={item.lang}>{item.name}</a><span class="dr-kind">{item.kind}</span></span>
+              <span class="dr-desc" lang={item.lang}>{item.blurb}</span>
             </li>
           ))}
         </ul>
