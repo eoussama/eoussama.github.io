@@ -4,6 +4,8 @@ import type { Lang } from "~/i18n/langs";
 import { PROFILE } from "~/data/profile";
 import { LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
+import { formatDate } from "~/lib/dates";
+import { getPosts, postPath } from "~/lib/posts";
 import { getProjects, pick, projectPath } from "~/lib/projects";
 import { localized, url } from "~/lib/url";
 import { versions } from "~/lib/versions";
@@ -42,6 +44,7 @@ type Item = {
 const { lang, path, hello, views } = Astro.props;
 const t = ui(lang);
 const projects = await getProjects();
+const posts = await getPosts(lang);
 
 const groups: { label: string; items: Item[] }[] = [
   {
@@ -60,6 +63,16 @@ const groups: { label: string; items: Item[] }[] = [
       icon: "z-star",
       href: localized(lang, projectPath(p)),
       keywords: `${pick(p.blurb, lang)} ${p.language ?? ""} ${p.type} ${p.kind} ${p.year ?? ""}`,
+    })),
+  },
+  {
+    label: t.cPosts,
+    items: posts.map(post => ({
+      label: post.entry.data.title,
+      hint: formatDate(post.entry.data.date, lang),
+      icon: "z-cross",
+      href: localized(lang, postPath(post)),
+      keywords: `${post.entry.data.summary} ${post.entry.data.tags.join(" ")}`,
     })),
   },
   {

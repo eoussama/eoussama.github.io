@@ -8,6 +8,8 @@ import { PROFILE } from "~/data/profile";
 import { HELLO_ORDER, langInfo } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
+import { formatDate } from "~/lib/dates";
+import { getPosts, postPath } from "~/lib/posts";
 import { getProjects, pick, projectPath } from "~/lib/projects";
 import { localized, url } from "~/lib/url";
 
@@ -37,8 +39,7 @@ const first = hellos[0]!;
 const projects = await getProjects();
 const featured = projects.filter(p => p.featured).slice(0, 4);
 
-// Placeholders until the blog is built.
-const posts = t.postPh.map((name, i) => ({ name, note: i === 0 ? t.postNotePh : "" }));
+const posts = await getPosts(lang);
 ---
 
 <Base lang={lang} path={path} title={title} description={`${t.name}.${t.intro}`} hello drawer open={open}>
@@ -67,10 +68,10 @@ const posts = t.postPh.map((name, i) => ({ name, note: i === 0 ? t.postNotePh : 
     <section class="row" aria-labelledby="writing">
       <h2 class="lab" id="writing"><a class="anchor" href="#writing" aria-label={t.writing + t.anchor}>{t.writing}</a></h2>
       <ul class="list">
-        {posts.map(post => (
+        {posts.slice(0, 2).map(post => (
           <li>
-            <i class="dot z-cross"></i><a class="link" href={localized(lang, "blog/")} data-drawer="writing">{post.name}</a> <span class="mut">{t.datePh}</span>
-            {post.note && <p class="note">{post.note}</p>}
+            <i class="dot z-cross"></i><a class="link" href={localized(lang, postPath(post))} lang={post.lang}>{post.entry.data.title}</a> <span class="mut">{formatDate(post.entry.data.date, lang)}</span>
+            {post.entry.data.note && <p class="note" lang={post.lang}>{post.entry.data.note}</p>}
           </li>
         ))}
         <li><i class="dot z-cross"></i><a class="link" href={localized(lang, "blog/")} data-drawer="writing">{t.allPosts(posts.length)}</a></li>

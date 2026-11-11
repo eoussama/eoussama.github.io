@@ -58,4 +58,23 @@ const stories = defineCollection({
   loader: glob({ pattern: "*/*.md", base: "./src/content/stories" }),
 });
 
-export const collections = { projects, stories };
+/**
+ * Blog posts: one Markdown file per language, at posts/<post>/<language>.md. A post
+ * missing in a language shows in English there.
+ */
+const posts = defineCollection({
+  loader: glob({ pattern: "*/*.md", base: "./src/content/posts" }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    /** One sentence, in lists and under the title. */
+    summary: z.string(),
+    /** The side note on the home page, on wide screens. */
+    note: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    /** Drafts show while writing (pnpm dev) but are left out of the built site. */
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, stories, posts };

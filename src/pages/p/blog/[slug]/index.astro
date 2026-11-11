@@ -1,0 +1,19 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import PostPage from "~/components/PostPage.astro";
+import { getPosts } from "~/lib/posts";
+
+
+
+/**
+ * Every post's page, in English.
+ *
+ * @returns One page per post
+ */
+export const getStaticPaths = (async () => (await getPosts("en")).map(p => ({ params: { slug: p.slug } }))) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+---
+
+<PostPage lang="en" slug={slug} />

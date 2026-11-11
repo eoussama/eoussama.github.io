@@ -116,6 +116,7 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
     {LANGS.map(l => <link rel="alternate" hreflang={l.code} href={absolute(alternates[l.code] ?? url())} />)}
     <link rel="alternate" hreflang="x-default" href={absolute(localized("en", path))} />
     <link rel="icon" href={url("favicon.svg")} type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={t.feed} href={localized(lang, "rss.xml")} />
     <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
     {info.dir === "rtl" && <link rel="stylesheet" href={naskh400} />}
     {info.dir === "rtl" && <link rel="stylesheet" href={naskh500} />}
@@ -137,27 +138,30 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
     <slot name="drawer" />
     <Palette lang={lang} path={path} hello={hello} views={drawer} />
     <!--
-      Back from a project, its bullet and name return to their place in the list:
-      the list names them for the view transition as it is shown. This has to be in
-      place before the first paint, so it runs here rather than in a bundled script.
+      Back from a project or post, its bullet and name return to their place in the
+      list: the list names them for the view transition as it is shown. This has to
+      be in place before the first paint, so it runs here rather than in a bundled
+      script.
     -->
     <script is:inline>
       addEventListener("pagereveal", (event) => {
+        const page = /\/(projects|blog)\/([^/]+)\/$/;
         const from = globalThis.navigation?.activation?.from?.url;
-        const id = from && /\/projects\/([^/]+)\/$/.exec(new URL(from).pathname)?.[1];
+        const match = from && page.exec(new URL(from).pathname);
 
-        if (!event.viewTransition || !id || /\/projects\/[^/]+\/$/.test(location.pathname)) {
+        if (!event.viewTransition || !match || page.test(location.pathname)) {
           return;
         }
 
         const shown = link => !link.closest("[inert], .crumb, .ck") && link.getClientRects().length > 0;
-        const links = [...document.querySelectorAll(`a[href$="/projects/${id}/"]`)];
+        const links = [...document.querySelectorAll(`a[href$="/${match[1]}/${match[2]}/"]`)];
         const link = links.find(l => shown(l) && l.closest(".dr")) ?? links.find(shown);
         const dot = link?.closest("li")?.querySelector(".dot");
+        const key = `${match[1]}-${match[2]}`;
 
         if (link && dot) {
-          link.style.viewTransitionName = `vt-name-${id}`;
-          dot.style.viewTransitionName = `vt-dot-${id}`;
+          link.style.viewTransitionName = `vt-name-${key}`;
+          dot.style.viewTransitionName = `vt-dot-${key}`;
           event.viewTransition.finished.finally(() => {
             link.style.removeProperty("view-transition-name");
             dot.style.removeProperty("view-transition-name");

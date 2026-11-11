@@ -21,4 +21,12 @@ export default defineConfig({
   devToolbar: {
     enabled: false,
   },
+  markdown: {
+    shikiConfig: {
+      // Soft, lavender-leaning themes for each mode; the page picks one with CSS.
+      themes: { light: "rose-pine-dawn", dark: "rose-pine-moon" },
+      defaultColor: false,
+      wrap: true,
+    },
+  },
 });

@@ -27,6 +27,11 @@ const en = {
   auto: "Auto",
   versions: "Versions of this site",
   versionButton: "Site version 0.5, from 2026. Show all versions",
+  published: "Published",
+  post: "Post",
+  minRead: (n: number) => `, ${n} minute read`,
+  rss: "RSS feed",
+  feed: "Writing by Oussama Essamadi",
   role: "Role",
   built: "Built with",
   source: "Source",
@@ -55,7 +60,6 @@ const en = {
   gAccess: "Access",
   gTopic: "Topic",
   access: { open: "Open source", private: "Private" },
-  postBlurbPh: "[One sentence from the post.]",
   work: "Works",
   writing: "Writing",
   where: "Whereabouts",
@@ -96,9 +100,6 @@ const en = {
   allPostsLabel: "All posts",
   kinds: { "open-source": "Open source", "private": "Private", "side-project": "Side project", "contribution": "Contribution" },
   types: { tool: "Tool", library: "Library", app: "App", game: "Game", site: "Website" },
-  postPh: ["[Your latest post title]", "[Another post title]"],
-  postNotePh: "[A line from the post.]",
-  datePh: "[date]",
 };
 
 export type UI = typeof en;
@@ -123,6 +124,11 @@ const ar: UI = {
   auto: "تلقائي",
   versions: "إصدارات هذا الموقع",
   versionButton: "إصدار الموقع 0.5، من 2026. اعرض كل الإصدارات",
+  published: "نُشر",
+  post: "المقال",
+  minRead: (n: number) => `، قراءة في ${n} دقائق`,
+  rss: "موجز RSS",
+  feed: "كتابات أسامة الصمدي",
   role: "الدور",
   built: "بُني بـ",
   source: "المصدر",
@@ -151,7 +157,6 @@ const ar: UI = {
   gAccess: "الإتاحة",
   gTopic: "الموضوع",
   access: { open: "مفتوح المصدر", private: "خاص" },
-  postBlurbPh: "[جملة من المقال.]",
   work: "الأعمال",
   writing: "الكتابات",
   where: "أين تجدني",
@@ -192,9 +197,6 @@ const ar: UI = {
   allPostsLabel: "كل المقالات",
   kinds: { "open-source": "مفتوح المصدر", "private": "خاص", "side-project": "مشروع جانبي", "contribution": "مساهمة" },
   types: { tool: "أداة", library: "مكتبة", app: "تطبيق", game: "لعبة", site: "موقع" },
-  postPh: ["[عنوان أحدث مقال]", "[عنوان مقال آخر]"],
-  postNotePh: "[سطر من المقال.]",
-  datePh: "[التاريخ]",
 };
 
 const ary: UI = {
@@ -211,6 +213,9 @@ const ary: UI = {
   auto: "أوتوماتيك",
   versions: "نسخ هاد الموقع",
   versionButton: "نسخة الموقع 0.5، ديال 2026. وريني كاع النسخ",
+  published: "تنشر",
+  minRead: (n: number) => `، ${n} دقايق ديال القراية`,
+  feed: "كتابات أسامة الصمدي",
   role: "الدور ديالي",
   built: "مبني ب",
   story: "الحكاية",
@@ -263,7 +268,6 @@ const ary: UI = {
   cHi: "سلّم بلغة أخرى",
   allProjectsLabel: "كاع المشاريع",
   allPostsLabel: "كاع المقالات",
-  postPh: ["[عنوان آخر مقال]", "[عنوان مقال آخر]"],
   signature: "التوقيع ديال أسامة الصمدي",
 };
 
@@ -287,6 +291,11 @@ const fr: UI = {
   auto: "Auto",
   versions: "Versions de ce site",
   versionButton: "Version 0.5 du site, de 2026. Voir toutes les versions",
+  published: "Publié",
+  post: "Article",
+  minRead: (n: number) => `, ${n} min de lecture`,
+  rss: "Flux RSS",
+  feed: "Les écrits d’Oussama Essamadi",
   role: "Rôle",
   built: "Fait avec",
   source: "Source",
@@ -315,7 +324,6 @@ const fr: UI = {
   gAccess: "Accès",
   gTopic: "Sujet",
   access: { open: "Open source", private: "Privé" },
-  postBlurbPh: "[Une phrase de l’article.]",
   work: "Travaux",
   writing: "Écrits",
   where: "Où me trouver",
@@ -356,9 +364,6 @@ const fr: UI = {
   allPostsLabel: "Tous les articles",
   kinds: { "open-source": "Open source", "private": "Privé", "side-project": "Projet perso", "contribution": "Contribution" },
   types: { tool: "Outil", library: "Bibliothèque", app: "Application", game: "Jeu", site: "Site web" },
-  postPh: ["[Titre de votre dernier article]", "[Titre d’un autre article]"],
-  postNotePh: "[Une ligne de l’article.]",
-  datePh: "[date]",
 };
 
 const es: UI = {
@@ -381,6 +386,11 @@ const es: UI = {
   auto: "Automático",
   versions: "Versiones de este sitio",
   versionButton: "Versión 0.5 del sitio, de 2026. Ver todas las versiones",
+  published: "Publicado",
+  post: "Artículo",
+  minRead: (n: number) => `, ${n} min de lectura`,
+  rss: "Feed RSS",
+  feed: "Escritos de Oussama Essamadi",
   role: "Rol",
   built: "Hecho con",
   source: "Código",
@@ -409,7 +419,6 @@ const es: UI = {
   gAccess: "Acceso",
   gTopic: "Tema",
   access: { open: "Código abierto", private: "Privado" },
-  postBlurbPh: "[Una frase del artículo.]",
   work: "Trabajos",
   writing: "Escritos",
   where: "Dónde encontrarme",
@@ -450,9 +459,6 @@ const es: UI = {
   allPostsLabel: "Todos los artículos",
   kinds: { "open-source": "Código abierto", "private": "Privado", "side-project": "Proyecto personal", "contribution": "Contribución" },
   types: { tool: "Herramienta", library: "Biblioteca", app: "Aplicación", game: "Juego", site: "Sitio web" },
-  postPh: ["[Título de tu último artículo]", "[Título de otro artículo]"],
-  postNotePh: "[Una línea del artículo.]",
-  datePh: "[fecha]",
 };
 
 const it: UI = {
@@ -475,6 +481,11 @@ const it: UI = {
   auto: "Automatico",
   versions: "Versioni di questo sito",
   versionButton: "Versione 0.5 del sito, del 2026. Mostra tutte le versioni",
+  published: "Pubblicato",
+  post: "Articolo",
+  minRead: (n: number) => `, ${n} min di lettura`,
+  rss: "Feed RSS",
+  feed: "Scritti di Oussama Essamadi",
   role: "Ruolo",
   built: "Fatto con",
   source: "Sorgente",
@@ -503,7 +514,6 @@ const it: UI = {
   gAccess: "Accesso",
   gTopic: "Argomento",
   access: { open: "Open source", private: "Privato" },
-  postBlurbPh: "[Una frase dell’articolo.]",
   work: "Lavori",
   writing: "Scritti",
   where: "Dove trovarmi",
@@ -544,9 +554,6 @@ const it: UI = {
   allPostsLabel: "Tutti gli articoli",
   kinds: { "open-source": "Open source", "private": "Privato", "side-project": "Progetto personale", "contribution": "Contributo" },
   types: { tool: "Strumento", library: "Libreria", app: "App", game: "Gioco", site: "Sito web" },
-  postPh: ["[Titolo del tuo ultimo articolo]", "[Titolo di un altro articolo]"],
-  postNotePh: "[Una riga dell’articolo.]",
-  datePh: "[data]",
 };
 
 const ja: UI = {
@@ -569,6 +576,11 @@ const ja: UI = {
   auto: "自動",
   versions: "このサイトの過去の版",
   versionButton: "サイトのバージョン0.5（2026年）。すべてのバージョンを表示",
+  published: "公開日",
+  post: "本文",
+  minRead: (n: number) => `、${n}分で読めます`,
+  rss: "RSSフィード",
+  feed: "Oussama Essamadiの文章",
   role: "役割",
   built: "使用技術",
   source: "ソース",
@@ -597,7 +609,6 @@ const ja: UI = {
   gAccess: "公開",
   gTopic: "トピック",
   access: { open: "オープンソース", private: "非公開" },
-  postBlurbPh: "［記事からの一文。］",
   work: "制作",
   writing: "文章",
   where: "居場所",
@@ -638,9 +649,6 @@ const ja: UI = {
   allPostsLabel: "すべての記事",
   kinds: { "open-source": "オープンソース", "private": "非公開", "side-project": "個人制作", "contribution": "コントリビューション" },
   types: { tool: "ツール", library: "ライブラリ", app: "アプリ", game: "ゲーム", site: "ウェブサイト" },
-  postPh: ["［最新記事のタイトル］", "［別の記事のタイトル］"],
-  postNotePh: "［記事からの一行。］",
-  datePh: "［日付］",
 };
 
 const UI_STRINGS: Record<Lang, UI> = { ar, ary, en, fr, es, it, ja };

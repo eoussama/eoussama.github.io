@@ -41,7 +41,7 @@ const site = project.live?.replace(/^https?:\/\//, "").replace(/\/$/, "");
 <Base lang={lang} path={projectPath(project)} title={`${project.name} · ${t.name}`} description={pick(project.blurb, lang)}>
   <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
 
-  <article class="project" style={`--vt-dot: vt-dot-${id}; --vt-name: vt-name-${id}`}>
+  <article class="project" style={`--vt-dot: vt-dot-projects-${id}; --vt-name: vt-name-projects-${id}`}>
     <section class="row first">
       <h2 class="lab" id="work"><a class="anchor" href="#work" aria-label={t.work + t.anchor}>{t.work}</a></h2>
       <div class="hero">
@@ -86,7 +86,7 @@ const site = project.live?.replace(/^https?:\/\//, "").replace(/\/$/, "");
     <section class="row">
       <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
       <p class="val">
-        <a class="next" href={localized(lang, projectPath(next))} data-vt-id={next.id}><i class="dot z-star"></i><span>{next.name}</span></a><span class="or">{t.or}</span><a class="link" href={localized(lang, "projects/")}>{t.allProjects(projects.length)}</a>
+        <a class="next" href={localized(lang, projectPath(next))}><i class="dot z-star"></i><span>{next.name}</span></a><span class="or">{t.or}</span><a class="link" href={localized(lang, "projects/")}>{t.allProjects(projects.length)}</a>
       </p>
     </section>
   </article>

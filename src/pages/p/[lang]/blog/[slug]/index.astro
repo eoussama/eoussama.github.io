@@ -1,0 +1,28 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import type { Lang } from "~/i18n/langs";
+
+import PostPage from "~/components/PostPage.astro";
+import { DEFAULT_LANG, LANGS } from "~/i18n/langs";
+import { getPosts } from "~/lib/posts";
+
+
+
+/**
+ * Every post's page, in every language but English. A post not written in a
+ * language still has a page in it, showing the English post.
+ *
+ * @returns One page per post and language
+ */
+export const getStaticPaths = (async () => {
+  const pages = await Promise.all(LANGS.filter(l => l.code !== DEFAULT_LANG).map(async l => (await getPosts(l.code)).map(p => ({ params: { lang: l.code, slug: p.slug } }))));
+
+  return pages.flat();
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.params;
+const lang = Astro.params.lang as Lang;
+---
+
+<PostPage lang={lang} slug={slug} />

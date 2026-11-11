@@ -3,6 +3,8 @@ import type { Lang } from "~/i18n/langs";
 
 import Logo from "~/components/Logo.astro";
 import { ui } from "~/i18n/ui";
+import { formatDate } from "~/lib/dates";
+import { getPosts, postPath } from "~/lib/posts";
 import { getProjects, pick, projectPath } from "~/lib/projects";
 import { localized } from "~/lib/url";
 
@@ -37,8 +39,15 @@ const projectItems: Item[] = projects.map(p => ({
   facets: { language: p.language ?? "", year: p.year ? String(p.year) : "", type: p.type, access: p.access },
 }));
 
-// Placeholders until the blog is built.
-const postItems: Item[] = t.postPh.map(name => ({ name, href: localized(lang, "blog/"), kind: t.datePh, blurb: t.postBlurbPh, icon: "z-cross", facets: {} }));
+const posts = await getPosts(lang);
+const postItems: Item[] = posts.map(post => ({
+  name: post.entry.data.title,
+  href: localized(lang, postPath(post)),
+  kind: formatDate(post.entry.data.date, lang),
+  blurb: post.entry.data.summary,
+  icon: "z-cross",
+  facets: { topic: post.entry.data.tags[0] ?? "", year: String(post.entry.data.date.getUTCFullYear()) },
+}));
 
 /**
  * The filter groups for a list, each with the values its items take and how many

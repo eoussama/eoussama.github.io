@@ -20,6 +20,7 @@
     "snapshot": "node tools/github-snapshot.ts"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.19",
     "@eoussama/core": "^0.1.2",
     "@fontsource-variable/newsreader": "^5.3.0",
     "@fontsource/noto-naskh-arabic": "^5.3.0",
