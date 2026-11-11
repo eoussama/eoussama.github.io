@@ -1,0 +1,14 @@
+name: temmejs
+order: 6
+kind: open-source
+type: library
+repo: https://github.com/eoussama/temmejs
+live: https://temmejs.ouss.es/
+blurb:
+  en: Emmet, but for JavaScript.
+  ar: مثل Emmet، لكن لـ JavaScript.
+  ary: بحال Emmet، ولكن ل JavaScript.
+  fr: Emmet, mais pour JavaScript.
+  es: Emmet, pero para JavaScript.
+  it: Emmet, ma per JavaScript.
+  ja: JavaScript版のEmmet。

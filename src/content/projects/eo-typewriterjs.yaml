@@ -1,0 +1,14 @@
+name: eo-typewriterjs
+order: 8
+kind: open-source
+type: library
+repo: https://github.com/eoussama/eo-typewriterjs
+live: https://eo-typewriterjs.ouss.es/
+blurb:
+  en: A typewriter effect for JavaScript, on the go.
+  ar: تأثير الآلة الكاتبة في JavaScript، جاهز للاستخدام.
+  ary: تأثير الماكينة ديال الكتابة ف JavaScript، واجد للاستعمال.
+  fr: Un effet machine à écrire pour JavaScript, prêt à l’emploi.
+  es: Un efecto de máquina de escribir para JavaScript, listo para usar.
+  it: Un effetto macchina da scrivere per JavaScript, pronto all’uso.
+  ja: すぐ使える、JavaScriptのタイプライター効果。

@@ -1,0 +1,14 @@
+name: phoshare
+order: 11
+kind: open-source
+type: app
+repo: https://github.com/eoussama/phoshare
+live: https://phoshare.ouss.es/
+blurb:
+  en: A simple offline photo-sharing app.
+  ar: تطبيق بسيط لمشاركة الصور دون اتصال.
+  ary: تطبيق بسيط باش تبارطاجي التصاور بلا كونيكسيون.
+  fr: Une application simple de partage de photos hors ligne.
+  es: Una aplicación sencilla para compartir fotos sin conexión.
+  it: Una semplice app per condividere foto offline.
+  ja: オフラインで写真を共有するシンプルなアプリ。

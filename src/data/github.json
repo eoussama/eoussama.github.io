@@ -1,0 +1,115 @@
+{
+  "fetchedAt": "2026-11-11T23:05:39.072Z",
+  "repos": {
+    "eoussama/anusic-api": {
+      "stars": 5,
+      "forks": 0,
+      "language": "Go",
+      "created": "2020-06-28T13:55:39Z",
+      "pushed": "2026-07-02T02:03:15Z",
+      "description": "Anime themes API.",
+      "homepage": "https://anusic-api.herokuapp.com/api/v1/",
+      "archived": false
+    },
+    "eoussama/core": {
+      "stars": 0,
+      "forks": 0,
+      "language": "TypeScript",
+      "created": "2025-07-20T21:20:29Z",
+      "pushed": "2026-10-18T20:18:22Z",
+      "description": "Common JavaScript/TypeScript utilities.",
+      "homepage": "http://ouss.es/core/",
+      "archived": false
+    },
+    "eoussama/dx": {
+      "stars": 0,
+      "forks": 0,
+      "language": "JavaScript",
+      "created": "2025-07-20T20:49:31Z",
+      "pushed": "2026-10-18T20:08:14Z",
+      "description": "Personal DX config.",
+      "homepage": "https://www.npmjs.com/package/@eoussama/dx",
+      "archived": false
+    },
+    "eoussama/eo-textdraw-editor": {
+      "stars": 4,
+      "forks": 1,
+      "language": "TypeScript",
+      "created": "2020-04-24T16:21:59Z",
+      "pushed": "2026-09-13T11:45:11Z",
+      "description": "Your on-the-fly, online Textdraw editor.",
+      "homepage": "https://eoussama.github.io/eo-textdraw-editor/",
+      "archived": false
+    },
+    "eoussama/eo-translatorjs": {
+      "stars": 17,
+      "forks": 3,
+      "language": "JavaScript",
+      "created": "2018-08-18T19:42:18Z",
+      "pushed": "2026-10-26T16:43:51Z",
+      "description": "A simple javascript library for translating web content.",
+      "homepage": "http://eo-translatorjs.ouss.es/",
+      "archived": true
+    },
+    "eoussama/eo-typewriterjs": {
+      "stars": 9,
+      "forks": 2,
+      "language": "TypeScript",
+      "created": "2018-04-30T23:50:00Z",
+      "pushed": "2026-10-26T13:33:56Z",
+      "description": "On the go typewriting utility for JavaScript.",
+      "homepage": "http://eo-typewriterjs.ouss.es/",
+      "archived": true
+    },
+    "eoussama/phoshare": {
+      "stars": 0,
+      "forks": 1,
+      "language": "Java",
+      "created": "2018-06-05T14:18:16Z",
+      "pushed": "2026-10-29T19:09:06Z",
+      "description": "A simple offline photo sharing application for those who don't have friends. 😥",
+      "homepage": "http://phoshare.ouss.es/",
+      "archived": true
+    },
+    "eoussama/publi-pro-max": {
+      "stars": 0,
+      "forks": 0,
+      "language": "HTML",
+      "created": "2018-08-29T15:46:39Z",
+      "pushed": "2019-04-01T20:35:52Z",
+      "description": "Publi Pro Max's official web page",
+      "homepage": "https://eoussama.github.io/publi-pro-max/",
+      "archived": true
+    },
+    "eoussama/steam-mcl": {
+      "stars": 1,
+      "forks": 0,
+      "language": "TypeScript",
+      "created": "2019-08-31T23:00:55Z",
+      "pushed": "2026-10-16T14:10:40Z",
+      "description": "A quick and reliable web app dedicated to missing content (DLCs, Prequels, Sequels...etc) on Steam for a given user.",
+      "homepage": "https://steam-mcl.ouss.es/",
+      "archived": true
+    },
+    "eoussama/temmejs": {
+      "stars": 11,
+      "forks": 0,
+      "language": "TypeScript",
+      "created": "2018-05-12T21:07:43Z",
+      "pushed": "2026-10-25T23:45:34Z",
+      "description": "Emmet, but for JavaScript.",
+      "homepage": "https://temmejs.ouss.es/",
+      "archived": true
+    },
+    "true-drive/core": {
+      "stars": 7,
+      "forks": 0,
+      "language": "C",
+      "created": "2023-06-05T21:14:34Z",
+      "pushed": "2026-11-09T21:25:50Z",
+      "description": "The core of True Drive, responsible for encoding and decoding files",
+      "homepage": null,
+      "archived": true
+    }
+  }
+}

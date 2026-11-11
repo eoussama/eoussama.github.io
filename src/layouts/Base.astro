@@ -26,9 +26,12 @@ interface Props {
   description: string;
   /** Whether the page has the greeting, which the command menu can cycle. */
   hello?: boolean;
+  /** Whether the page has the list drawer, and which list it opens with, if any. */
+  drawer?: boolean;
+  open?: "" | "work" | "writing";
 }
 
-const { lang, path = "", title, description, hello = false } = Astro.props;
+const { lang, path = "", title, description, hello = false, drawer = false, open = "" } = Astro.props;
 const t = ui(lang);
 const info = langInfo(lang);
 const alternates = Object.fromEntries(LANGS.map(l => [l.code, localized(l.code, path)]));
@@ -37,7 +40,7 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
 ---
 
 <!doctype html>
-<html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light">
+<html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light" data-open={open || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -121,19 +124,23 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
   </head>
   <body>
     <a class="skip" href="#main">{t.skip}</a>
-    <div class="col">
-      <Header lang={lang} path={path}>
-        <slot name="crumb" slot="crumb" />
-      </Header>
-      <main id="main">
-        <slot />
-      </main>
+    <div class="page" inert={!!open}>
+      <div class="col">
+        <Header lang={lang} path={path} views={drawer}>
+          <slot name="crumb" slot="crumb" />
+        </Header>
+        <main id="main">
+          <slot />
+        </main>
+      </div>
     </div>
-    <Palette lang={lang} path={path} hello={hello} />
+    <slot name="drawer" />
+    <Palette lang={lang} path={path} hello={hello} views={drawer} />
     <script>
       import "~/scripts/site";
       import "~/scripts/copy";
       import "~/scripts/palette";
+      import "~/scripts/drawer";
     </script>
   </body>
 </html>

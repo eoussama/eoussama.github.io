@@ -26,22 +26,27 @@ const projects = defineCollection({
     /** Order on the home page and in lists; lower comes first. */
     order: z.number(),
     featured: z.boolean().default(false),
+    /** How it is labelled in lists. */
     kind: z.enum(["open-source", "private", "side-project", "contribution"]),
+    /** Whether its code is public; defaults to whether it has a repository. */
+    access: z.enum(["open", "private"]).optional(),
     type: z.enum(["tool", "library", "app", "game", "site"]),
+    /** Filled in from GitHub when left out. */
     language: z.string().nullable().default(null),
+    /** Filled in from GitHub (the year the repository was created) when left out. */
     year: z.number().nullable().default(null),
     repo: z.url().nullable().default(null),
     live: z.url().nullable().default(null),
     stack: z.array(z.string()).default([]),
     role: localized.nullable().default(null),
-    /** Follows the name on the home page: "dx, one ESLint config and…". */
-    desc: localized,
     /** One sentence, in lists. */
     blurb: localized,
+    /** Follows the name on the home page ("dx, one ESLint config and…"); defaults to the blurb. */
+    desc: localized.optional(),
     /** The side note shown in the margin on hover, on wide screens. */
     note: localized.nullable().default(null),
-    /** The lead on the project's own page. */
-    long: localized,
+    /** The lead on the project's own page; defaults to the blurb. */
+    long: localized.optional(),
   }),
 });
 

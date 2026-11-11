@@ -16,7 +16,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "lint": "dx lint",
-    "fix": "dx fix"
+    "fix": "dx fix",
+    "snapshot": "node tools/github-snapshot.ts"
   },
   "dependencies": {
     "@eoussama/core": "^0.1.2",

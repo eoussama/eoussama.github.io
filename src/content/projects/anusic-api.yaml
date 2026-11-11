@@ -1,0 +1,13 @@
+name: anusic-api
+order: 10
+kind: open-source
+type: tool
+repo: https://github.com/eoussama/anusic-api
+blurb:
+  en: An API for anime theme songs.
+  ar: واجهة برمجية لأغاني شارات الأنمي.
+  ary: API ديال أغاني الأنمي.
+  fr: Une API pour les génériques d’anime.
+  es: Una API de canciones de anime.
+  it: Un’API per le sigle degli anime.
+  ja: アニメの主題歌のAPI。

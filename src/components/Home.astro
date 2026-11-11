@@ -1,6 +1,7 @@
 ---
 import type { Lang } from "~/i18n/langs";
 
+import Drawer from "~/components/Drawer.astro";
 import Ext from "~/components/Ext.astro";
 import Footer from "~/components/Footer.astro";
 import { PROFILE } from "~/data/profile";
@@ -15,10 +16,14 @@ import { localized, url } from "~/lib/url";
 /** The home page, in one language. */
 interface Props {
   lang: Lang;
+  /** The list drawer to open with: the home page itself is also /p/projects/ and /p/blog/. */
+  open?: "" | "work" | "writing";
 }
 
-const { lang } = Astro.props;
+const { lang, open = "" } = Astro.props;
 const t = ui(lang);
+const path = { "": "", "work": "projects/", "writing": "blog/" }[open];
+const title = { "": t.name, "work": `${t.work} · ${t.name}`, "writing": `${t.writing} · ${t.name}` }[open];
 
 // The greeting starts in the page's language and cycles through the rest.
 const start = HELLO_ORDER.indexOf(lang);
@@ -30,13 +35,13 @@ const hellos = [...HELLO_ORDER.slice(start), ...HELLO_ORDER.slice(0, start)].map
 const first = hellos[0]!;
 
 const projects = await getProjects();
-const featured = projects.filter(p => p.data.featured).slice(0, 4);
+const featured = projects.filter(p => p.featured).slice(0, 4);
 
 // Placeholders until the blog is built.
 const posts = t.postPh.map((name, i) => ({ name, note: i === 0 ? t.postNotePh : "" }));
 ---
 
-<Base lang={lang} title={t.name} description={`${t.name}.${t.intro}`} hello>
+<Base lang={lang} path={path} title={title} description={`${t.name}.${t.intro}`} hello drawer open={open}>
   <section class="row first" aria-labelledby="whoami">
     <h2 class="lab hello-lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
     <div>
@@ -51,11 +56,11 @@ const posts = t.postPh.map((name, i) => ({ name, note: i === 0 ? t.postNotePh : 
       <ul class="list">
         {featured.map(project => (
           <li>
-            <i class="dot z-star"></i><a class="link" href={localized(lang, projectPath(project))}>{project.data.name}</a>{t.sep}{pick(project.data.desc, lang)}
-            {project.data.note && <p class="note">{pick(project.data.note, lang)}</p>}
+            <i class="dot z-star"></i><a class="link" href={localized(lang, projectPath(project))}>{project.name}</a>{t.sep}{pick(project.desc ?? project.blurb, lang)}
+            {project.note && <p class="note">{pick(project.note, lang)}</p>}
           </li>
         ))}
-        <li><i class="dot z-star"></i><a class="link" href={localized(lang, "projects/")}>{t.allProjects(projects.length)}</a></li>
+        <li><i class="dot z-star"></i><a class="link" href={localized(lang, "projects/")} data-drawer="work">{t.allProjects(projects.length)}</a></li>
       </ul>
     </section>
 
@@ -64,11 +69,11 @@ const posts = t.postPh.map((name, i) => ({ name, note: i === 0 ? t.postNotePh : 
       <ul class="list">
         {posts.map(post => (
           <li>
-            <i class="dot z-cross"></i><a class="link" href={localized(lang, "blog/")}>{post.name}</a> <span class="mut">{t.datePh}</span>
+            <i class="dot z-cross"></i><a class="link" href={localized(lang, "blog/")} data-drawer="writing">{post.name}</a> <span class="mut">{t.datePh}</span>
             {post.note && <p class="note">{post.note}</p>}
           </li>
         ))}
-        <li><i class="dot z-cross"></i><a class="link" href={localized(lang, "blog/")}>{t.allPosts(posts.length)}</a></li>
+        <li><i class="dot z-cross"></i><a class="link" href={localized(lang, "blog/")} data-drawer="writing">{t.allPosts(posts.length)}</a></li>
       </ul>
     </section>
 
@@ -84,4 +89,6 @@ const posts = t.postPh.map((name, i) => ({ name, note: i === 0 ? t.postNotePh : 
 
     <Footer lang={lang} />
   </div>
+
+  <Drawer slot="drawer" lang={lang} open={open} />
 </Base>

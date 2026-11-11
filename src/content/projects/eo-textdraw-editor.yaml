@@ -1,0 +1,14 @@
+name: eo-textdraw-editor
+order: 13
+kind: open-source
+type: tool
+repo: https://github.com/eoussama/eo-textdraw-editor
+live: https://eoussama.github.io/eo-textdraw-editor/
+blurb:
+  en: An online editor for SA-MP textdraws.
+  ar: محرر على الويب لعناصر textdraw في SA-MP.
+  ary: محرر ف الويب ديال textdraws ف SA-MP.
+  fr: Un éditeur en ligne de textdraws pour SA-MP.
+  es: Un editor en línea de textdraws para SA-MP.
+  it: Un editor online di textdraw per SA-MP.
+  ja: SA-MPのテキストドロー用オンラインエディター。

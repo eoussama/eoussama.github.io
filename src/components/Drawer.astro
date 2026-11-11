@@ -1,0 +1,162 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import Logo from "~/components/Logo.astro";
+import { ui } from "~/i18n/ui";
+import { getProjects, pick, projectPath } from "~/lib/projects";
+import { localized } from "~/lib/url";
+
+
+
+/**
+ * The list drawer: every project ("Works") or every post ("Writing"), on a sheet of
+ * torn paper that slides in from the side over the home page. It has a search field,
+ * a filter menu and removable chips for the filters picked. It is also a page of its
+ * own (/p/projects/, /p/blog/), so it works without scripts and can be linked to.
+ */
+interface Props {
+  lang: Lang;
+  /** Which list is open when the page loads, if any. */
+  open: "" | "work" | "writing";
+}
+
+type Item = { name: string; href: string; kind: string; blurb: string; icon: "z-star" | "z-cross"; facets: Record<string, string> };
+type Group = { key: string; label: string; options: { value: string; label: string; count: number }[] };
+type Sheet = { list: "work" | "writing"; search: string; items: Item[]; groups: Group[] };
+
+const { lang, open } = Astro.props;
+const t = ui(lang);
+const projects = await getProjects();
+
+const projectItems: Item[] = projects.map(p => ({
+  name: p.name,
+  href: localized(lang, projectPath(p)),
+  kind: t.kinds[p.kind],
+  blurb: pick(p.blurb, lang),
+  icon: "z-star",
+  facets: { language: p.language ?? "", year: p.year ? String(p.year) : "", type: p.type, access: p.access },
+}));
+
+// Placeholders until the blog is built.
+const postItems: Item[] = t.postPh.map(name => ({ name, href: localized(lang, "blog/"), kind: t.datePh, blurb: t.postBlurbPh, icon: "z-cross", facets: {} }));
+
+/**
+ * The filter groups for a list, each with the values its items take and how many
+ * items take each. Groups with nothing to choose from are left out.
+ *
+ * @param items - The list's items
+ * @param keys - The facets to filter by, with their labels
+ * @param labels - Display labels for some facets' values
+ * @returns The groups, in the order given
+ */
+function groupsOf(items: Item[], keys: [string, string][], labels: Record<string, Record<string, string>> = {}): Group[] {
+  return keys.map(([key, label]) => {
+    const counts = new Map<string, number>();
+
+    items.forEach((item) => {
+      const value = item.facets[key];
+
+      if (value) {
+        counts.set(value, (counts.get(value) ?? 0) + 1);
+      }
+    });
+
+    const options = [...counts].map(([value, count]) => ({ value, label: labels[key]?.[value] ?? value, count }));
+
+    if (key === "year") {
+      options.sort((a, b) => Number(b.value) - Number(a.value));
+    }
+
+    return { key, label, options };
+  }).filter(group => group.options.length > 1);
+}
+
+const sheets: Sheet[] = [
+  {
+    list: "work",
+    search: t.searchProjects,
+    items: projectItems,
+    groups: groupsOf(projectItems, [["language", t.gLanguage], ["year", t.gYear], ["type", t.gKind], ["access", t.gAccess]], { type: t.types, access: t.access }),
+  },
+  { list: "writing", search: t.searchPosts, items: postItems, groups: groupsOf(postItems, [["topic", t.gTopic], ["year", t.gYear]]) },
+];
+---
+
+<button type="button" class="dr-scrim" tabindex="-1" aria-label={t.closeList} data-drawer-close></button>
+<aside
+  class="dr"
+  id="drawer"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="dr-title"
+  data-list={open || "work"}
+  inert={!open}
+  data-none-q={t.noMatchQ}
+  data-none-f={t.noMatchF}
+  data-remove={t.removeFilter}
+  data-url-home={localized(lang)}
+  data-url-work={localized(lang, "projects/")}
+  data-url-writing={localized(lang, "blog/")}
+  data-title-home={t.name}
+  data-title-work={`${t.work} · ${t.name}`}
+  data-title-writing={`${t.writing} · ${t.name}`}
+>
+  <span class="dr-tear" aria-hidden="true"><i></i><b></b></span>
+  <div class="dr-scroll">
+    <div class="dr-head">
+      <span class="dr-mark"><Logo id="lg-drawer" size={44} /></span>
+      <h2 class="dr-title" id="dr-title" tabindex="-1"><span data-show="work">{t.work}</span><span data-show="writing">{t.writing}</span></h2>
+      <div class="dr-tabs">
+        <a class="link" href={localized(lang, "blog/")} data-drawer="writing" data-show="work">{t.writing}</a>
+        <a class="link" href={localized(lang, "projects/")} data-drawer="work" data-show="writing">{t.work}</a>
+        <a class="dr-x" href={localized(lang)} aria-label={t.closeList} title={t.closeList} data-drawer-close>
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+        </a>
+      </div>
+    </div>
+
+    {sheets.map(sheet => (
+      <section class="dr-sheet" data-sheet={sheet.list}>
+        <div class="dr-tools">
+          <div class="dr-search">
+            <svg class="dr-glass" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+            <input type="search" class="dr-q" placeholder={sheet.search} aria-label={sheet.search} autocomplete="off" />
+            {sheet.groups.length > 0 && (
+              <button type="button" class="dr-fbtn" aria-expanded="false" aria-controls={`dr-f-${sheet.list}`} aria-label={t.filters} title={t.filters} data-label={t.filters}>
+                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 5h13M5 9h8M7.5 13h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg>
+                <b class="dr-badge" hidden></b>
+              </button>
+            )}
+          </div>
+          {sheet.groups.length > 0 && (
+            <div class="dr-fpop" id={`dr-f-${sheet.list}`} role="group" aria-label={t.filters} data-open="false">
+              {sheet.groups.map(group => (
+                <div class="dr-fg" data-group={group.key} data-group-label={group.label}>
+                  <p class="dr-fh">{group.label}</p>
+                  <div class="dr-fopts">
+                    {group.options.map(option => (
+                      <button type="button" class="dr-fo" aria-pressed="false" data-value={option.value} data-label={option.label}>{option.label}<em class="dr-n">{option.count}</em></button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div class="dr-active" aria-label={t.filters} hidden>
+            <button type="button" class="link dr-clear" data-clear>{t.clearAll}</button>
+          </div>
+        </div>
+        <p class="dr-empty" hidden><span></span> <button type="button" class="link" data-clear>{t.clearSearch}</button></p>
+        <ul class="list dr-list">
+          {sheet.items.map((item, i) => (
+            <li style={`--i: ${i}`} data-kw={`${item.name} ${item.blurb} ${item.kind} ${Object.values(item.facets).join(" ")}`.toLowerCase()} data-facets={JSON.stringify(item.facets)}>
+              <i class:list={["dot", item.icon]}></i>
+              <span class="dr-line"><a class="link dr-name" href={item.href}>{item.name}</a><span class="dr-kind">{item.kind}</span></span>
+              <span class="dr-desc">{item.blurb}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</aside>

@@ -1,0 +1,14 @@
+name: eo-translatorjs
+order: 7
+kind: open-source
+type: library
+repo: https://github.com/eoussama/eo-translatorjs
+live: https://eo-translatorjs.ouss.es/
+blurb:
+  en: A small JavaScript library for translating web content.
+  ar: مكتبة JavaScript صغيرة لترجمة محتوى الويب.
+  ary: مكتبة JavaScript صغيرة باش تترجم محتوى الويب.
+  fr: Une petite bibliothèque JavaScript pour traduire du contenu web.
+  es: Una pequeña biblioteca de JavaScript para traducir contenido web.
+  it: Una piccola libreria JavaScript per tradurre contenuti web.
+  ja: Webコンテンツを翻訳する小さなJavaScriptライブラリ。

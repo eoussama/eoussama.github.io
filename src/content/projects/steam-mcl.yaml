@@ -1,0 +1,14 @@
+name: steam-mcl
+order: 9
+kind: open-source
+type: app
+repo: https://github.com/eoussama/steam-mcl
+live: https://steam-mcl.ouss.es/
+blurb:
+  en: Finds the DLCs, prequels and sequels missing from a Steam library.
+  ar: يجد المحتوى الإضافي والأجزاء السابقة واللاحقة الناقصة من مكتبة Steam.
+  ary: كيلقى الإضافات والأجزاء اللي قبل واللي من بعد اللي ناقصين ف مكتبة Steam.
+  fr: Trouve les DLC, préquelles et suites qui manquent à une bibliothèque Steam.
+  es: Encuentra los DLC, precuelas y secuelas que faltan en una biblioteca de Steam.
+  it: Trova i DLC, i prequel e i sequel che mancano in una libreria Steam.
+  ja: Steamライブラリに足りないDLCや前作・続編を見つける。
