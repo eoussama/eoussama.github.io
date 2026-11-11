@@ -6,6 +6,7 @@ import naskh400 from "@fontsource/noto-naskh-arabic/arabic-400.css?url";
 import naskh500 from "@fontsource/noto-naskh-arabic/arabic-500.css?url";
 import jp400 from "@fontsource/noto-serif-jp/400.css?url";
 import jp500 from "@fontsource/noto-serif-jp/500.css?url";
+import Drawer from "~/components/Drawer.astro";
 import Header from "~/components/Header.astro";
 import Palette from "~/components/Palette.astro";
 import { langInfo, LANGS } from "~/i18n/langs";
@@ -26,12 +27,9 @@ interface Props {
   description: string;
   /** Whether the page has the greeting, which the command menu can cycle. */
   hello?: boolean;
-  /** Whether the page has the list drawer, and which list it opens with, if any. */
-  drawer?: boolean;
-  open?: "" | "work" | "writing";
 }
 
-const { lang, path = "", title, description, hello = false, drawer = false, open = "" } = Astro.props;
+const { lang, path = "", title, description, hello = false } = Astro.props;
 const t = ui(lang);
 const info = langInfo(lang);
 const alternates = Object.fromEntries(LANGS.map(l => [l.code, localized(l.code, path)]));
@@ -40,7 +38,7 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
 ---
 
 <!doctype html>
-<html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light" data-open={open || undefined}>
+<html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -77,6 +75,13 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
 
       if (dark) {
         document.querySelector("meta[name=theme-color]").content = "#14161d";
+      }
+
+      // ?list=projects or ?list=posts opens the list drawer over the page.
+      const list = { projects: "work", posts: "writing" }[new URLSearchParams(location.search).get("list")];
+
+      if (list) {
+        d.dataset.open = list;
       }
 
       if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
@@ -125,9 +130,9 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
   </head>
   <body>
     <a class="skip" href="#main">{t.skip}</a>
-    <div class="page" inert={!!open}>
+    <div class="page">
       <div class="col">
-        <Header lang={lang} path={path} views={drawer}>
+        <Header lang={lang} path={path}>
           <slot name="crumb" slot="crumb" />
         </Header>
         <main id="main">
@@ -135,8 +140,8 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
         </main>
       </div>
     </div>
-    <slot name="drawer" />
-    <Palette lang={lang} path={path} hello={hello} views={drawer} />
+    <Drawer lang={lang} />
+    <Palette lang={lang} path={path} hello={hello} />
     <!--
       Back from a project or post, its bullet and name return to their place in the
       list: the list names them for the view transition as it is shown. This has to
@@ -144,6 +149,12 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
       script.
     -->
     <script is:inline>
+      // A page opened with its drawer showing: the page behind it is out of reach.
+      if (document.documentElement.dataset.open) {
+        document.querySelector(".page").inert = true;
+        document.querySelector("#drawer").inert = false;
+      }
+
       addEventListener("pagereveal", (event) => {
         const page = /\/(projects|blog)\/([^/]+)\/$/;
         const from = globalThis.navigation?.activation?.from?.url;

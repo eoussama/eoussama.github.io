@@ -22,8 +22,6 @@ interface Props {
   path: string;
   /** Whether the page has the greeting, which the menu can cycle. */
   hello: boolean;
-  /** Whether the page has the list drawer, which the menu opens in place. */
-  views: boolean;
 }
 
 type Item = {
@@ -41,7 +39,7 @@ type Item = {
   keywords: string;
 };
 
-const { lang, path, hello, views } = Astro.props;
+const { lang, path, hello } = Astro.props;
 const t = ui(lang);
 const projects = await getProjects();
 const posts = await getPosts(lang);
@@ -51,8 +49,8 @@ const groups: { label: string; items: Item[] }[] = [
     label: t.cGo,
     items: [
       { label: t.cHome, href: localized(lang), keywords: "home" },
-      { label: t.allProjectsLabel, hint: t.cList, href: localized(lang, "projects/"), drawer: "work", keywords: "projects work" },
-      { label: t.allPostsLabel, hint: t.cList, href: localized(lang, "blog/"), drawer: "writing", keywords: "posts writing blog" },
+      { label: t.allProjectsLabel, hint: t.cList, href: "?list=projects", drawer: "work", keywords: "projects work" },
+      { label: t.allPostsLabel, hint: t.cList, href: "?list=posts", drawer: "writing", keywords: "posts writing blog" },
     ],
   },
   {
@@ -142,7 +140,7 @@ let n = 0;
             );
 
             return item.href
-              ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} hreflang={item.langLink} data-lang-link={item.langLink} data-href-home={views && item.langLink ? localized(item.langLink) : undefined} data-href-work={views && item.langLink ? localized(item.langLink, "projects/") : undefined} data-href-writing={views && item.langLink ? localized(item.langLink, "blog/") : undefined} data-drawer={views ? item.drawer : undefined} data-kw={keywords}>{inner}</a>
+              ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} data-kw={keywords}>{inner}</a>
               : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} data-kw={keywords}>{inner}</button>;
           })}
         </div>

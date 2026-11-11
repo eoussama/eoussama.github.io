@@ -1,7 +1,6 @@
 ---
 import type { Lang } from "~/i18n/langs";
 
-import Drawer from "~/components/Drawer.astro";
 import Ext from "~/components/Ext.astro";
 import Footer from "~/components/Footer.astro";
 import { PROFILE } from "~/data/profile";
@@ -18,14 +17,10 @@ import { localized, url } from "~/lib/url";
 /** The home page, in one language. */
 interface Props {
   lang: Lang;
-  /** The list drawer to open with: the home page itself is also /p/projects/ and /p/blog/. */
-  open?: "" | "work" | "writing";
 }
 
-const { lang, open = "" } = Astro.props;
+const { lang } = Astro.props;
 const t = ui(lang);
-const path = { "": "", "work": "projects/", "writing": "blog/" }[open];
-const title = { "": t.name, "work": `${t.work} · ${t.name}`, "writing": `${t.writing} · ${t.name}` }[open];
 
 // The greeting starts in the page's language and cycles through the rest.
 const start = HELLO_ORDER.indexOf(lang);
@@ -42,7 +37,7 @@ const featured = projects.filter(p => p.featured).slice(0, 4);
 const posts = await getPosts(lang);
 ---
 
-<Base lang={lang} path={path} title={title} description={`${t.name}.${t.intro}`} hello drawer open={open}>
+<Base lang={lang} title={t.name} description={`${t.name}.${t.intro}`} hello>
   <section class="row first" aria-labelledby="whoami">
     <h2 class="lab hello-lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
     <div>
@@ -61,7 +56,7 @@ const posts = await getPosts(lang);
             {project.note && <p class="note">{pick(project.note, lang)}</p>}
           </li>
         ))}
-        <li><i class="dot z-star"></i><a class="link" href={localized(lang, "projects/")} data-drawer="work">{t.allProjects(projects.length)}</a></li>
+        <li><i class="dot z-star"></i><a class="link" href="?list=projects" data-drawer="work">{t.allProjects(projects.length)}</a></li>
       </ul>
     </section>
 
@@ -74,7 +69,7 @@ const posts = await getPosts(lang);
             {post.entry.data.note && <p class="note" lang={post.lang}>{post.entry.data.note}</p>}
           </li>
         ))}
-        <li><i class="dot z-cross"></i><a class="link" href={localized(lang, "blog/")} data-drawer="writing">{t.allPosts(posts.length)}</a></li>
+        <li><i class="dot z-cross"></i><a class="link" href="?list=posts" data-drawer="writing">{t.allPosts(posts.length)}</a></li>
       </ul>
     </section>
 
@@ -91,5 +86,4 @@ const posts = await getPosts(lang);
     <Footer lang={lang} />
   </div>
 
-  <Drawer slot="drawer" lang={lang} open={open} />
 </Base>

@@ -86,7 +86,7 @@ const site = project.live?.replace(/^https?:\/\//, "").replace(/\/$/, "");
     <section class="row">
       <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
       <p class="val">
-        <a class="next" href={localized(lang, projectPath(next))}><i class="dot z-star"></i><span>{next.name}</span></a><span class="or">{t.or}</span><a class="link" href={localized(lang, "projects/")}>{t.allProjects(projects.length)}</a>
+        <a class="next" href={localized(lang, projectPath(next))}><i class="dot z-star"></i><span>{next.name}</span></a><span class="or">{t.or}</span><a class="link" href="?list=projects" data-drawer="work">{t.allProjects(projects.length)}</a>
       </p>
     </section>
   </article>

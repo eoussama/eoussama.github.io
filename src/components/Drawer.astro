@@ -12,21 +12,19 @@ import { localized } from "~/lib/url";
 
 /**
  * The list drawer: every project ("Works") or every post ("Writing"), on a sheet of
- * torn paper that slides in from the side over the home page. It has a search field,
- * a filter menu and removable chips for the filters picked. It is also a page of its
- * own (/p/projects/, /p/blog/), so it works without scripts and can be linked to.
+ * torn paper that slides in from the side over whatever page is showing. It has a
+ * search field, a filter menu and removable chips for the filters picked. The address
+ * says which list is open (?list=projects, ?list=posts), so it can be linked to.
  */
 interface Props {
   lang: Lang;
-  /** Which list is open when the page loads, if any. */
-  open: "" | "work" | "writing";
 }
 
 type Item = { name: string; href: string; kind: string; blurb: string; icon: "z-star" | "z-cross"; facets: Record<string, string>; lang?: Lang };
 type Group = { key: string; label: string; options: { value: string; label: string; count: number }[] };
 type Sheet = { list: "work" | "writing"; search: string; items: Item[]; groups: Group[] };
 
-const { lang, open } = Astro.props;
+const { lang } = Astro.props;
 const t = ui(lang);
 const projects = await getProjects();
 
@@ -99,17 +97,13 @@ const sheets: Sheet[] = [
   role="dialog"
   aria-modal="true"
   aria-labelledby="dr-title"
-  data-list={open || "work"}
-  inert={!open}
+  data-list="work"
+  inert
   data-none-q={t.noMatchQ}
   data-none-f={t.noMatchF}
   data-remove={t.removeFilter}
-  data-url-home={localized(lang)}
-  data-url-work={localized(lang, "projects/")}
-  data-url-writing={localized(lang, "blog/")}
-  data-title-home={t.name}
-  data-title-work={`${t.work} · ${t.name}`}
-  data-title-writing={`${t.writing} · ${t.name}`}
+  data-title-work={t.work}
+  data-title-writing={t.writing}
 >
   <span class="dr-tear" aria-hidden="true"><i></i><b></b></span>
   <div class="dr-scroll">
@@ -117,11 +111,11 @@ const sheets: Sheet[] = [
       <span class="dr-mark"><Logo id="lg-drawer" size={44} /></span>
       <h2 class="dr-title" id="dr-title" tabindex="-1"><span data-show="work">{t.work}</span><span data-show="writing">{t.writing}</span></h2>
       <div class="dr-tabs">
-        <a class="link" href={localized(lang, "blog/")} data-drawer="writing" data-show="work">{t.writing}</a>
-        <a class="link" href={localized(lang, "projects/")} data-drawer="work" data-show="writing">{t.work}</a>
-        <a class="dr-x" href={localized(lang)} aria-label={t.closeList} title={t.closeList} data-drawer-close>
+        <a class="link" href="?list=posts" data-drawer="writing" data-show="work">{t.writing}</a>
+        <a class="link" href="?list=projects" data-drawer="work" data-show="writing">{t.work}</a>
+        <button type="button" class="dr-x" aria-label={t.closeList} title={t.closeList} data-drawer-close>
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
-        </a>
+        </button>
       </div>
     </div>
 

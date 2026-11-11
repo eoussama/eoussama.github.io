@@ -1310,8 +1310,11 @@ html {
   padding: 18px 62px 60px 48px;
 }
 
-.dr[data-list="work"] :is([data-sheet="writing"], [data-show="writing"]),
-.dr[data-list="writing"] :is([data-sheet="work"], [data-show="work"]) {
+/* The list showing follows the address while open, and stays put as it slides away. */
+:root[data-open="work"] .dr :is([data-sheet="writing"], [data-show="writing"]),
+:root[data-open="writing"] .dr :is([data-sheet="work"], [data-show="work"]),
+:root:not([data-open]) .dr[data-list="work"] :is([data-sheet="writing"], [data-show="writing"]),
+:root:not([data-open]) .dr[data-list="writing"] :is([data-sheet="work"], [data-show="work"]) {
   display: none;
 }
 
@@ -1412,6 +1415,9 @@ html {
 
 .dr-x {
   display: grid;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
   place-items: center;
   width: 44px;
   height: 44px;

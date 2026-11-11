@@ -62,7 +62,7 @@ const own = { lang: post.lang, dir: langInfo(post.lang).dir };
       <section class="row">
         <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
         <p class="val">
-          <a class="next" href={localized(lang, postPath(next))}><i class="dot z-cross"></i><span lang={next.lang}>{next.entry.data.title}</span></a><span class="or">{t.or}</span><a class="link" href={localized(lang, "blog/")}>{t.allPosts(posts.length)}</a>
+          <a class="next" href={localized(lang, postPath(next))}><i class="dot z-cross"></i><span lang={next.lang}>{next.entry.data.title}</span></a><span class="or">{t.or}</span><a class="link" href="?list=posts" data-drawer="writing">{t.allPosts(posts.length)}</a>
         </p>
       </section>
     )}

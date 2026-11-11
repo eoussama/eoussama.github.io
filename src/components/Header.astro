@@ -17,11 +17,9 @@ interface Props {
   lang: Lang;
   /** This page's path, so the language menu links to the same page elsewhere. */
   path?: string;
-  /** Whether the page has the list drawer, so the language links can follow it. */
-  views?: boolean;
 }
 
-const { lang, path = "", views = false } = Astro.props;
+const { lang, path = "" } = Astro.props;
 const t = ui(lang);
 const info = langInfo(lang);
 const vers = versions(lang);
@@ -76,7 +74,7 @@ const themes = [
         <ul>
           {LANGS.map(l => (
             <li>
-              <a class="menu-item" href={localized(l.code, path)} hreflang={l.code} data-lang-link={l.code} data-href-home={views ? localized(l.code) : undefined} data-href-work={views ? localized(l.code, "projects/") : undefined} data-href-writing={views ? localized(l.code, "blog/") : undefined} aria-current={l.code === lang ? "page" : undefined}><span lang={l.code} dir={l.dir}>{l.name}</span></a>
+              <a class="menu-item" href={localized(l.code, path)} hreflang={l.code} data-lang-link={l.code} aria-current={l.code === lang ? "page" : undefined}><span lang={l.code} dir={l.dir}>{l.name}</span></a>
             </li>
           ))}
         </ul>
