@@ -29,8 +29,9 @@ export_ref() {
 
 	if [[ "$ref" == "HEAD" ]]; then
 		# Use the working tree so uncommitted changes can be previewed locally.
-		# In CI the working tree is identical to HEAD.
-		git ls-files -z --cached --others --exclude-standard \
+		# In CI the working tree is identical to HEAD. Installed dependencies are
+		# never part of the site, even if they are lying around untracked.
+		git ls-files -z --cached --others --exclude-standard -- . ':(exclude)node_modules' ':(exclude)**/node_modules' \
 			| (cd "$ROOT" && tar --null -T - -cf -) \
 			| tar -xf - -C "$dest"
 	else
@@ -44,8 +45,9 @@ export_ref() {
 strip_repo_files() {
 	local dir="$1"
 	rm -rf "$dir"/.github "$dir"/archive "$dir"/scripts "$dir"/_site
+	rm -rf "$dir"/node_modules
 	rm -f "$dir"/.gitattributes "$dir"/.gitignore "$dir"/README.md "$dir"/LICENSE \
-		"$dir"/CNAME "$dir"/package.json "$dir"/package-lock.json
+		"$dir"/CNAME "$dir"/package.json "$dir"/package-lock.json "$dir"/pnpm-lock.yaml "$dir"/yarn.lock
 	find "$dir" -name '*.swp' -delete
 }
 
