@@ -1,0 +1,23 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import Signature from "~/components/Signature.astro";
+import { ui } from "~/i18n/ui";
+
+
+
+/** The home page's sign-off: the signature, drawn in, and the copyright under it. */
+interface Props {
+  lang: Lang;
+}
+
+const t = ui(Astro.props.lang);
+---
+
+<footer class="row foot">
+  <div></div>
+  <div>
+    <Signature label={t.signature} />
+    <p class="small">{t.copyright}</p>
+  </div>
+</footer>

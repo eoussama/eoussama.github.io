@@ -1,0 +1,101 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import Logo from "~/components/Logo.astro";
+import { langInfo, LANGS } from "~/i18n/langs";
+import { ui } from "~/i18n/ui";
+import { localized } from "~/lib/url";
+import { CURRENT, versions } from "~/lib/versions";
+
+
+
+/**
+ * The bar above every page: the logo on one side; on the other, search, the version
+ * timeline, the language menu and the Light, Dark and Auto switch.
+ */
+interface Props {
+  lang: Lang;
+  /** This page's path, so the language menu links to the same page elsewhere. */
+  path?: string;
+}
+
+const { lang, path = "" } = Astro.props;
+const t = ui(lang);
+const info = langInfo(lang);
+const vers = versions();
+const themes = [
+  { key: "light", label: t.light },
+  { key: "dark", label: t.dark },
+  { key: "auto", label: t.auto },
+] as const;
+---
+
+<header class="bar" data-busy="false">
+  <div class="slot">
+    <a class="logo" href={localized(lang)} aria-label={t.home}><Logo id="lg-head" /></a>
+  </div>
+  <slot name="crumb" />
+
+  <div class="tools">
+    <button type="button" class="pill-btn search-btn" data-palette-open aria-label={t.palOpen} aria-keyshortcuts="Meta+K Control+K" title={t.palTitle}>
+      <svg class="search-ico" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
+        <path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+      </svg>
+      <kbd class="kbd full" dir="ltr"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></kbd>
+    </button>
+
+    <div class="menu-wrap ver-wrap">
+      <button type="button" class="pill-btn" data-menu="menu-versions" aria-expanded="false" aria-controls="menu-versions" aria-label={t.versionButton}>
+        <span dir="ltr">v{CURRENT}</span>
+        <svg class="chev" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
+      <nav class="menu vers" id="menu-versions" data-open="false" aria-label={t.versions}>
+        <ol>
+          {vers.map(v => (
+            <li>
+              <a class="menu-item ver" href={v.href} lang="en" aria-current={v.current ? "page" : undefined}>
+                <i class="vdot"></i>
+                <span class="vname"><b class="vn">{v.name}</b><i class="vt">{v.title}</i></span>
+                <span class="vy">{v.year}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </div>
+
+    <div class="menu-wrap">
+      <button type="button" class="pill-btn" data-menu="menu-langs" aria-expanded="false" aria-controls="menu-langs" aria-label={`${t.language}: ${info.name}`}>
+        <span class="full">{info.name}</span><span class="short">{info.short}</span>
+        <svg class="chev" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </button>
+      <nav class="menu" id="menu-langs" data-open="false" aria-label={t.language}>
+        <ul>
+          {LANGS.map(l => (
+            <li>
+              <a class="menu-item" href={localized(l.code, path)} hreflang={l.code} data-lang-link={l.code} aria-current={l.code === lang ? "page" : undefined}><span lang={l.code} dir={l.dir}>{l.name}</span></a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+
+    <div class="theme" role="group" aria-label={t.theme}>
+      {themes.map(th => (
+        <button type="button" class="th" data-theme-pick={th.key} aria-pressed="false" aria-label={th.label} title={th.label}>
+          <i class="th-pill"></i>
+          {th.key === "light" && (
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="currentColor"></circle></svg>
+          )}
+          {th.key === "dark" && (
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10.2 1.9A6.5 6.5 0 1 0 14.1 10 5.2 5.2 0 0 1 10.2 1.9Z" fill="currentColor"></path></svg>
+          )}
+          {th.key === "auto" && (
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.75" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="M8 1.5a6.5 6.5 0 0 1 0 13Z" fill="currentColor"></path></svg>
+          )}
+        </button>
+      ))}
+    </div>
+  </div>
+</header>

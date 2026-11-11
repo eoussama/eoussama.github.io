@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <style>
+    .ink { fill: #1e2230; }
+    .acc { fill: #5b4bc4; }
+    @media (prefers-color-scheme: dark) {
+      .ink { fill: #eceaf3; }
+      .acc { fill: #b8aef5; }
+    }
+  </style>
+  <clipPath id="clip"><circle cx="32" cy="32" r="31"/></clipPath>
+  <mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+    <rect x="0" y="0" width="64" height="64" fill="#fff"/>
+    <circle cx="35.5" cy="32" r="24.5" fill="#000"/>
+  </mask>
+  <circle class="ink" cx="32" cy="32" r="31" mask="url(#cut)"/>
+  <g clip-path="url(#clip)">
+    <path class="acc" fill-rule="evenodd" d="M12.5 32a23 23 0 1 0 46 0a23 23 0 1 0 -46 0ZM15 32a17.5 17.5 0 1 0 35 0a17.5 17.5 0 1 0 -35 0Z"/>
+  </g>
+  <path class="ink" d="M8 24.6L41 30.2a1.8 1.8 0 0 1 0 3.6L8 39.4Z"/>
+</svg>

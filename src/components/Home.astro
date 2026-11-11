@@ -1,0 +1,39 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import Footer from "~/components/Footer.astro";
+import { HELLO_ORDER, langInfo } from "~/i18n/langs";
+import { ui } from "~/i18n/ui";
+import Base from "~/layouts/Base.astro";
+
+
+
+/** The home page, in one language. */
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui(lang);
+
+// The greeting starts in the page's language and cycles through the rest.
+const start = HELLO_ORDER.indexOf(lang);
+const hellos = [...HELLO_ORDER.slice(start), ...HELLO_ORDER.slice(0, start)].map((code) => {
+  const info = langInfo(code);
+
+  return { text: info.hello, lang: code, dir: info.dir };
+});
+const first = hellos[0]!;
+---
+
+<Base lang={lang} title={t.name} description={`${t.name}.${t.intro}`}>
+  <section class="row first" aria-labelledby="whoami">
+    <h2 class="lab hello-lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
+    <div>
+      <h1>{t.name}</h1>
+      <p><button type="button" class="link hello" lang={first.lang} dir={first.dir} aria-label={`${first.text} ${t.hiAria}`} data-hint={t.hiAria} data-hellos={JSON.stringify(hellos)}>{first.text}</button>{t.intro}</p>
+    </div>
+  </section>
+
+  <Footer lang={lang} />
+</Base>

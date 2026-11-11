@@ -1,0 +1,1098 @@
+/*
+ * v0.5: quiet serif type on warm paper. Values come from the approved design canvas
+ * (round 5). The page follows data-mode (light or dark) and data-lang on <html>.
+ */
+
+:root {
+  --bg: #faf7f2;
+  --ink: #1e2230;
+  --mut: #5c6272;
+  --acc: #b5a9f0;
+  --soft: #e4dff8;
+  --line: rgba(30, 34, 48, 0.16);
+  --lg-ink: var(--ink);
+  --lg-acc: #5b4bc4;
+  --text: "Newsreader Variable", "Noto Naskh Arabic", "Noto Serif JP", Georgia, serif;
+  --fast: 150ms;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --paper-a: 0.16;
+  --paper-b: 0.1;
+
+  color-scheme: light;
+}
+
+:root[data-mode="dark"] {
+  --bg: #14161d;
+  --ink: #eceaf3;
+  --mut: #a2a7b6;
+  --acc: #8d82d6;
+  --soft: #2e2a4f;
+  --line: rgba(236, 234, 243, 0.18);
+  --lg-acc: #b8aef5;
+  --paper-a: 0.8;
+  --paper-b: 0.55;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/*
+ * <html> carries the background too, so the body keeps its own: the paper texture
+ * below is blended against it, inside the body's stacking context.
+ */
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  transition: background-color var(--fast) linear;
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: clip;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 20px/30px var(--text);
+  font-optical-sizing: auto;
+  transition:
+    background-color var(--fast) linear,
+    color var(--fast) linear;
+}
+
+/* A seamless sheet of paper over everything, in both themes. */
+body::before,
+body::after {
+  content: "";
+  /* Fixed, so only what the viewport shows is painted as the header is hovered. */
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image: url("../assets/paper.webp");
+  background-repeat: repeat;
+  mix-blend-mode: soft-light;
+}
+
+:root:not([data-mode="dark"]) body::before,
+:root:not([data-mode="dark"]) body::after {
+  /* The light texture is a plain translucent overlay: no blend mode, so it is part
+     of every snapshot of the theme transition and never pops in after it. */
+  background-image: url("../assets/paper-light.webp");
+  mix-blend-mode: normal;
+}
+
+body::before {
+  background-size: 1024px 1024px;
+  opacity: var(--paper-a);
+}
+
+body::after {
+  background-size: 1408px 1408px;
+  background-position: 383px 211px;
+  opacity: var(--paper-b);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--lg-acc);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -80px;
+  z-index: 100;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- The column ---------- */
+
+.col {
+  position: relative;
+  width: min(1060px, 100% - 48px);
+  margin: 0 auto;
+  padding: 18px 0 62px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 150px 600px;
+  column-gap: 40px;
+  margin-top: 46px;
+  scroll-margin-top: 24px;
+}
+
+.row.first {
+  margin-top: 32px;
+}
+
+.lab {
+  position: relative;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--mut);
+  font: italic 400 18px/30px var(--text);
+  text-align: start;
+  scroll-margin-top: 24px;
+}
+
+.lab.hello-lab {
+  padding-top: 17px;
+}
+
+h1 {
+  margin: 0 0 26px;
+  font-size: 46px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.mut {
+  color: var(--mut);
+}
+
+.small {
+  margin: 0;
+  color: var(--mut);
+  font-size: 15px;
+  line-height: 24px;
+}
+
+/* ---------- Links ---------- */
+
+/* Underlined in lavender, with a soft highlight that sweeps in from the start. */
+a,
+.link {
+  color: var(--ink);
+  text-decoration: underline 2px var(--acc);
+  text-underline-offset: 4px;
+  background-image: linear-gradient(var(--soft), var(--soft));
+  background-repeat: no-repeat;
+  background-size: 0 1.2em;
+  background-position: 100% 55%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  border-radius: 2px;
+  transition:
+    background-size 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    color var(--fast) linear,
+    text-decoration-color var(--fast) linear;
+}
+
+a:hover,
+a:focus-visible,
+.link:hover,
+.link:focus-visible {
+  text-decoration-color: var(--ink);
+  background-size: 100% 1.2em;
+  background-position: 0 55%;
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+[dir="rtl"] a,
+[dir="rtl"] .link {
+  background-position: 0 55%;
+}
+
+[dir="rtl"] a:hover,
+[dir="rtl"] a:focus-visible,
+[dir="rtl"] .link:hover,
+[dir="rtl"] .link:focus-visible {
+  background-position: 100% 55%;
+}
+
+/* A margin heading is a link to its own section, and shows a "#" on hover. */
+a.anchor {
+  position: relative;
+  color: inherit;
+  text-decoration: none;
+  background-image: none;
+}
+
+a.anchor::before {
+  content: "#";
+  position: absolute;
+  inset-inline-start: -17px;
+  top: 50%;
+  margin-top: -0.52em;
+  line-height: 1em;
+  font-style: normal;
+  color: var(--acc);
+  opacity: 0;
+  transform: translateX(4px);
+  transition:
+    opacity 110ms linear,
+    transform var(--fast) var(--ease);
+}
+
+[dir="rtl"] a.anchor::before {
+  transform: translateX(-4px);
+}
+
+a.anchor:hover,
+a.anchor:focus-visible {
+  color: var(--ink);
+}
+
+a.anchor:hover::before,
+a.anchor:focus-visible::before {
+  opacity: 1;
+  transform: none;
+}
+
+/* External links end in an arrow that nudges out on hover. */
+.arrow {
+  display: inline-block;
+  margin-inline-start: 3px;
+  vertical-align: 0.12em;
+  color: var(--mut);
+  transition:
+    transform var(--fast) var(--ease),
+    color var(--fast) linear;
+}
+
+.ext:hover .arrow {
+  transform: translate(1.5px, -1.5px);
+  color: var(--ink);
+}
+
+[dir="rtl"] .arrow {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .ext:hover .arrow {
+  transform: translate(-1.5px, -1.5px) scaleX(-1);
+}
+
+/* ---------- Lists and zellige bullets ---------- */
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list > li {
+  position: relative;
+  margin-bottom: 9px;
+}
+
+.dot {
+  position: absolute;
+  inset-inline-start: -26px;
+  top: 0.42em;
+  width: 14px;
+  height: 14px;
+  background: var(--acc);
+  transition: transform var(--fast) var(--ease);
+}
+
+.z-star {
+  clip-path: polygon(100% 50%, 85.36% 64.64%, 85.36% 85.36%, 64.64% 85.36%, 50% 100%, 35.36% 85.36%, 14.65% 85.36%, 14.65% 64.64%, 0% 50%, 14.65% 35.36%, 14.65% 14.65%, 35.36% 14.65%, 50% 0%, 64.64% 14.65%, 85.36% 14.65%, 85.36% 35.36%);
+}
+
+.z-cross {
+  clip-path: polygon(50% 0%, 64.64% 14.65%, 64.64% 35.36%, 85.36% 35.36%, 100% 50%, 85.36% 64.64%, 64.64% 64.64%, 64.64% 85.36%, 50% 100%, 35.36% 85.36%, 35.36% 64.64%, 14.65% 64.64%, 0% 50%, 14.65% 35.36%, 35.36% 35.36%, 35.36% 14.65%);
+}
+
+.z-dia {
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  transform: scale(0.8);
+}
+
+.list > li:hover > .z-star {
+  transform: rotate(22.5deg);
+}
+
+.list > li:hover > .z-cross {
+  transform: rotate(45deg);
+}
+
+.list > li:hover > .z-dia {
+  transform: scale(0.8) rotate(45deg);
+}
+
+/* ---------- Header bar ---------- */
+
+.bar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+}
+
+.slot {
+  flex: none;
+  width: 52px;
+  height: 52px;
+}
+
+.logo {
+  display: block;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: none;
+}
+
+.logo svg {
+  display: block;
+}
+
+.tools {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-inline-start: auto;
+  font-size: 15px;
+  line-height: 1;
+  transition: gap var(--fast) var(--ease);
+}
+
+.menu-wrap {
+  position: relative;
+}
+
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    border-color var(--fast) linear,
+    padding var(--fast) var(--ease),
+    color var(--fast) linear;
+}
+
+[dir="rtl"] .pill-btn {
+  padding: 0 16px 0 14px;
+}
+
+.pill-btn:hover {
+  border-color: var(--ink);
+}
+
+.pill-btn > span,
+.kbd {
+  font: 400 15px/16px var(--text);
+  letter-spacing: 0.02em;
+  transform: translateY(2.3px);
+}
+
+.chev {
+  transition:
+    transform var(--fast) var(--ease),
+    width var(--fast) var(--ease),
+    opacity 110ms linear,
+    margin var(--fast) var(--ease);
+}
+
+.pill-btn[aria-expanded="true"] .chev {
+  transform: rotate(180deg);
+}
+
+.search-btn {
+  gap: 7px;
+  padding: 0 14px 0 13px;
+  color: var(--mut);
+}
+
+.search-btn:hover {
+  color: var(--ink);
+}
+
+.search-ico {
+  display: block;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.kbd {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  color: var(--mut);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.kbd .k-mac,
+:root.is-mac .kbd .k-pc {
+  display: none;
+}
+
+:root.is-mac .kbd .k-mac {
+  display: inline;
+}
+
+.short {
+  display: none;
+}
+
+/* ---------- Menus ---------- */
+
+.menu {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 6px);
+  min-width: 176px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.97);
+  transform-origin: 100% 0;
+  pointer-events: none;
+  transition:
+    opacity 110ms linear,
+    transform var(--fast) var(--ease),
+    visibility 0s linear 150ms;
+}
+
+[dir="rtl"] .menu {
+  transform-origin: 0 0;
+}
+
+.menu[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    opacity 110ms linear,
+    transform var(--fast) var(--ease),
+    visibility 0s;
+}
+
+.menu ul,
+.menu ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  color: var(--ink);
+  text-align: start;
+  text-decoration: none;
+  background: transparent;
+  transition: background-color var(--fast) linear;
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--soft);
+}
+
+.menu-item[aria-current="page"]::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--acc);
+}
+
+/* The version menu is a small timeline, newest first. */
+.menu.vers {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+  min-width: 272px;
+  padding: 8px;
+  transform-origin: 0 0;
+}
+
+[dir="rtl"] .menu.vers {
+  transform-origin: 100% 0;
+}
+
+.vers ol {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vers ol::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 19px;
+  top: 26px;
+  bottom: 26px;
+  width: 2px;
+  background: var(--line);
+}
+
+.menu-item.ver {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+  justify-content: normal;
+  min-height: 52px;
+  padding: 5px 12px;
+}
+
+.menu-item.ver::after {
+  display: none;
+}
+
+.vdot {
+  position: relative;
+  justify-self: center;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--mut);
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.ver[aria-current="page"] .vdot {
+  border-color: var(--acc);
+  background: var(--acc);
+}
+
+.vname {
+  display: block;
+  min-width: 0;
+}
+
+.vn {
+  display: block;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.vt {
+  display: block;
+  color: var(--mut);
+  font-size: 14px;
+  font-style: normal;
+  line-height: 19px;
+}
+
+.vy {
+  color: var(--mut);
+  font: italic 400 15px/1 var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Theme switch ---------- */
+
+.theme {
+  display: flex;
+  height: 44px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition:
+    border-color var(--fast) linear,
+    padding var(--fast) var(--ease);
+}
+
+.th {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 36px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mut);
+  cursor: pointer;
+  transition:
+    width var(--fast) var(--ease),
+    opacity 110ms linear,
+    color var(--fast) linear;
+}
+
+:root[data-theme="light"] .th[data-theme-pick="light"],
+:root[data-theme="dark"] .th[data-theme-pick="dark"],
+:root[data-theme="auto"] .th[data-theme-pick="auto"],
+.th:hover {
+  color: var(--ink);
+}
+
+.th svg {
+  position: relative;
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.th-pill {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--soft);
+  opacity: 0;
+  transition: opacity 110ms linear;
+}
+
+/* The current theme is read from <html>, so it shows before any script runs. */
+:root[data-theme="light"] .th[data-theme-pick="light"] .th-pill,
+:root[data-theme="dark"] .th[data-theme-pick="dark"] .th-pill,
+:root[data-theme="auto"] .th[data-theme-pick="auto"] .th-pill {
+  opacity: 1;
+}
+
+/* The new theme spreads in a circle from the button, behind a faint ring. */
+.th-ring {
+  position: fixed;
+  z-index: 95;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: scale(0);
+  box-shadow:
+    inset 0 0 0 1.5px var(--acc),
+    inset 0 0 36px 2px color-mix(in srgb, var(--acc), transparent 60%);
+}
+
+:root.vt-theme::view-transition-old(root),
+:root.vt-theme::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root.vt-theme::view-transition-old(root) {
+  z-index: 1;
+}
+
+:root.vt-theme::view-transition-new(root) {
+  z-index: 2;
+}
+
+/* Moving between pages is a soft cross-fade. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(root) {
+  animation-duration: 150ms;
+}
+
+/*
+ * At rest, only search, the language and the current theme show, small and muted.
+ * The full controls open up on hover or keyboard focus, or while a menu is open.
+ * Touch screens always show them.
+ */
+@media (hover: hover) {
+  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .pill-btn {
+    padding-left: 7px;
+    padding-right: 7px;
+    border-color: transparent;
+    color: var(--mut);
+  }
+
+  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .chev {
+    width: 0;
+    margin-inline-start: -8px;
+    opacity: 0;
+  }
+
+  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .theme {
+    border-color: transparent;
+  }
+
+  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th {
+    width: 0;
+    opacity: 0;
+  }
+
+  :root[data-theme="light"] .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th[data-theme-pick="light"],
+  :root[data-theme="dark"] .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th[data-theme-pick="dark"],
+  :root[data-theme="auto"] .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th[data-theme-pick="auto"] {
+    width: 26px;
+    opacity: 1;
+    color: var(--mut);
+  }
+
+  :root .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th .th-pill {
+    opacity: 0;
+  }
+
+  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .tools {
+    gap: 2px;
+  }
+
+  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .ver-wrap {
+    max-width: 0;
+    margin-inline-end: -2px;
+    overflow: hidden;
+    opacity: 0;
+  }
+}
+
+.ver-wrap {
+  max-width: 110px;
+  transition:
+    max-width var(--fast) var(--ease),
+    opacity 110ms linear,
+    margin var(--fast) var(--ease);
+}
+
+/* ---------- The eclipse logo settling in, on the first visit ---------- */
+
+.lg-disc,
+.lg-hole,
+.lg-moon,
+.lg-wedge {
+  transform-box: view-box;
+  transform-origin: 32px 32px;
+}
+
+.lg-hole,
+.lg-moon {
+  transform-origin: 35.5px 32px;
+}
+
+.lg-wedge {
+  transform-origin: 8px 32px;
+}
+
+@keyframes lg-disc {
+  from {
+    transform: scale(0);
+  }
+}
+
+@keyframes lg-open {
+  0% {
+    transform: translateX(-3.5px) scale(0);
+  }
+
+  48% {
+    transform: translateX(-3.5px) scale(1);
+  }
+
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes lg-ring {
+  0% {
+    opacity: 0;
+    transform: translateX(-3px) scale(0.4);
+  }
+
+  48% {
+    opacity: 1;
+    transform: translateX(-3px) scale(1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes lg-wedge {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+:root:not(.is-seen) .logo .lg-disc {
+  animation: lg-disc 0.45s cubic-bezier(0.34, 1.3, 0.64, 1) both;
+}
+
+:root:not(.is-seen) .logo .lg-hole {
+  animation: lg-open 1s cubic-bezier(0.5, 0, 0.2, 1) 0.2s both;
+}
+
+:root:not(.is-seen) .logo .lg-moon {
+  animation: lg-ring 1s cubic-bezier(0.5, 0, 0.2, 1) 0.2s both;
+}
+
+:root:not(.is-seen) .logo .lg-wedge {
+  animation: lg-wedge 0.4s cubic-bezier(0.3, 1.35, 0.6, 1) 1.1s both;
+}
+
+/* ---------- Greeting ---------- */
+
+.hello {
+  display: inline-block;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.hello[data-g="a"] {
+  animation: hello-a 140ms var(--ease);
+}
+
+.hello[data-g="b"] {
+  animation: hello-b 140ms var(--ease);
+}
+
+@keyframes hello-a {
+  from {
+    opacity: 0;
+    transform: translateY(0.55em);
+  }
+}
+
+@keyframes hello-b {
+  from {
+    opacity: 0;
+    transform: translateY(0.55em);
+  }
+}
+
+/* ---------- Signature ---------- */
+
+.sig {
+  margin: 4px 0 12px -6px;
+  color: var(--ink);
+}
+
+[dir="rtl"] .sig {
+  margin: 4px -6px 12px 0;
+}
+
+.sig svg {
+  display: block;
+}
+
+.sig svg > g path {
+  stroke: currentColor;
+  stroke-width: 1.1;
+}
+
+.sig mask path {
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1.2;
+  animation: sig-draw forwards;
+}
+
+/* With scripts on, it waits until it scrolls into view, and draws once a visit. */
+:root.js .sig:not(.is-drawing) mask path {
+  animation-play-state: paused;
+}
+
+:root.sig-drawn .sig mask path {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+
+@keyframes sig-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- Other scripts ---------- */
+
+:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy) {
+  font-style: normal;
+}
+
+:root:is([data-lang="ar"], [data-lang="ary"]) body {
+  font-size: 21px;
+  line-height: 36px;
+}
+
+:root:is([data-lang="ar"], [data-lang="ary"]) h1 {
+  line-height: 1.35;
+}
+
+:root:is([data-lang="ar"], [data-lang="ary"]) .lab {
+  font-size: 18px;
+  line-height: 36px;
+}
+
+:root[data-lang="ja"] body {
+  font-size: 18px;
+  line-height: 34px;
+}
+
+:root[data-lang="ja"] .lab {
+  font-size: 16px;
+  line-height: 34px;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- Narrower screens ---------- */
+
+@media (max-width: 1100px) {
+  .col {
+    width: min(800px, 100% - 48px);
+  }
+
+  .row {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .col {
+    width: 100%;
+    padding: 28px 24px 56px;
+  }
+
+  .row {
+    display: block;
+    margin-top: 38px;
+  }
+
+  .row.first {
+    margin-top: 22px;
+  }
+
+  .lab {
+    margin-bottom: 8px;
+  }
+
+  .lab.hello-lab {
+    padding-top: 0;
+  }
+
+  h1 {
+    font-size: 38px;
+  }
+
+  .list {
+    padding-inline-start: 22px;
+  }
+
+  .tools {
+    gap: 4px;
+  }
+
+  .pill-btn {
+    gap: 5px;
+    padding: 0 8px 0 10px;
+  }
+
+  [dir="rtl"] .pill-btn {
+    padding: 0 10px 0 8px;
+  }
+
+  .search-btn {
+    padding: 0 9px;
+    border-color: transparent;
+  }
+
+  .th {
+    width: 30px;
+  }
+
+  .menu-wrap {
+    position: static;
+  }
+
+  .menu,
+  .menu.vers {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+    top: calc(100% + 6px);
+  }
+
+  .full {
+    display: none;
+  }
+
+  .short {
+    display: inline;
+  }
+}
+
+/* ---------- Reduced motion: everything still or instant ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+
+  .hello,
+  .logo *,
+  .sig mask path {
+    animation: none !important;
+  }
+
+  .sig mask path {
+    stroke-dashoffset: 0;
+  }
+
+  ::view-transition-group(root) {
+    animation: none;
+  }
+}

@@ -1,0 +1,132 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import newsreaderLatin from "@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url";
+import naskh400 from "@fontsource/noto-naskh-arabic/arabic-400.css?url";
+import naskh500 from "@fontsource/noto-naskh-arabic/arabic-500.css?url";
+import jp400 from "@fontsource/noto-serif-jp/400.css?url";
+import jp500 from "@fontsource/noto-serif-jp/500.css?url";
+import Header from "~/components/Header.astro";
+import { langInfo, LANGS } from "~/i18n/langs";
+import { ui } from "~/i18n/ui";
+import { localized, url } from "~/lib/url";
+
+import "@fontsource-variable/newsreader/opsz.css";
+import "@fontsource-variable/newsreader/opsz-italic.css";
+import "~/styles/global.css";
+
+
+
+interface Props {
+  lang: Lang;
+  /** The page's path without the language prefix, "" for the home page. */
+  path?: string;
+  title: string;
+  description: string;
+}
+
+const { lang, path = "", title, description } = Astro.props;
+const t = ui(lang);
+const info = langInfo(lang);
+const alternates = Object.fromEntries(LANGS.map(l => [l.code, localized(l.code, path)]));
+const codes = LANGS.map(l => l.code);
+const absolute = (href: string) => new URL(href, Astro.site).href;
+---
+
+<!doctype html>
+<html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#faf7f2" />
+    <!--
+      Before the first paint: the saved theme (no flash), the keyboard shortcut's
+      label, what this visit has already seen, and, on English pages, a first visit
+      that follows the browser's language.
+    -->
+    <script is:inline define:vars={{ lang, alternates, codes }}>
+      const d = document.documentElement;
+
+      function read(store, key) {
+        try {
+          return store.getItem(key);
+        }
+        catch {
+          return null;
+        }
+      }
+
+      d.classList.add("js");
+
+      let theme = read(localStorage, "theme");
+
+      if (theme !== "light" && theme !== "dark") {
+        theme = "auto";
+      }
+
+      const dark = theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+
+      d.dataset.theme = theme;
+      d.dataset.mode = dark ? "dark" : "light";
+
+      if (dark) {
+        document.querySelector("meta[name=theme-color]").content = "#14161d";
+      }
+
+      if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
+        d.classList.add("is-mac");
+      }
+
+      if (read(sessionStorage, "seen")) {
+        d.classList.add("is-seen");
+      }
+
+      if (read(sessionStorage, "sig")) {
+        d.classList.add("sig-drawn");
+      }
+
+      if (lang === "en") {
+        let want = read(localStorage, "lang");
+
+        for (const tag of want ? [] : navigator.languages || [navigator.language || ""]) {
+          const full = String(tag).toLowerCase();
+
+          want = codes.find(c => c === full) || codes.find(c => c === full.split("-")[0]);
+
+          if (want) {
+            break;
+          }
+        }
+
+        if (want && want !== "en" && alternates[want]) {
+          location.replace(alternates[want] + location.hash);
+        }
+      }
+    </script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={absolute(localized(lang, path))} />
+    {LANGS.map(l => <link rel="alternate" hreflang={l.code} href={absolute(alternates[l.code] ?? url())} />)}
+    <link rel="alternate" hreflang="x-default" href={absolute(localized("en", path))} />
+    <link rel="icon" href={url("favicon.svg")} type="image/svg+xml" />
+    <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
+    {info.dir === "rtl" && <link rel="stylesheet" href={naskh400} />}
+    {info.dir === "rtl" && <link rel="stylesheet" href={naskh500} />}
+    {lang === "ja" && <link rel="stylesheet" href={jp400} />}
+    {lang === "ja" && <link rel="stylesheet" href={jp500} />}
+  </head>
+  <body>
+    <a class="skip" href="#main">{t.skip}</a>
+    <div class="col">
+      <Header lang={lang} path={path}>
+        <slot name="crumb" slot="crumb" />
+      </Header>
+      <main id="main">
+        <slot />
+      </main>
+    </div>
+    <script>
+      import "~/scripts/site";
+    </script>
+  </body>
+</html>

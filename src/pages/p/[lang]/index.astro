@@ -1,0 +1,21 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import type { Lang } from "~/i18n/langs";
+
+import Home from "~/components/Home.astro";
+import { DEFAULT_LANG, LANGS } from "~/i18n/langs";
+
+
+
+/**
+ * The home page in every language but English, which lives at the root.
+ *
+ * @returns One page per language
+ */
+export const getStaticPaths = (() => LANGS.filter(l => l.code !== DEFAULT_LANG).map(l => ({ params: { lang: l.code } }))) satisfies GetStaticPaths;
+
+const lang = Astro.params.lang as Lang;
+---
+
+<Home lang={lang} />
