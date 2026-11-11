@@ -742,8 +742,24 @@ a.anchor:focus-visible::before {
   navigation: auto;
 }
 
-::view-transition-group(root) {
+::view-transition-group(*) {
   animation-duration: 150ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* What carries over from page to page: the logo, the name and a project's star. */
+.bar .logo {
+  view-transition-name: logo;
+}
+
+.site-name {
+  display: inline-block;
+  view-transition-name: site-name;
+}
+
+/* The theme switch reveals the whole page at once; nothing travels on its own. */
+:root.vt-theme * {
+  view-transition-name: none !important;
 }
 
 /*
@@ -1754,9 +1770,186 @@ html {
   }
 }
 
+/* ---------- A project's page ---------- */
+
+/* The way home: the site's name beside the logo, behind a back chevron. */
+.crumb {
+  position: relative;
+  display: inline-block;
+  margin-inline-start: 138px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 52px;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  view-transition-name: site-name;
+}
+
+.crumb:hover,
+.crumb:focus-visible {
+  text-decoration: underline 2px var(--acc);
+}
+
+.crumb::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -22px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -5px;
+  border-bottom: 1.8px solid currentColor;
+  border-inline-start: 1.8px solid currentColor;
+  border-radius: 1px;
+  opacity: 0.55;
+  transform: rotate(45deg);
+  transition:
+    transform var(--fast) var(--ease),
+    opacity var(--fast) linear;
+}
+
+[dir="rtl"] .crumb::before {
+  transform: rotate(-45deg);
+}
+
+.crumb:hover::before,
+.crumb:focus-visible::before {
+  opacity: 1;
+  transform: translateX(-3px) rotate(45deg);
+}
+
+[dir="rtl"] .crumb:hover::before,
+[dir="rtl"] .crumb:focus-visible::before {
+  transform: translateX(3px) rotate(-45deg);
+}
+
+.hero {
+  position: relative;
+  min-height: 216px;
+  padding-inline-end: 250px;
+}
+
+.hero h1 {
+  margin-bottom: 18px;
+  font-size: 60px;
+  line-height: 1.02;
+}
+
+.title {
+  display: inline-block;
+  view-transition-name: var(--vt-name);
+}
+
+.lead {
+  margin: 0;
+  font-size: 23px;
+  line-height: 33px;
+}
+
+.disc {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 0;
+  width: 210px;
+  height: 210px;
+  background: var(--acc);
+  view-transition-name: var(--vt-dot);
+}
+
+.val {
+  margin: 0;
+}
+
+.row.tight {
+  margin-top: 14px;
+}
+
+.stars {
+  margin-inline-start: 10px;
+  font-size: 16px;
+}
+
+.prose p {
+  margin: 0 0 22px;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+.rise {
+  animation: rise 150ms var(--ease) both;
+  animation-delay: var(--d, 0ms);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Next: the next project's bullet and name, or the whole list. */
+.next {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  text-decoration: none;
+  background-image: none;
+}
+
+.next:hover,
+.next:focus-visible {
+  background-image: none;
+}
+
+.next > span {
+  text-decoration: underline 2px var(--acc);
+  text-underline-offset: 4px;
+  background-image: linear-gradient(var(--soft), var(--soft));
+  background-repeat: no-repeat;
+  background-size: 0 1.2em;
+  background-position: 100% 55%;
+  border-radius: 2px;
+  transition:
+    background-size 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    text-decoration-color var(--fast) linear;
+}
+
+.next:hover > span,
+.next:focus-visible > span {
+  text-decoration-color: var(--ink);
+  background-size: 100% 1.2em;
+  background-position: 0 55%;
+}
+
+[dir="rtl"] .next > span {
+  background-position: 0 55%;
+}
+
+[dir="rtl"] .next:hover > span {
+  background-position: 100% 55%;
+}
+
+.next .dot {
+  position: static;
+  flex: none;
+  transform: translateY(2px);
+}
+
+.next:hover .dot {
+  transform: translateY(2px) rotate(22.5deg);
+}
+
+.or {
+  margin: 0 10px;
+  color: var(--mut);
+  font-style: italic;
+}
+
 /* ---------- Other scripts ---------- */
 
-:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty, .dr-kind, .dr-fh, .dr-on-k, .dr-empty) {
+:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty, .dr-kind, .dr-fh, .dr-on-k, .dr-empty, .or) {
   font-style: normal;
 }
 
@@ -1780,6 +1973,11 @@ html {
 
 :root[data-lang="ja"] body {
   font-size: 18px;
+  line-height: 34px;
+}
+
+:root[data-lang="ja"] .lead {
+  font-size: 20px;
   line-height: 34px;
 }
 
@@ -1910,6 +2108,43 @@ html {
     font-size: 32px;
   }
 
+  .bar {
+    flex-wrap: wrap;
+  }
+
+  .crumb {
+    flex-basis: 100%;
+    order: 3;
+    margin: 14px 0 0;
+    padding-inline-start: 17px;
+    line-height: 30px;
+  }
+
+  .crumb::before {
+    inset-inline-start: 2px;
+  }
+
+  .hero {
+    min-height: 0;
+    padding-inline-end: 0;
+  }
+
+  .hero h1 {
+    min-height: 96px;
+    padding-inline-end: 104px;
+    font-size: 44px;
+  }
+
+  .disc {
+    width: 88px;
+    height: 88px;
+  }
+
+  .lead {
+    font-size: 21px;
+    line-height: 30px;
+  }
+
   .dr-head {
     gap: 12px;
     margin-inline-start: -22px;
@@ -1939,6 +2174,7 @@ html {
 
   .hello,
   .copy,
+  .rise,
   .dr-list > li,
   .dr-on,
   .dr-badge,
@@ -1953,7 +2189,9 @@ html {
     stroke-dashoffset: 0;
   }
 
-  ::view-transition-group(root) {
-    animation: none;
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

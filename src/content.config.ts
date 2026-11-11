@@ -50,4 +50,12 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { projects };
+/**
+ * A project's story, the case study on its page: one Markdown file per language, at
+ * stories/<project>/<language>.md. Pages fall back to the English one.
+ */
+const stories = defineCollection({
+  loader: glob({ pattern: "*/*.md", base: "./src/content/stories" }),
+});
+
+export const collections = { projects, stories };

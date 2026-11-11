@@ -84,11 +84,11 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
       }
 
       // The logo settling and the signature drawing play on every load and reload,
-      // but not when moving from one page of the site to another.
+      // but not when moving from one page of the site to another, or back and forth.
       const nav = performance.getEntriesByType("navigation")[0];
       const fromHere = !!document.referrer && new URL(document.referrer).origin === location.origin;
 
-      if (fromHere && nav?.type !== "reload") {
+      if (nav?.type === "back_forward" || (fromHere && nav?.type !== "reload")) {
         d.classList.add("is-seen", "sig-drawn");
       }
 
@@ -136,11 +136,41 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
     </div>
     <slot name="drawer" />
     <Palette lang={lang} path={path} hello={hello} views={drawer} />
+    <!--
+      Back from a project, its bullet and name return to their place in the list:
+      the list names them for the view transition as it is shown. This has to be in
+      place before the first paint, so it runs here rather than in a bundled script.
+    -->
+    <script is:inline>
+      addEventListener("pagereveal", (event) => {
+        const from = globalThis.navigation?.activation?.from?.url;
+        const id = from && /\/projects\/([^/]+)\/$/.exec(new URL(from).pathname)?.[1];
+
+        if (!event.viewTransition || !id || /\/projects\/[^/]+\/$/.test(location.pathname)) {
+          return;
+        }
+
+        const shown = link => !link.closest("[inert], .crumb, .ck") && link.getClientRects().length > 0;
+        const links = [...document.querySelectorAll(`a[href$="/projects/${id}/"]`)];
+        const link = links.find(l => shown(l) && l.closest(".dr")) ?? links.find(shown);
+        const dot = link?.closest("li")?.querySelector(".dot");
+
+        if (link && dot) {
+          link.style.viewTransitionName = `vt-name-${id}`;
+          dot.style.viewTransitionName = `vt-dot-${id}`;
+          event.viewTransition.finished.finally(() => {
+            link.style.removeProperty("view-transition-name");
+            dot.style.removeProperty("view-transition-name");
+          });
+        }
+      });
+    </script>
     <script>
       import "~/scripts/site";
       import "~/scripts/copy";
       import "~/scripts/palette";
       import "~/scripts/drawer";
+      import "~/scripts/vt";
     </script>
   </body>
 </html>

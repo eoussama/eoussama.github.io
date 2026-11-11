@@ -45,7 +45,7 @@ const posts = t.postPh.map((name, i) => ({ name, note: i === 0 ? t.postNotePh : 
   <section class="row first" aria-labelledby="whoami">
     <h2 class="lab hello-lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
     <div>
-      <h1>{t.name}</h1>
+      <h1><span class="site-name">{t.name}</span></h1>
       <p><button type="button" class="link hello" lang={first.lang} dir={first.dir} aria-label={`${first.text} ${t.hiAria}`} data-hint={t.hiAria} data-hellos={JSON.stringify(hellos)}>{first.text}</button>{t.intro}</p>
     </div>
   </section>

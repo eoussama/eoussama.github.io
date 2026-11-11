@@ -1,0 +1,27 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import type { Lang } from "~/i18n/langs";
+
+import ProjectPage from "~/components/ProjectPage.astro";
+import { DEFAULT_LANG, LANGS } from "~/i18n/langs";
+import { getProjects } from "~/lib/projects";
+
+
+
+/**
+ * Every project's page, in every language but English.
+ *
+ * @returns One page per project and language
+ */
+export const getStaticPaths = (async () => {
+  const projects = await getProjects();
+
+  return LANGS.filter(l => l.code !== DEFAULT_LANG).flatMap(l => projects.map(p => ({ params: { lang: l.code, id: p.id } })));
+}) satisfies GetStaticPaths;
+
+const { id } = Astro.params;
+const lang = Astro.params.lang as Lang;
+---
+
+<ProjectPage lang={lang} id={id} />

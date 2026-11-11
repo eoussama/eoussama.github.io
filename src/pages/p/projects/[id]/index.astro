@@ -1,0 +1,19 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import ProjectPage from "~/components/ProjectPage.astro";
+import { getProjects } from "~/lib/projects";
+
+
+
+/**
+ * Every project's page, in English.
+ *
+ * @returns One page per project
+ */
+export const getStaticPaths = (async () => (await getProjects()).map(p => ({ params: { id: p.id } }))) satisfies GetStaticPaths;
+
+const { id } = Astro.params;
+---
+
+<ProjectPage lang="en" id={id} />

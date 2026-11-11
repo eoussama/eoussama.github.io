@@ -1,0 +1,93 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import { getEntry, render } from "astro:content";
+
+import Ext from "~/components/Ext.astro";
+import { ui } from "~/i18n/ui";
+import Base from "~/layouts/Base.astro";
+import { getProjects, pick, projectPath } from "~/lib/projects";
+import { localized } from "~/lib/url";
+
+
+
+/**
+ * A project's own page: its name and lead beside a large zellige star, then its role,
+ * what it is built with, its source, its story and the next project. Arriving from a
+ * list, the project's bullet grows into the star and its name into the title.
+ */
+interface Props {
+  lang: Lang;
+  id: string;
+}
+
+const { lang, id } = Astro.props;
+const t = ui(lang);
+const projects = await getProjects();
+const index = projects.findIndex(p => p.id === id);
+const project = projects[index]!;
+const next = projects[(index + 1) % projects.length]!;
+
+const story = await getEntry("stories", `${id}/${lang}`) ?? await getEntry("stories", `${id}/en`);
+const { Content } = story ? await render(story) : { Content: null };
+
+const owned = project.repo?.startsWith("https://github.com/eoussama/") ?? false;
+const role = project.role ? pick(project.role, lang) : (owned ? t.roleAuthor : t.rolePh);
+const stack = project.stack.length ? project.stack : (project.language ? [project.language] : []);
+const source = project.repo ? project.repo.replace(/^https:\/\//, "") : t.access.private;
+const site = project.live?.replace(/^https?:\/\//, "").replace(/\/$/, "");
+---
+
+<Base lang={lang} path={projectPath(project)} title={`${project.name} · ${t.name}`} description={pick(project.blurb, lang)}>
+  <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
+
+  <article class="project" style={`--vt-dot: vt-dot-${id}; --vt-name: vt-name-${id}`}>
+    <section class="row first">
+      <h2 class="lab" id="work"><a class="anchor" href="#work" aria-label={t.work + t.anchor}>{t.work}</a></h2>
+      <div class="hero">
+        <i class="disc z-star" aria-hidden="true"></i>
+        <h1><span class="title">{project.name}</span></h1>
+        <p class="lead rise">{pick(project.long ?? project.blurb, lang)}</p>
+      </div>
+    </section>
+
+    <section class="row rise" style="--d: 30ms">
+      <h2 class="lab" id="role"><a class="anchor" href="#role" aria-label={t.role + t.anchor}>{t.role}</a></h2>
+      <p class="val">{role}</p>
+    </section>
+
+    <section class="row tight rise" style="--d: 45ms">
+      <h2 class="lab" id="built-with"><a class="anchor" href="#built-with" aria-label={t.built + t.anchor}>{t.built}</a></h2>
+      <p class="val">{stack.length ? stack.join(t.list) : t.stackPh}</p>
+    </section>
+
+    <section class="row tight rise" style="--d: 60ms">
+      <h2 class="lab" id="source"><a class="anchor" href="#source" aria-label={t.source + t.anchor}>{t.source}</a></h2>
+      <p class="val">
+        {project.repo ? <Ext href={project.repo} hint={t.newTab}><span dir="ltr">{source}</span></Ext> : source}
+        {project.stats && project.stats.stars > 0 && <span class="mut stars" dir="ltr">★ {project.stats.stars}</span>}
+      </p>
+    </section>
+
+    {site && (
+      <section class="row tight rise" style="--d: 70ms">
+        <h2 class="lab" id="site"><a class="anchor" href="#site" aria-label={t.site + t.anchor}>{t.site}</a></h2>
+        <p class="val"><Ext href={project.live!} hint={t.newTab}><span dir="ltr">{site}</span></Ext></p>
+      </section>
+    )}
+
+    {(Content || project.featured) && (
+      <section class="row rise" style="--d: 75ms">
+        <h2 class="lab" id="story"><a class="anchor" href="#story" aria-label={t.story + t.anchor}>{t.story}</a></h2>
+        <div class="val prose">{Content ? <Content /> : <p>{t.storyPh}</p>}</div>
+      </section>
+    )}
+
+    <section class="row">
+      <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
+      <p class="val">
+        <a class="next" href={localized(lang, projectPath(next))} data-vt-id={next.id}><i class="dot z-star"></i><span>{next.name}</span></a><span class="or">{t.or}</span><a class="link" href={localized(lang, "projects/")}>{t.allProjects(projects.length)}</a>
+      </p>
+    </section>
+  </article>
+</Base>
