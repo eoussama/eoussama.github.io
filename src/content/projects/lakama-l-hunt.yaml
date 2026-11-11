@@ -1,0 +1,37 @@
+name: Lakama L Hunt
+order: 4
+featured: true
+kind: side-project
+type: game
+desc:
+  en: "[one line about the game]."
+  ar: "[سطر عن اللعبة]."
+  ary: "[سطر على اللعبة]."
+  fr: "[une ligne sur le jeu]."
+  es: "[una línea sobre el juego]."
+  it: "[una riga sul gioco]."
+  ja: ［ゲームについて一行］。
+blurb:
+  en: "[One line about the game.]"
+  ar: "[سطر عن اللعبة.]"
+  ary: "[سطر على اللعبة.]"
+  fr: "[Une ligne sur le jeu.]"
+  es: "[Una línea sobre el juego.]"
+  it: "[Una riga sul gioco.]"
+  ja: ［ゲームについて一行。］
+note:
+  en: "[A note about the game.]"
+  ar: "[ملاحظة عن اللعبة.]"
+  ary: "[ملاحظة على اللعبة.]"
+  fr: "[Une note sur le jeu.]"
+  es: "[Una nota sobre el juego.]"
+  it: "[Una nota sul gioco.]"
+  ja: ［ゲームについてのメモ。］
+long:
+  en: "[Two lines about the game.]"
+  ar: "[سطران عن اللعبة.]"
+  ary: "[جوج سطور على اللعبة.]"
+  fr: "[Deux lignes sur le jeu.]"
+  es: "[Dos líneas sobre el juego.]"
+  it: "[Due righe sul gioco.]"
+  ja: ［ゲームについて二行。］

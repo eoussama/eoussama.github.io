@@ -11,6 +11,8 @@ type Theme = "light" | "dark" | "auto";
 type Hello = { text: string; lang: string; dir: string };
 
 const root = document.documentElement;
+const bar = document.querySelector<HTMLElement>(".bar");
+let open: HTMLButtonElement | null = null;
 const prefersDark = matchMedia("(prefers-color-scheme: dark)");
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -120,6 +122,14 @@ function pickTheme(theme: Theme, button: HTMLElement) {
   const duration = Math.round(Math.min(1050, Math.max(620, far * 0.62)));
   const easing = "cubic-bezier(.55,0,.15,1)";
 
+  // While the transition runs, its snapshot covers the page and the header loses its
+  // hover. Keep it open if it was, so it doesn't fold up and open again.
+  const keepOpen = !!bar?.matches(":hover, :has(:focus-visible)");
+
+  if (keepOpen) {
+    bar?.setAttribute("data-busy", "true");
+  }
+
   root.classList.add("vt-theme");
 
   const transition = document.startViewTransition(change);
@@ -143,7 +153,15 @@ function pickTheme(theme: Theme, button: HTMLElement) {
     fade.onfinish = () => ring.remove();
   }).catch(() => {});
 
-  transition.finished.finally(() => root.classList.remove("vt-theme"));
+  // A transition cut short (another switch, a navigation) only skips the animation.
+  transition.updateCallbackDone.catch(() => {});
+  transition.finished.catch(() => {}).finally(() => {
+    root.classList.remove("vt-theme");
+
+    if (keepOpen) {
+      bar?.setAttribute("data-busy", String(!!open));
+    }
+  });
 }
 
 document.querySelectorAll<HTMLButtonElement>("[data-theme-pick]").forEach((button) => {
@@ -160,8 +178,6 @@ applyTheme((root.dataset.theme as Theme) || "auto");
 
 /* ---------- Header menus ---------- */
 
-const bar = document.querySelector<HTMLElement>(".bar");
-let open: HTMLButtonElement | null = null;
 
 /**
  * Opens one header menu and closes the other. While a menu is open the header keeps
@@ -247,7 +263,7 @@ if (hello) {
   });
 }
 
-/* ---------- Signature: draws in once a visit, when it scrolls into view ---------- */
+/* ---------- Signature: draws in when it scrolls into view ---------- */
 
 const signature = document.querySelector<HTMLElement>(".sig");
 
@@ -256,12 +272,9 @@ if (signature && !root.classList.contains("sig-drawn")) {
     if (entries.some(entry => entry.isIntersecting)) {
       watch.disconnect();
       signature.classList.add("is-drawing");
-      remember("session", "sig", "1");
     }
   }, { threshold: 0.6 });
 
   watch.observe(signature);
 }
 
-// The logo settles in on the first page of a visit only.
-remember("session", "seen", "1");

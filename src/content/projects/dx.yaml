@@ -1,0 +1,49 @@
+name: dx
+order: 1
+featured: true
+kind: open-source
+type: tool
+language: TypeScript
+year: 2025
+repo: https://github.com/eoussama/dx
+stack: [TypeScript, ESLint]
+role:
+  en: Author and maintainer
+  ar: المؤلف والمشرف على صيانته
+  ary: كتبتو وكنتهلا فيه
+  fr: Auteur et mainteneur
+  es: Autor y mantenedor
+  it: Autore e manutentore
+  ja: 作者・メンテナー
+desc:
+  en: one ESLint config and a small CLI for every repo I touch.
+  ar: إعداد ESLint واحد وأداة سطر أوامر صغيرة لكل مستودع أعمل عليه.
+  ary: إعداد ESLint واحد وأداة صغيرة ف سطر الأوامر لكل مستودع كنخدم عليه.
+  fr: une config ESLint et une petite CLI pour chaque dépôt que je touche.
+  es: una configuración de ESLint y una pequeña CLI para cada repositorio que toco.
+  it: una configurazione ESLint e una piccola CLI per ogni repository che tocco.
+  ja: 触るすべてのリポジトリ用の、ESLint設定ひとつと小さなCLI。
+blurb:
+  en: One ESLint config and a small CLI for every repo I touch.
+  ar: إعداد ESLint واحد وأداة سطر أوامر صغيرة لكل مستودع أعمل عليه.
+  ary: إعداد ESLint واحد وأداة صغيرة ف سطر الأوامر لكل مستودع كنخدم عليه.
+  fr: Une config ESLint et une petite CLI pour chaque dépôt que je touche.
+  es: Una configuración de ESLint y una pequeña CLI para cada repositorio que toco.
+  it: Una configurazione ESLint e una piccola CLI per ogni repository che tocco.
+  ja: 触るすべてのリポジトリ用の、ESLint設定ひとつと小さなCLI。
+note:
+  en: Open source. TypeScript and ESLint. This site is linted with it.
+  ar: مفتوح المصدر. TypeScript وESLint. هذا الموقع مدقَّق به.
+  ary: مفتوح المصدر. TypeScript وESLint. هاد الموقع مدقّق بيه.
+  fr: Open source. TypeScript et ESLint. Ce site est vérifié avec.
+  es: Código abierto. TypeScript y ESLint. Este sitio se revisa con él.
+  it: Open source. TypeScript ed ESLint. Questo sito è controllato con esso.
+  ja: オープンソース。TypeScriptとESLint。このサイトもこれでLintしています。
+long:
+  en: One ESLint config and a small command-line tool that lints, fixes and sets up every repo I touch.
+  ar: إعداد ESLint واحد وأداة سطر أوامر صغيرة تدقّق كل مستودع أعمل عليه وتصلحه وتهيّئه.
+  ary: إعداد ESLint واحد وأداة صغيرة ف سطر الأوامر كتدقّق وتصلح وتوجّد كل مستودع كنخدم عليه.
+  fr: Une config ESLint et un petit outil en ligne de commande qui vérifie, corrige et configure chaque dépôt que je touche.
+  es: Una configuración de ESLint y una pequeña herramienta de línea de comandos que revisa, corrige y prepara cada repositorio que toco.
+  it: Una configurazione ESLint e un piccolo strumento da riga di comando che controlla, corregge e configura ogni repository che tocco.
+  ja: 触るすべてのリポジトリをLint・修正・セットアップする、ESLint設定ひとつと小さなコマンドラインツール。

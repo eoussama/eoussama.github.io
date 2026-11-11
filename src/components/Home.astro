@@ -1,10 +1,14 @@
 ---
 import type { Lang } from "~/i18n/langs";
 
+import Ext from "~/components/Ext.astro";
 import Footer from "~/components/Footer.astro";
+import { PROFILE } from "~/data/profile";
 import { HELLO_ORDER, langInfo } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
+import { getProjects, pick, projectPath } from "~/lib/projects";
+import { localized, url } from "~/lib/url";
 
 
 
@@ -24,9 +28,15 @@ const hellos = [...HELLO_ORDER.slice(start), ...HELLO_ORDER.slice(0, start)].map
   return { text: info.hello, lang: code, dir: info.dir };
 });
 const first = hellos[0]!;
+
+const projects = await getProjects();
+const featured = projects.filter(p => p.data.featured).slice(0, 4);
+
+// Placeholders until the blog is built.
+const posts = t.postPh.map((name, i) => ({ name, note: i === 0 ? t.postNotePh : "" }));
 ---
 
-<Base lang={lang} title={t.name} description={`${t.name}.${t.intro}`}>
+<Base lang={lang} title={t.name} description={`${t.name}.${t.intro}`} hello>
   <section class="row first" aria-labelledby="whoami">
     <h2 class="lab hello-lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
     <div>
@@ -35,5 +45,43 @@ const first = hellos[0]!;
     </div>
   </section>
 
-  <Footer lang={lang} />
+  <div class="home">
+    <section class="row" aria-labelledby="work">
+      <h2 class="lab" id="work"><a class="anchor" href="#work" aria-label={t.work + t.anchor}>{t.work}</a></h2>
+      <ul class="list">
+        {featured.map(project => (
+          <li>
+            <i class="dot z-star"></i><a class="link" href={localized(lang, projectPath(project))}>{project.data.name}</a>{t.sep}{pick(project.data.desc, lang)}
+            {project.data.note && <p class="note">{pick(project.data.note, lang)}</p>}
+          </li>
+        ))}
+        <li><i class="dot z-star"></i><a class="link" href={localized(lang, "projects/")}>{t.allProjects(projects.length)}</a></li>
+      </ul>
+    </section>
+
+    <section class="row" aria-labelledby="writing">
+      <h2 class="lab" id="writing"><a class="anchor" href="#writing" aria-label={t.writing + t.anchor}>{t.writing}</a></h2>
+      <ul class="list">
+        {posts.map(post => (
+          <li>
+            <i class="dot z-cross"></i><a class="link" href={localized(lang, "blog/")}>{post.name}</a> <span class="mut">{t.datePh}</span>
+            {post.note && <p class="note">{post.note}</p>}
+          </li>
+        ))}
+        <li><i class="dot z-cross"></i><a class="link" href={localized(lang, "blog/")}>{t.allPosts(posts.length)}</a></li>
+      </ul>
+    </section>
+
+    <section class="row" aria-labelledby="whereabouts">
+      <h2 class="lab" id="whereabouts"><a class="anchor" href="#whereabouts" aria-label={t.where + t.anchor}>{t.where}</a></h2>
+      <ul class="list">
+        <li><i class="dot z-dia"></i><Ext href={PROFILE.github.url} hint={t.newTab}><span dir="ltr">{PROFILE.github.label}</span></Ext>{t.codeTail}</li>
+        <li><i class="dot z-dia"></i><Ext href={PROFILE.linkedin.url} hint={t.newTab}><span dir="ltr">{PROFILE.linkedin.label}</span></Ext>{t.workTail}</li>
+        <li><i class="dot z-dia"></i><Ext href={url(PROFILE.resume)} hint={t.newTab}>{t.resume}</Ext>{t.resumeTail}</li>
+        <li><i class="dot z-dia"></i><button type="button" class="link copy" data-copy={PROFILE.email} data-copied={t.copied} data-copied-long={t.copiedLong}>{t.copyEmail}</button>{t.emailTail}<span class="sr" aria-live="polite" data-copy-status></span></li>
+      </ul>
+    </section>
+
+    <Footer lang={lang} />
+  </div>
 </Base>

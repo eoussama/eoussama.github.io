@@ -19,13 +19,18 @@ export function url(path = ""): string {
 }
 
 /**
- * The same page in a given language. English lives at the root; every other
- * language under /p/<code>/, which keeps clear of the project sites at /<repo>/.
+ * The same page in a given language. Everything but the English home page lives
+ * under /p/, which keeps clear of the project sites at /<repo>/: English pages at
+ * /p/<path>, every other language at /p/<code>/<path>.
  *
  * @param lang - The language
- * @param path - The page's path without a language prefix
+ * @param path - The page's path without a language prefix, "" for the home page
  * @returns The page's address in that language
  */
 export function localized(lang: Lang, path = ""): string {
-  return lang === DEFAULT_LANG ? url(path) : url(`p/${lang}/${path}`);
+  if (lang !== DEFAULT_LANG) {
+    return url(`p/${lang}/${path}`);
+  }
+
+  return path ? url(`p/${path}`) : url();
 }

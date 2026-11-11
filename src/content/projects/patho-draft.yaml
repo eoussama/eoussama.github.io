@@ -1,0 +1,37 @@
+name: Patho Draft
+order: 3
+featured: true
+kind: private
+type: app
+desc:
+  en: drafts pathology reports. A private case study.
+  ar: يصوغ مسودات تقارير التشريح المرضي. دراسة حالة خاصة.
+  ary: كيكتب مسودات تقارير التشريح المرضي. دراسة حالة خاصة.
+  fr: rédige des brouillons de comptes rendus d’anatomopathologie. Une étude de cas privée.
+  es: redacta borradores de informes de anatomía patológica. Un caso de estudio privado.
+  it: redige bozze di referti di anatomia patologica. Un caso di studio privato.
+  ja: 病理診断書の下書きを作る。非公開のケーススタディ。
+blurb:
+  en: Drafts pathology reports. A case study.
+  ar: يصوغ مسودات تقارير التشريح المرضي. دراسة حالة.
+  ary: كيكتب مسودات تقارير التشريح المرضي. دراسة حالة.
+  fr: Rédige des brouillons de comptes rendus d’anatomopathologie. Une étude de cas.
+  es: Redacta borradores de informes de anatomía patológica. Un caso de estudio.
+  it: Redige bozze di referti di anatomia patologica. Un caso di studio.
+  ja: 病理診断書の下書きを作る。ケーススタディ。
+note:
+  en: Private. My master’s final-year project.
+  ar: خاص. مشروع تخرّجي في الماستر.
+  ary: خاص. مشروع التخرج ديالي ف الماستر.
+  fr: Privé. Mon projet de fin d’études de master.
+  es: Privado. Mi proyecto de fin de máster.
+  it: Privato. Il mio progetto di tesi magistrale.
+  ja: 非公開。修士の卒業制作。
+long:
+  en: A tool that drafts pathology reports, built as my master’s final-year project. The code is private, so this is a case study.
+  ar: أداة تصوغ مسودات تقارير التشريح المرضي، بنيتها مشروعًا لتخرّجي في الماستر. الشيفرة خاصة، لذا هذه دراسة حالة.
+  ary: أداة كتكتب مسودات تقارير التشريح المرضي، بنيتها كمشروع التخرج ديالي ف الماستر. الكود خاص، داكشي علاش هادي دراسة حالة.
+  fr: Un outil qui rédige des brouillons de comptes rendus d’anatomopathologie, réalisé comme projet de fin d’études de master. Le code est privé, d’où cette étude de cas.
+  es: Una herramienta que redacta borradores de informes de anatomía patológica, hecha como mi proyecto de fin de máster. El código es privado, así que esto es un caso de estudio.
+  it: Uno strumento che redige bozze di referti di anatomia patologica, realizzato come progetto di tesi magistrale. Il codice è privato, quindi questo è un caso di studio.
+  ja: 修士の卒業制作として作った、病理診断書の下書きを作るツール。コードは非公開なので、ケーススタディとして紹介します。

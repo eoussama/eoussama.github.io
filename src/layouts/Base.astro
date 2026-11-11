@@ -7,6 +7,7 @@ import naskh500 from "@fontsource/noto-naskh-arabic/arabic-500.css?url";
 import jp400 from "@fontsource/noto-serif-jp/400.css?url";
 import jp500 from "@fontsource/noto-serif-jp/500.css?url";
 import Header from "~/components/Header.astro";
+import Palette from "~/components/Palette.astro";
 import { langInfo, LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import { localized, url } from "~/lib/url";
@@ -23,9 +24,11 @@ interface Props {
   path?: string;
   title: string;
   description: string;
+  /** Whether the page has the greeting, which the command menu can cycle. */
+  hello?: boolean;
 }
 
-const { lang, path = "", title, description } = Astro.props;
+const { lang, path = "", title, description, hello = false } = Astro.props;
 const t = ui(lang);
 const info = langInfo(lang);
 const alternates = Object.fromEntries(LANGS.map(l => [l.code, localized(l.code, path)]));
@@ -41,8 +44,8 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
     <meta name="theme-color" content="#faf7f2" />
     <!--
       Before the first paint: the saved theme (no flash), the keyboard shortcut's
-      label, what this visit has already seen, and, on English pages, a first visit
-      that follows the browser's language.
+      label, whether to play the entrance again, and, on English pages, a first
+      visit that follows the browser's language.
     -->
     <script is:inline define:vars={{ lang, alternates, codes }}>
       const d = document.documentElement;
@@ -77,12 +80,13 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
         d.classList.add("is-mac");
       }
 
-      if (read(sessionStorage, "seen")) {
-        d.classList.add("is-seen");
-      }
+      // The logo settling and the signature drawing play on every load and reload,
+      // but not when moving from one page of the site to another.
+      const nav = performance.getEntriesByType("navigation")[0];
+      const fromHere = !!document.referrer && new URL(document.referrer).origin === location.origin;
 
-      if (read(sessionStorage, "sig")) {
-        d.classList.add("sig-drawn");
+      if (fromHere && nav?.type !== "reload") {
+        d.classList.add("is-seen", "sig-drawn");
       }
 
       if (lang === "en") {
@@ -125,8 +129,11 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
         <slot />
       </main>
     </div>
+    <Palette lang={lang} path={path} hello={hello} />
     <script>
       import "~/scripts/site";
+      import "~/scripts/copy";
+      import "~/scripts/palette";
     </script>
   </body>
 </html>

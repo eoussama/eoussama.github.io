@@ -748,49 +748,50 @@ a.anchor:focus-visible::before {
 
 /*
  * At rest, only search, the language and the current theme show, small and muted.
- * The full controls open up on hover or keyboard focus, or while a menu is open.
+ * The full controls open up on hover or keyboard focus (not a mouse click's focus),
+ * or while a menu is open.
  * Touch screens always show them.
  */
 @media (hover: hover) {
-  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .pill-btn {
+  .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .pill-btn {
     padding-left: 7px;
     padding-right: 7px;
     border-color: transparent;
     color: var(--mut);
   }
 
-  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .chev {
+  .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .chev {
     width: 0;
     margin-inline-start: -8px;
     opacity: 0;
   }
 
-  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .theme {
+  .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .theme {
     border-color: transparent;
   }
 
-  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th {
+  .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .th {
     width: 0;
     opacity: 0;
   }
 
-  :root[data-theme="light"] .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th[data-theme-pick="light"],
-  :root[data-theme="dark"] .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th[data-theme-pick="dark"],
-  :root[data-theme="auto"] .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th[data-theme-pick="auto"] {
+  :root[data-theme="light"] .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .th[data-theme-pick="light"],
+  :root[data-theme="dark"] .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .th[data-theme-pick="dark"],
+  :root[data-theme="auto"] .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .th[data-theme-pick="auto"] {
     width: 26px;
     opacity: 1;
     color: var(--mut);
   }
 
-  :root .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .th .th-pill {
+  :root .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .th .th-pill {
     opacity: 0;
   }
 
-  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .tools {
+  .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .tools {
     gap: 2px;
   }
 
-  .bar:not(:hover):not(:focus-within):not([data-busy="true"]) .ver-wrap {
+  .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .ver-wrap {
     max-width: 0;
     margin-inline-end: -2px;
     overflow: hidden;
@@ -957,9 +958,267 @@ a.anchor:focus-visible::before {
   }
 }
 
+/* ---------- Side notes: a short note in the right margin, on wide screens ---------- */
+
+.note {
+  position: absolute;
+  inset-inline-start: calc(100% + 56px);
+  top: 1px;
+  width: 240px;
+  margin: 0;
+  color: var(--mut);
+  font: italic 400 17px/26px var(--text);
+  opacity: 0;
+  transform: translateX(-8px);
+  pointer-events: none;
+  transition:
+    opacity 110ms linear,
+    transform var(--fast) var(--ease);
+}
+
+[dir="rtl"] .note {
+  transform: translateX(8px);
+}
+
+.note::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -36px;
+  top: 13px;
+  width: 24px;
+  height: 2px;
+  background: var(--acc);
+}
+
+/* A note shows only while its item is pointed at or focused. */
+.home li:hover > .note,
+.home li:focus-within > .note {
+  opacity: 1;
+  transform: none;
+}
+
+.copy[data-done] {
+  animation: hello-a 140ms var(--ease);
+}
+
+/* ---------- Command menu ---------- */
+
+.ck {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.ck::backdrop {
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  animation: ck-fade 110ms linear;
+}
+
+html:has(.ck[open]) {
+  overflow: hidden;
+}
+
+.ck-box {
+  position: absolute;
+  top: 96px;
+  left: 0;
+  right: 0;
+  width: min(580px, 100% - 32px);
+  margin-inline: auto;
+  overflow: hidden;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px -30px rgba(30, 34, 48, 0.5);
+}
+
+.ck[open] .ck-box {
+  animation: ck-in 150ms var(--ease);
+}
+
+@keyframes ck-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+}
+
+@keyframes ck-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.ck-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 58px;
+  padding: 0 12px 0 18px;
+  border-bottom: 1px solid var(--line);
+  color: var(--mut);
+}
+
+[dir="rtl"] .ck-top {
+  padding: 0 18px 0 12px;
+}
+
+.ck-q {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 400 20px/1 var(--text);
+}
+
+.ck-q::placeholder {
+  color: var(--mut);
+  font-style: italic;
+  opacity: 1;
+}
+
+.ck-esc {
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.ck-kbd {
+  display: inline-block;
+  min-width: 20px;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--mut);
+  font: 500 12px/20px ui-sans-serif, system-ui, sans-serif;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ck-list {
+  max-height: 404px;
+  padding: 6px 8px 8px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.ck-h {
+  margin: 10px 0 2px;
+  padding: 0 12px;
+  color: var(--mut);
+  font: italic 400 15px/24px var(--text);
+}
+
+.ck-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 26px;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  scroll-margin: 8px;
+}
+
+a.ck-item:hover {
+  background-size: 0;
+}
+
+.ck-item[aria-selected="true"] {
+  background: var(--soft);
+}
+
+.ck-ic {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  background: var(--acc);
+  transition: transform var(--fast) var(--ease);
+}
+
+.ck-ic.z-dia {
+  transform: scale(0.8);
+}
+
+.ck-item[aria-selected="true"] .ck-ic.z-star {
+  transform: rotate(22.5deg);
+}
+
+.ck-item[aria-selected="true"] .ck-ic.z-cross {
+  transform: rotate(45deg);
+}
+
+.ck-item[aria-selected="true"] .ck-ic.z-dia {
+  transform: scale(0.8) rotate(45deg);
+}
+
+.ck-l {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ck-hint {
+  flex: none;
+  color: var(--mut);
+  font: italic 400 15px/1 var(--text);
+}
+
+.ck-empty {
+  margin: 14px 12px 10px;
+  color: var(--mut);
+  font-style: italic;
+}
+
+.ck-foot {
+  display: flex;
+  gap: 18px;
+  margin: 0;
+  padding: 9px 18px 10px;
+  border-top: 1px solid var(--line);
+  color: var(--mut);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.ck-foot .ck-kbd {
+  margin-inline-end: 4px;
+}
+
 /* ---------- Other scripts ---------- */
 
-:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy) {
+:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty) {
+  font-style: normal;
+}
+
+:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) .ck-q::placeholder {
   font-style: normal;
 }
 
@@ -982,6 +1241,15 @@ a.anchor:focus-visible::before {
   line-height: 34px;
 }
 
+:root[data-lang="ja"] .note {
+  font-size: 15px;
+  line-height: 26px;
+}
+
+:root:is([data-lang="ar"], [data-lang="ary"]) .note {
+  line-height: 30px;
+}
+
 :root[data-lang="ja"] .lab {
   font-size: 16px;
   line-height: 34px;
@@ -991,6 +1259,10 @@ a.anchor:focus-visible::before {
 /* ---------- Narrower screens ---------- */
 
 @media (max-width: 1100px) {
+  .note {
+    display: none;
+  }
+
   .col {
     width: min(800px, 100% - 48px);
   }
@@ -1068,6 +1340,18 @@ a.anchor:focus-visible::before {
     display: none;
   }
 
+  .ck-box {
+    top: 20px;
+  }
+
+  .ck-foot {
+    display: none;
+  }
+
+  .ck-list {
+    max-height: 60vh;
+  }
+
   .short {
     display: inline;
   }
@@ -1083,6 +1367,9 @@ a.anchor:focus-visible::before {
   }
 
   .hello,
+  .copy,
+  .ck-box,
+  .ck::backdrop,
   .logo *,
   .sig mask path {
     animation: none !important;

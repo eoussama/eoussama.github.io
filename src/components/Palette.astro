@@ -1,0 +1,137 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import { PROFILE } from "~/data/profile";
+import { LANGS } from "~/i18n/langs";
+import { ui } from "~/i18n/ui";
+import { getProjects, pick, projectPath } from "~/lib/projects";
+import { localized, url } from "~/lib/url";
+import { versions } from "~/lib/versions";
+
+
+
+/**
+ * The command menu (⌘K or Ctrl K): every page, project, language, theme, older
+ * version and contact link, filtered as you type. Rendered on every page, opened by
+ * the search button or the shortcut.
+ */
+interface Props {
+  lang: Lang;
+  path: string;
+  /** Whether the page has the greeting, which the menu can cycle. */
+  hello: boolean;
+}
+
+type Item = {
+  label: string;
+  hint?: string;
+  icon?: "z-star" | "z-cross" | "z-dia";
+  href?: string;
+  external?: boolean;
+  action?: "theme" | "copy" | "hello";
+  value?: string;
+  lang?: Lang;
+  dir?: string;
+  langLink?: Lang;
+  keywords: string;
+};
+
+const { lang, path, hello } = Astro.props;
+const t = ui(lang);
+const projects = await getProjects();
+
+const groups: { label: string; items: Item[] }[] = [
+  {
+    label: t.cGo,
+    items: [
+      { label: t.cHome, href: localized(lang), keywords: "home" },
+      { label: t.allProjectsLabel, hint: t.cList, href: localized(lang, "projects/"), keywords: "projects work" },
+      { label: t.allPostsLabel, hint: t.cList, href: localized(lang, "blog/"), keywords: "posts writing blog" },
+    ],
+  },
+  {
+    label: t.cProjects,
+    items: projects.map(p => ({
+      label: p.data.name,
+      hint: t.kinds[p.data.kind],
+      icon: "z-star",
+      href: localized(lang, projectPath(p)),
+      keywords: `${pick(p.data.blurb, lang)} ${p.data.language ?? ""} ${p.data.type} ${p.data.kind}`,
+    })),
+  },
+  {
+    label: t.cLang,
+    items: LANGS.map(l => ({
+      label: l.name,
+      hint: l.code === lang ? t.cCurrent : "",
+      lang: l.code,
+      dir: l.dir,
+      langLink: l.code,
+      href: localized(l.code, path),
+      keywords: `language translate ${l.code}`,
+    })),
+  },
+  {
+    label: t.cTheme,
+    items: (["light", "dark", "auto"] as const).map(key => ({
+      label: t[key],
+      action: "theme",
+      value: key,
+      keywords: `theme appearance mode ${key}`,
+    })),
+  },
+  {
+    label: t.cVers,
+    items: versions().map(v => ({ label: `${v.name}, ${v.title}`, hint: String(v.year), href: v.href, keywords: "version archive old" })),
+  },
+  {
+    label: t.cWhere,
+    items: [
+      { label: t.cGh, hint: "↗", href: PROFILE.github.url, external: true, keywords: "code eoussama github" },
+      { label: t.cLi, hint: "↗", href: PROFILE.linkedin.url, external: true, keywords: "work history eoussama linkedin" },
+      { label: t.cCv, hint: "PDF ↗", href: url(PROFILE.resume), external: true, keywords: "resume cv pdf" },
+      { label: t.cMail, action: "copy", keywords: "contact write mail email" },
+    ],
+  },
+];
+
+if (hello) {
+  groups.push({ label: t.cExtras, items: [{ label: t.cHi, action: "hello", keywords: "greeting hello hi" }] });
+}
+
+let n = 0;
+---
+
+<dialog class="ck" id="palette" aria-label={t.palTitle} data-none={t.palNone} data-current={t.cCurrent}>
+  <div class="ck-box">
+    <div class="ck-top">
+      <svg width="17" height="17" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+      <input type="text" class="ck-q" role="combobox" aria-expanded="true" aria-controls="ck-list" aria-autocomplete="list" aria-label={t.palPh} placeholder={t.palPh} autocomplete="off" spellcheck="false" />
+      <button type="button" class="ck-esc" aria-label={t.palClose} data-palette-close><kbd class="ck-kbd" dir="ltr">esc</kbd></button>
+    </div>
+    <div class="ck-list" id="ck-list" role="listbox" aria-label={t.palTitle}>
+      {groups.map((group, g) => (
+        <div class="ck-group" role="group" aria-labelledby={`ck-g${g}`}>
+          <p class="ck-h" id={`ck-g${g}`}>{group.label}</p>
+          {group.items.map((item) => {
+            const id = `ck-${n++}`;
+            const keywords = `${group.label} ${item.label} ${item.hint ?? ""} ${item.keywords}`.toLowerCase();
+            const inner = (
+              <Fragment>
+                <i class:list={["ck-ic", item.icon ?? "z-dia"]}></i>
+                <span class="ck-l"><span lang={item.lang} dir={item.dir}>{item.label}</span></span>
+                <span class="ck-hint" data-theme-hint={item.action === "theme" ? item.value : undefined}>{item.hint}</span>
+              </Fragment>
+            );
+
+            return item.href
+              ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} hreflang={item.langLink} data-lang-link={item.langLink} data-kw={keywords}>{inner}</a>
+              : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} data-kw={keywords}>{inner}</button>;
+          })}
+        </div>
+      ))}
+      <p class="ck-empty" hidden></p>
+    </div>
+    <p class="ck-foot"><span><kbd class="ck-kbd">↑</kbd><kbd class="ck-kbd">↓</kbd> {t.move}</span><span><kbd class="ck-kbd">↵</kbd> {t.run}</span><span><kbd class="ck-kbd">esc</kbd> {t.close}</span></p>
+  </div>
+</dialog>
