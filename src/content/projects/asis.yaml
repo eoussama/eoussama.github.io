@@ -1,7 +1,7 @@
 name: ASIS
 order: 1
 featured: true
-kind: private
+kind: commissioned
 type: app
 year: 2026
 languages:
@@ -52,13 +52,13 @@ desc:
   it: intelligence strategica per l’IRES, con fonti citate.
   ja: IRESのための、出典付きの戦略インテリジェンス。
 note:
-  en: Private, for IRES. NestJS, Next.js, Python and local AI models.
-  ar: خاص، لصالح IRES. NestJS وNext.js وPython ونماذج ذكاء اصطناعي محلية.
-  ary: خاص، ل IRES. NestJS وNext.js وPython ونماذج ديال الذكاء الاصطناعي خدامة محلياً.
-  fr: Privé, pour l’IRES. NestJS, Next.js, Python et des modèles d’IA locaux.
-  es: Privado, para el IRES. NestJS, Next.js, Python y modelos de IA locales.
-  it: Privato, per l’IRES. NestJS, Next.js, Python e modelli di IA locali.
-  ja: 非公開、IRES向け。NestJS、Next.js、Python、ローカルのAIモデル。
+  en: Commissioned by IRES. NestJS, Next.js, Python and local AI models.
+  ar: بتكليف من IRES. NestJS وNext.js وPython ونماذج ذكاء اصطناعي محلية.
+  ary: بتكليف من IRES. NestJS وNext.js وPython ونماذج ديال الذكاء الاصطناعي خدامة محلياً.
+  fr: Sur commande pour l’IRES. NestJS, Next.js, Python et des modèles d’IA locaux.
+  es: Por encargo del IRES. NestJS, Next.js, Python y modelos de IA locales.
+  it: Su commissione dell’IRES. NestJS, Next.js, Python e modelli di IA locali.
+  ja: IRESからの受託。NestJS、Next.js、Python、ローカルのAIモデル。
 long:
   en: ASIS, the Augmented Strategic Intelligence System, is built for the Institut Royal des Études Stratégiques (IRES) in Rabat. It gathers the institute’s own material and approved outside sources in one controlled place. It supports monitoring, horizon scanning and analysis, and every brief, alert or report it drafts cites the sources behind it. It works in Arabic, French and English.
   ar: ASIS، أي نظام الذكاء الاستراتيجي المعزَّز، مبنيّ للمعهد الملكي للدراسات الاستراتيجية (IRES) في الرباط. يجمع مواد المعهد نفسه والمصادر الخارجية المعتمدة في مكان واحد خاضع للرقابة. يدعم الرصد واستشراف المستقبل والتحليل، وكل موجز أو تنبيه أو تقرير يصوغه يستشهد بالمصادر التي بُني عليها. يعمل بالعربية والفرنسية والإنجليزية.

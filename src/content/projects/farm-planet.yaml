@@ -1,0 +1,49 @@
+name: Farm Planet
+order: 32
+kind: commissioned
+type: app
+year: 2021
+live: https://farm-planet.netlify.app/
+languages:
+  - JavaScript
+tools:
+  - React
+  - React Router
+  - Next.js
+  - Chakra UI
+  - web3.js
+tags:
+  - Crypto
+  - Web
+role:
+  en: Developer
+  ar: مطوّر
+  ary: المطوّر
+  fr: Développeur
+  es: Desarrollador
+  it: Sviluppatore
+  ja: 開発者
+blurb:
+  en: An app shell and an NFT marketplace template for Farm Planet.
+  ar: هيكل تطبيق وقالب سوق NFT لـ Farm Planet.
+  ary: هيكل ديال تطبيق وقالب ديال سوق NFT ل Farm Planet.
+  fr: Une coquille d’application et un modèle de place de marché NFT pour Farm Planet.
+  es: Un esqueleto de app y una plantilla de marketplace NFT para Farm Planet.
+  it: Uno scheletro di app e un modello di marketplace NFT per Farm Planet.
+  ja: Farm Planetのためのアプリのひな形と、NFTマーケットプレイスのテンプレート。
+note:
+  en: Commissioned. React, then Next.js, Chakra UI and web3.js.
+  ar: بتكليف. React، ثم Next.js وChakra UI وweb3.js.
+  ary: بتكليف. React، ومن بعد Next.js وChakra UI وweb3.js.
+  fr: Sur commande. React, puis Next.js, Chakra UI et web3.js.
+  es: Por encargo. React, después Next.js, Chakra UI y web3.js.
+  it: Su commissione. React, poi Next.js, Chakra UI e web3.js.
+  ja: 受託。React、その後Next.js、Chakra UI、web3.js。
+long:
+  en: "The starting point for the Farm Planet NFT project: an app shell with home, collection and filter pages, then a marketplace template, the base Crypto Katana’s marketplace was built on a month later."
+  ar: "نقطة انطلاق مشروع Farm Planet من رموز NFT: هيكل تطبيق بصفحات رئيسية ومجموعة وتصفية، ثم قالب سوق، وهو الأساس الذي بُني عليه سوق Crypto Katana بعد شهر."
+  ary: "نقطة البداية ديال مشروع Farm Planet ديال NFT: هيكل ديال تطبيق فيه الصفحة الرئيسية، والمجموعة، والفيلتر، ومن بعد قالب ديال السوق، هو الأساس اللي تبنى عليه السوق ديال Crypto Katana من بعد شهر."
+  fr: "Le point de départ du projet NFT Farm Planet : une coquille d’application avec des pages d’accueil, de collection et de filtres, puis un modèle de place de marché, la base sur laquelle celle de Crypto Katana a été construite un mois plus tard."
+  es: "El punto de partida del proyecto NFT Farm Planet: un esqueleto de app con páginas de inicio, colección y filtros, y después una plantilla de marketplace, la base sobre la que se construyó el de Crypto Katana un mes más tarde."
+  it: "Il punto di partenza del progetto NFT Farm Planet: uno scheletro di app con pagine home, collezione e filtri, poi un modello di marketplace, la base su cui un mese dopo è stato costruito quello di Crypto Katana."
+  ja: NFTプロジェクトFarm Planetの出発点。ホーム、コレクション、絞り込みのページを持つアプリのひな形と、マーケットプレイスのテンプレートです。1か月後、Crypto Katanaのマーケットプレイスはこれをもとに作られました。

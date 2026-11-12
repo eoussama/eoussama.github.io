@@ -411,8 +411,12 @@ if (drawer) {
         fly(drawerTab(list), swapFrom.title, true, swapFrom.titleSize);
       }
 
-      // The title takes focus, also when switching lists: the tab pressed is gone.
-      drawer.querySelector<HTMLElement>(".dr-title")?.focus({ preventScroll: true });
+      // The search takes focus, also when switching lists, so typing filters at once. On
+      // a touch screen that would raise the keyboard over the list: the title takes it.
+      const search = drawer.querySelector<HTMLInputElement>(`[data-sheet="${list}"] .dr-q`);
+      const touch = matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+      (touch ? drawer.querySelector<HTMLElement>(".dr-title") : search)?.focus({ preventScroll: true });
     }
     else {
       const flights = [fly(pageLogo(), from.logo, false), fly(pageLabel(was), from.label, true, fontSize(drawerTitle(was)))];

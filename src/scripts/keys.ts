@@ -4,8 +4,8 @@ import { closeNote, foldOnDismiss, openNote } from "./note";
 
 /*
  * Keyboard shortcuts, one key each: T switches between light and dark, P and W open
- * (or close) the projects and writing lists, H goes home, C starts an email and ?
- * lists them all. They stay out of the way while typing, and while a dialog is open.
+ * (or close) the projects and writing lists, S searches the list that is open, H goes
+ * home, C starts an email and ? lists them all. They stay out of the way while typing, and while a dialog is open.
  * With a keyboard in another script, the keys in the same places do the same.
  */
 
@@ -13,7 +13,7 @@ const keys = document.querySelector<HTMLDialogElement>("#keys");
 const root = document.documentElement;
 
 /** Where each shortcut's key sits, for keyboards that type other letters there. */
-const BY_CODE: Record<string, string> = { KeyT: "t", KeyP: "p", KeyW: "w", KeyH: "h", KeyC: "c" };
+const BY_CODE: Record<string, string> = { KeyT: "t", KeyP: "p", KeyW: "w", KeyS: "s", KeyH: "h", KeyC: "c" };
 
 /** Opens the list of shortcuts, in place of the command menu if that is open. */
 export function openKeys() {
@@ -89,6 +89,18 @@ document.addEventListener("keydown", (event) => {
   }
   else if (key === "p" || key === "w") {
     drawer(key === "p" ? "work" : "writing");
+  }
+  else if (key === "s" && root.dataset.open) {
+    // A list is open: its search takes focus, the cursor after what is already typed
+    // (already there, the key just types).
+    const search = document.querySelector<HTMLInputElement>(`#drawer [data-sheet="${root.dataset.open}"] .dr-q`);
+
+    if (!search) {
+      return;
+    }
+
+    search.focus();
+    search.setSelectionRange(search.value.length, search.value.length);
   }
   else if (key === "h") {
     const home = document.querySelector<HTMLAnchorElement>(".bar .logo");

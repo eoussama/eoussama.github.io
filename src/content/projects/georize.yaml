@@ -1,0 +1,47 @@
+name: Georize
+order: 27
+kind: commissioned
+type: site
+year: 2023
+languages:
+  - TypeScript
+tools:
+  - Next.js
+  - React
+  - Sass
+  - tsParticles
+  - eo-translatorjs
+tags:
+  - Web
+role:
+  en: Developer
+  ar: مطوّر
+  ary: المطوّر
+  fr: Développeur
+  es: Desarrollador
+  it: Sviluppatore
+  ja: 開発者
+blurb:
+  en: The website of Georize, a Moroccan ground-penetrating radar company.
+  ar: موقع Georize، شركة مغربية متخصصة في الرادار المخترق للأرض.
+  ary: السيت ديال Georize، شركة مغربية خدامة بالرادار اللي كيشوف تحت الأرض.
+  fr: Le site de Georize, une entreprise marocaine de géoradar.
+  es: La web de Georize, una empresa marroquí de georradar.
+  it: Il sito di Georize, un’azienda marocchina di georadar.
+  ja: 地中レーダーを扱うモロッコの企業、Georizeのウェブサイト。
+note:
+  en: Commissioned by Georize. Next.js, in English, French and Spanish.
+  ar: بتكليف من Georize. Next.js، بالإنجليزية والفرنسية والإسبانية.
+  ary: بتكليف من Georize. Next.js، بالنكليزية والفرنسية والسبنيولية.
+  fr: Sur commande pour Georize. Next.js, en anglais, français et espagnol.
+  es: Por encargo de Georize. Next.js, en inglés, francés y español.
+  it: Su commissione di Georize. Next.js, in inglese, francese e spagnolo.
+  ja: Georizeからの受託。Next.js、英語・フランス語・スペイン語。
+long:
+  en: "Georize uses ground-penetrating radar (GPR) to see what lies under the ground without digging: buried pipes and cables, construction sites, hazards. Its one-page site introduces the company and the technology, puts its team a click away and shows where to find them in Rabat, in English, French and Spanish."
+  ar: "تستخدم Georize الرادار المخترق للأرض (GPR) لرؤية ما تحت الأرض دون حفر: الأنابيب والكابلات المدفونة، وورش البناء، والمخاطر. يعرّف موقعها ذو الصفحة الواحدة بالشركة وبالتقنية، ويضع فريقها على بعد نقرة، ويبيّن مكانها في الرباط، بالإنجليزية والفرنسية والإسبانية."
+  ary: "Georize كتخدم بالرادار اللي كيدخل ف الأرض (GPR) باش تشوف شنو كاين تحت الأرض بلا حفير: القوادس والكابلات المدفونين، والأوراش، والمخاطر. السيت ديالها ف صفحة وحدة كيعرّف بالشركة وبالتقنية، وكيخلّي الفريق ديالها على بعد كليك، وكيبيّن فين تلقاهم ف الرباط، بالنكليزية والفرنسية والسبنيولية."
+  fr: "Georize utilise le géoradar (GPR) pour voir ce qui se trouve sous le sol sans creuser : canalisations et câbles enterrés, chantiers, risques. Son site d’une page présente l’entreprise et la technologie, met son équipe à un clic et indique où la trouver à Rabat, en anglais, français et espagnol."
+  es: "Georize usa georradar (GPR) para ver lo que hay bajo el suelo sin excavar: tuberías y cables enterrados, obras, riesgos. Su web de una sola página presenta la empresa y la tecnología, pone a su equipo a un clic y muestra dónde encontrarla en Rabat, en inglés, francés y español."
+  it: "Georize usa il georadar (GPR) per vedere cosa c’è sotto terra senza scavare: tubi e cavi interrati, cantieri, pericoli. Il suo sito di una pagina presenta l’azienda e la tecnologia, mette il team a un clic e mostra dove trovarla a Rabat, in inglese, francese e spagnolo."
+  ja: Georizeは地中レーダー（GPR）で、掘らずに地下にあるもの、つまり埋設された配管やケーブル、工事現場、危険を調べます。1ページのサイトで会社と技術を紹介し、チームにすぐ連絡でき、ラバトの所在地も示します。英語、フランス語、スペイン語に対応。

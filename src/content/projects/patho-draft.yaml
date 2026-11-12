@@ -17,7 +17,6 @@ tools:
   - D3
   - Zod
   - Groq
-  - Ollama
   - Jest
   - Docker
 tags:

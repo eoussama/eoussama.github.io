@@ -1,0 +1,49 @@
+name: Samadisa
+order: 28
+kind: commissioned
+type: site
+year: 2022
+live: https://samadisa.netlify.app/
+languages:
+  - HTML
+  - CSS
+  - JavaScript
+tools:
+  - Bootstrap
+  - jQuery
+  - Slick
+  - eo-translatorjs
+tags:
+  - Web
+role:
+  en: Developer
+  ar: مطوّر
+  ary: المطوّر
+  fr: Développeur
+  es: Desarrollador
+  it: Sviluppatore
+  ja: 開発者
+blurb:
+  en: The website of Samadisa, a construction company.
+  ar: موقع Samadisa، شركة بناء.
+  ary: السيت ديال Samadisa، شركة ديال البني.
+  fr: Le site de Samadisa, une entreprise de construction.
+  es: La web de Samadisa, una empresa de construcción.
+  it: Il sito di Samadisa, un’impresa di costruzioni.
+  ja: 建設会社Samadisaのウェブサイト。
+note:
+  en: Commissioned by Samadisa S.A.R.L. HTML and Bootstrap, in Spanish and French.
+  ar: بتكليف من Samadisa S.A.R.L. HTML وBootstrap، بالإسبانية والفرنسية.
+  ary: بتكليف من Samadisa S.A.R.L. HTML وBootstrap، بالسبنيولية والفرنسية.
+  fr: Sur commande pour Samadisa S.A.R.L. HTML et Bootstrap, en espagnol et en français.
+  es: Por encargo de Samadisa S.A.R.L. HTML y Bootstrap, en español y francés.
+  it: Su commissione di Samadisa S.A.R.L. HTML e Bootstrap, in spagnolo e francese.
+  ja: Samadisa S.A.R.Lからの受託。HTMLとBootstrap、スペイン語とフランス語。
+long:
+  en: "A one-page site for Samadisa S.A.R.L, a construction company: a gallery of its finished work, a contact form, and the whole page in Spanish or French."
+  ar: "موقع من صفحة واحدة لـ Samadisa S.A.R.L، شركة بناء: معرض لأعمالها المنجزة، واستمارة تواصل، والصفحة كلها بالإسبانية أو الفرنسية."
+  ary: "سيت ف صفحة وحدة ل Samadisa S.A.R.L، شركة ديال البني: معرض ديال الخدمات اللي سالات، وفورمير ديال التواصل، والصفحة كاملة بالسبنيولية ولا بالفرنسية."
+  fr: "Un site d’une page pour Samadisa S.A.R.L, une entreprise de construction : une galerie de ses réalisations, un formulaire de contact, et toute la page en espagnol ou en français."
+  es: "Una web de una sola página para Samadisa S.A.R.L, una empresa de construcción: una galería de sus obras terminadas, un formulario de contacto y toda la página en español o francés."
+  it: "Un sito di una pagina per Samadisa S.A.R.L, un’impresa di costruzioni: una galleria dei lavori finiti, un modulo di contatto e tutta la pagina in spagnolo o francese."
+  ja: 建設会社Samadisa S.A.R.Lの1ページのサイト。施工実績のギャラリーと問い合わせフォームがあり、ページ全体をスペイン語かフランス語で表示できます。

@@ -27,7 +27,7 @@ const projects = defineCollection({
     order: z.number(),
     featured: z.boolean().default(false),
     /** How it is labelled in lists. */
-    kind: z.enum(["open-source", "private", "side-project", "contribution"]),
+    kind: z.enum(["open-source", "private", "commissioned", "side-project", "contribution"]),
     /** Whether its code is public; defaults to whether it has a repository. */
     access: z.enum(["open", "private"]).optional(),
     type: z.enum(["tool", "library", "app", "extension", "game", "site"]),
