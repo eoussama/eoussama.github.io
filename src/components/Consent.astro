@@ -7,9 +7,10 @@ import { CURRENT } from "~/lib/versions";
 
 
 /**
- * The question asked before Google Analytics loads. It shows only once the site has a
- * measurement ID (PUBLIC_GA_ID) and until the visitor answers; the command menu can
- * bring it back.
+ * The question asked before Google Analytics loads: a note stapled in the corner, on
+ * the same paper as the command menu. It shows only once the site has a measurement ID
+ * (PUBLIC_GA_ID), only after the page has loaded and played its entrance, and until the
+ * visitor answers; the command menu can bring it back.
  */
 interface Props {
   lang: Lang;
@@ -21,9 +22,15 @@ const t = ui(lang);
 ---
 
 <section class="consent" id="consent" aria-label={t.cConsent} data-ga={id} data-version={CURRENT} hidden>
-  <p>{t.consentText}</p>
-  <div class="consent-actions">
-    <button type="button" class="pill-btn consent-yes" data-consent="granted">{t.consentYes}</button>
-    <button type="button" class="pill-btn" data-consent="denied">{t.consentNo}</button>
+  <div class="ck-sheet">
+    <span class="note-shadow" aria-hidden="true"></span>
+    <div class="ck-box consent-box">
+      <p>{t.consentText}</p>
+      <div class="consent-actions">
+        <button type="button" class="pill-btn consent-yes" data-consent="granted">{t.consentYes}</button>
+        <button type="button" class="pill-btn" data-consent="denied">{t.consentNo}</button>
+      </div>
+    </div>
+    <span class="note-tear" aria-hidden="true"><i></i></span>
   </div>
 </section>

@@ -14,6 +14,7 @@ type Gtag = (...args: unknown[]) => void;
 const banner = document.querySelector<HTMLElement>("#consent");
 const id = banner?.dataset.ga ?? "";
 const KEY = "consent";
+const FOLD = 340;
 
 let gtag: Gtag | null = null;
 
@@ -62,10 +63,7 @@ export function track(name: string, params: Record<string, string> = {}) {
  */
 function answer(answer: string) {
   tryCatchSync(() => localStorage.setItem(KEY, answer));
-
-  if (banner) {
-    banner.hidden = true;
-  }
+  fold();
 
   if (answer === "granted") {
     load();
@@ -81,12 +79,86 @@ function answer(answer: string) {
   });
 }
 
-/** Asks again, from the command menu. */
-export function askConsent() {
-  if (banner) {
-    banner.hidden = false;
+/** Folds the note away, then hides it. */
+function fold() {
+  if (!banner || banner.hidden) {
+    return;
+  }
+
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    banner.hidden = true;
+
+    return;
+  }
+
+  banner.classList.add("is-closing");
+  window.setTimeout(() => {
+    // Asked again while folding: it stays.
+    if (banner.classList.contains("is-closing")) {
+      banner.classList.remove("is-closing");
+      banner.hidden = true;
+    }
+  }, FOLD);
+}
+
+/**
+ * Unfolds the note.
+ *
+ * @param focus - Whether to move focus to it, as when asked from the command menu
+ */
+function show(focus = false) {
+  if (!banner) {
+    return;
+  }
+
+  banner.classList.remove("is-closing");
+  banner.hidden = false;
+
+  if (focus) {
     banner.querySelector<HTMLButtonElement>("[data-consent]")?.focus();
   }
+}
+
+/**
+ * Waits until the page has finished loading and playing its entrance, so the question
+ * never cuts in on either.
+ *
+ * @returns Once the page has settled
+ */
+function settled(): Promise<void> {
+  const root = document.documentElement;
+  const loaded = document.readyState === "complete"
+    ? Promise.resolve()
+    : new Promise<void>(resolve => window.addEventListener("load", () => resolve(), { once: true }));
+  const playing = () => root.dataset.rv === "pre" || root.dataset.rv === "run";
+  const entrance = new Promise<void>((resolve) => {
+    if (!playing()) {
+      resolve();
+
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      if (!playing()) {
+        observer.disconnect();
+        resolve();
+      }
+    });
+
+    observer.observe(root, { attributeFilter: ["data-rv"] });
+    // An entrance waiting on lines further down the page asks no longer than this.
+    window.setTimeout(() => {
+      observer.disconnect();
+      resolve();
+    }, 9000);
+  });
+
+  return Promise.all([loaded, entrance]).then(() => new Promise(resolve => window.setTimeout(resolve, 900)));
+}
+
+/** Asks again, from the command menu. */
+export function askConsent() {
+  show(true);
 }
 
 if (banner && id) {
@@ -102,7 +174,12 @@ if (banner && id) {
       load();
     }
     else if (decided !== "denied") {
-      banner.hidden = false;
+      settled().then(() => {
+        // Answered meanwhile, from the command menu.
+        if (!stored()) {
+          show();
+        }
+      });
     }
   };
 

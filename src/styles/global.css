@@ -2889,24 +2889,36 @@ a.anchor .rv-i,
 
 /* ---------- The analytics question ---------- */
 
+/*
+ * A small note stapled in the corner: the command menu's paper, staples, torn edge and
+ * shadow. It unfolds down from its staples when it is asked, and folds back up once
+ * it is answered.
+ */
 .consent {
   position: fixed;
   inset-inline-end: 24px;
-  bottom: 24px;
+  bottom: 16px;
   z-index: 20;
-  width: min(380px, 100% - 32px);
-  padding: 16px 18px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--bg);
-  box-shadow: 0 18px 44px -26px rgba(30, 34, 48, 0.45);
+  width: min(360px, 100% - 32px);
   font-size: 16px;
   line-height: 24px;
-  animation: ck-in 150ms var(--ease);
+  transition: translate 420ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.consent .ck-sheet::before {
+  left: 14%;
+}
+
+.consent .ck-sheet::after {
+  right: 14%;
+}
+
+.consent-box {
+  padding: 30px 20px 34px;
 }
 
 .consent p {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
 }
 
 .consent-actions {
@@ -2925,6 +2937,30 @@ a.anchor .rv-i,
   background: var(--ink);
   border-color: var(--ink);
   color: var(--bg);
+}
+
+.consent:not([hidden]) .ck-sheet {
+  animation: note-open 760ms linear both;
+}
+
+.consent:not([hidden]) .ck-box::after {
+  animation: note-open-shade 760ms linear both;
+}
+
+.consent.is-closing .ck-sheet {
+  animation: note-close 340ms linear forwards;
+}
+
+.consent.is-closing .ck-box::after {
+  animation: note-close-shade 340ms linear forwards;
+}
+
+@media (max-width: 700px) {
+  .consent {
+    inset-inline: 16px;
+    bottom: 8px;
+    width: auto;
+  }
 }
 
 /* ---------- Other scripts ---------- */
