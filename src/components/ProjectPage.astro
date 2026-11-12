@@ -1,21 +1,22 @@
 ---
 import type { Lang } from "~/i18n/langs";
 
-import { getEntry, render } from "astro:content";
+import { getCollection, render } from "astro:content";
 
 import Ext from "~/components/Ext.astro";
 import LinkIcon from "~/components/LinkIcon.astro";
+import ProjectName from "~/components/ProjectName.astro";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
-import { getProjects, pick, projectPath } from "~/lib/projects";
+import { fullName, getProjects, pick, projectPath } from "~/lib/projects";
 import { localized } from "~/lib/url";
 
 
 
 /**
- * A project's own page: its name and lead beside a large zellige star, then its role,
- * what it is built with, its source, its story and the next project. Arriving from a
- * list, the project's bullet grows into the star and its name into the title.
+ * A project's own page: its name and lead, then its role, what it is built with, its
+ * source, its links, its story and the next project. Arriving from a list, the
+ * project's name grows into the title.
  */
 interface Props {
   lang: Lang;
@@ -29,46 +30,103 @@ const index = projects.findIndex(p => p.id === id);
 const project = projects[index]!;
 const next = projects[(index + 1) % projects.length]!;
 
-const story = await getEntry("stories", `${id}/${lang}`) ?? await getEntry("stories", `${id}/en`);
+// Most projects have no story; reading the collection, rather than asking for an entry, finds that out quietly.
+const stories = await getCollection("stories", entry => entry.id.startsWith(`${id}/`));
+const story = stories.find(entry => entry.id === `${id}/${lang}`) ?? stories.find(entry => entry.id === `${id}/en`);
 const { Content } = story ? await render(story) : { Content: null };
 
 const owned = project.repo?.startsWith("https://github.com/eoussama/") ?? false;
-const role = project.role ? pick(project.role, lang) : (owned ? t.roleAuthor : t.rolePh);
-const stack = project.stack.length ? project.stack : (project.language ? [project.language] : []);
-const source = project.repo ? project.repo.replace(/^https:\/\//, "") : t.access.private;
+const role = project.role ? pick(project.role, lang) : (owned ? t.roleAuthor : "");
+// What it is built with: its languages, then its frameworks and libraries. Each opens
+// the list of projects filtered by it.
+const chips = [
+  ...project.languages.map(value => ({ group: "language", value })),
+  ...project.tools.map(value => ({ group: "tool", value })),
+];
 const site = project.live?.replace(/^https?:\/\//, "").replace(/\/$/, "");
+// A contribution's stars are the upstream project's, not a measure of the work.
+const starsOf = (stats: { stars: number } | null) => (project.kind !== "contribution" && stats ? stats.stars : 0);
+
+/**
+ * A link's address as it reads on the page: no scheme, no "www.", no trailing slash.
+ * On a narrow screen it may break after any slash.
+ *
+ * @param url - The address
+ * @returns The short form
+ */
+function short(url: string): string {
+  return url.replace(/^https?:\/\/(?:www\.)?/, "").replace(/\/$/, "");
+}
+
+/**
+ * The short address up to its last slash, and what follows it: the second keeps the
+ * link's arrow on its line.
+ *
+ * @param url - The address
+ * @returns Its start, through the last slash
+ */
+function head(url: string): string {
+  const text = short(url);
+
+  return text.slice(0, text.lastIndexOf("/") + 1);
+}
+
+/**
+ * The last part of a short address, after its last slash.
+ *
+ * @param url - The address
+ * @returns Its end
+ */
+function tail(url: string): string {
+  const text = short(url);
+
+  return text.slice(text.lastIndexOf("/") + 1);
+}
 ---
 
-<Base lang={lang} path={projectPath(project)} title={`${project.name} · ${t.name}`} description={pick(project.blurb, lang)}>
+<Base lang={lang} path={projectPath(project)} title={`${fullName(project)} · ${t.name}`} description={pick(project.blurb, lang)}>
   <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
 
-  <article class="project" style={`--vt-dot: vt-dot-projects-${id}; --vt-name: vt-name-projects-${id}`}>
+  <article class="project" style={`--vt-name: vt-name-projects-${id}`}>
     <section class="row first">
       <h2 class="lab" id="work"><a class="anchor" href="#work" aria-label={t.work + t.anchor}>{t.work}</a></h2>
       <div class="hero">
-        <i class="disc z-star" aria-hidden="true"></i>
-        <h1><span class="title">{project.name}</span></h1>
+        <h1><span class="title"><ProjectName owner={project.owner} name={project.name} /></span></h1>
         <p class="lead rise">{pick(project.long ?? project.blurb, lang)}</p>
       </div>
     </section>
 
-    <section class="row rise" style="--d: 30ms">
-      <h2 class="lab" id="role"><a class="anchor" href="#role" aria-label={t.role + t.anchor}>{t.role}</a></h2>
-      <p class="val">{role}</p>
-    </section>
+    {role && (
+      <section class="row rise" style="--d: 30ms">
+        <h2 class="lab" id="role"><a class="anchor" href="#role" aria-label={t.role + t.anchor}>{t.role}</a></h2>
+        <p class="val">{role}</p>
+      </section>
+    )}
 
-    <section class="row tight rise" style="--d: 45ms">
-      <h2 class="lab" id="built-with"><a class="anchor" href="#built-with" aria-label={t.built + t.anchor}>{t.built}</a></h2>
-      <p class="val">{stack.length ? stack.join(t.list) : t.stackPh}</p>
-    </section>
+    {chips.length > 0 && (
+      <section class={role ? "row tight rise" : "row rise"} style="--d: 45ms">
+        <h2 class="lab" id="built-with"><a class="anchor" href="#built-with" aria-label={t.built + t.anchor}>{t.built}</a></h2>
+        <ul class="val chips">
+          {chips.map(({ group, value }, i) => (
+            <li style={`--i: ${i}`}><a class="chip" href={`?list=projects&${new URLSearchParams({ [group]: value })}`} data-drawer="work" data-filter dir="ltr">{value}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
 
-    <section class="row tight rise" style="--d: 60ms">
-      <h2 class="lab" id="source"><a class="anchor" href="#source" aria-label={t.source + t.anchor}>{t.source}</a></h2>
-      <p class="val">
-        {project.repo ? <Ext href={project.repo} hint={t.newTab}><span dir="ltr">{source}</span></Ext> : source}
-        {project.stats && project.stats.stars > 0 && <span class="mut stars" dir="ltr">★ {project.stats.stars}</span>}
-      </p>
-    </section>
+    {project.repos.length > 0 && (
+      <section class={role || chips.length ? "row tight rise" : "row rise"} style="--d: 60ms">
+        <h2 class="lab" id="source"><a class="anchor" href="#source" aria-label={t.source + t.anchor}>{t.source}</a></h2>
+        <ul class="val links">
+          {project.repos.map(({ url, stats }) => (
+            <li>
+              <Ext href={url} hint={t.newTab} tail={tail(url)}><span dir="ltr">{head(url)}</span></Ext>
+              {starsOf(stats) > 0 && <span class="mut stars" dir="ltr">★ {starsOf(stats)}</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
     {site && (
       <section class="row tight rise" style="--d: 70ms">
@@ -77,17 +135,26 @@ const site = project.live?.replace(/^https?:\/\//, "").replace(/\/$/, "");
       </section>
     )}
 
-    {(Content || project.featured) && (
+    {project.links.length > 0 && (
+      <section class="row tight rise" style="--d: 72ms">
+        <h2 class="lab" id="links"><a class="anchor" href="#links" aria-label={t.links + t.anchor}>{t.links}</a></h2>
+        <ul class="val links">
+          {project.links.map(url => <li><Ext href={url} hint={t.newTab} tail={tail(url)}><span dir="ltr">{head(url).split(/(?<=\/)/).map((part, i) => <>{i > 0 && <wbr />}{part}</>)}</span></Ext></li>)}
+        </ul>
+      </section>
+    )}
+
+    {Content && (
       <section class="row rise" style="--d: 75ms">
-        <h2 class="lab" id="story"><a class="anchor" href="#story" aria-label={t.story + t.anchor}>{t.story}</a></h2>
-        <div class="val prose">{Content ? <Content /> : <p>{t.storyPh}</p>}</div>
+        <h2 class="lab" id="notes"><a class="anchor" href="#notes" aria-label={t.notes + t.anchor}>{t.notes}</a></h2>
+        <div class="val prose"><Content /></div>
       </section>
     )}
 
     <section class="row">
       <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
       <p class="val">
-        <a class="next" href={localized(lang, projectPath(next))}><i class="dot z-star"></i><span>{next.name}</span></a><span class="or">{t.or}</span><a class="link" href="?list=projects" data-drawer="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a>
+        <a class="next" href={localized(lang, projectPath(next))}><i class="dot z-star"></i><span><span class="hl"><ProjectName owner={next.owner} name={next.name} /></span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href="?list=projects" data-drawer="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a>
       </p>
     </section>
   </article>

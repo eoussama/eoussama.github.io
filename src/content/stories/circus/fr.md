@@ -1,0 +1,1 @@
+Commencé en décembre 2024 et construit surtout pendant l’été 2025, dans un style néo-brutaliste avec des confettis sur le logo. Les permissions sont des masques de bits : seuls les historiens ajoutent à la frise, et seuls certains membres ajoutent des jeux ou des matchs. Les cartes de joueur viennent de mon FUT Card Generator.

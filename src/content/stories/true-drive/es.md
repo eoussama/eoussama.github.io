@@ -1,0 +1,1 @@
+Los inconvenientes son parte de la broma: el almacenamiento es gratis allí donde haya vídeo, pero los vídeos no van cifrados, las plataformas limitan su duración y pueden darse cuenta, y un vídeo borrado se lleva su archivo con él.

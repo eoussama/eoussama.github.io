@@ -1,0 +1,50 @@
+name: PockInv
+order: 5
+kind: private
+type: app
+year: 2023
+live: https://pockinv.ouss.es/
+languages:
+  - TypeScript
+tools:
+  - Vue
+  - Capacitor
+  - Tailwind CSS
+  - Supabase
+  - Vite
+tags:
+  - Android
+  - Mobile
+  - Web
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
+blurb:
+  en: An offline-first inventory app for small shops.
+  ar: تطبيق جرد للمحلات الصغيرة يعمل دون اتصال أولًا.
+  ary: تطبيق ديال الستوك للحوانت الصغار، كيخدم حتى بلا كونيكسيون.
+  fr: Une appli d’inventaire hors ligne d’abord, pour les petits commerces.
+  es: Una app de inventario para tiendas pequeñas, pensada para funcionar sin conexión.
+  it: Un’app di inventario per piccoli negozi, pensata per funzionare offline.
+  ja: 小さな店のための、オフラインファーストの在庫管理アプリ。
+note:
+  en: Private. Vue and Capacitor, on the web and Android, in English, Arabic and French.
+  ar: خاص. Vue وCapacitor، على الويب وAndroid، بالإنجليزية والعربية والفرنسية.
+  ary: خاص. Vue وCapacitor، ف الويب وAndroid، بالنكليزية والعربية والفرنسية.
+  fr: Privé. Vue et Capacitor, sur le web et Android, en anglais, arabe et français.
+  es: Privado. Vue y Capacitor, en la web y Android, en inglés, árabe y francés.
+  it: Privato. Vue e Capacitor, sul web e su Android, in inglese, arabo e francese.
+  ja: 非公開。VueとCapacitorで、ウェブとAndroidに対応。英語、アラビア語、フランス語。
+long:
+  en: PockInv keeps a small shop’s stock on the phone, with or without a connection, and syncs when there is one. I built it first for two friends’ hardware stores.
+  ar: يحفظ PockInv مخزون المحل الصغير على الهاتف، بالاتصال أو دونه، ويزامن متى توفّر الاتصال. بنيته أولًا لمحلَّي أدوات يملكهما صديقان لي.
+  ary: PockInv كيخلّي الستوك ديال الحانوت الصغير ف التيليفون، بالكونيكسيون ولا بلا بيها، وكيزامن ملي كتكون. بنيتو الأول لجوج صحابي عندهم دروكري.
+  fr: PockInv garde le stock d’un petit commerce sur le téléphone, avec ou sans connexion, et se synchronise dès qu’il y en a une. Je l’ai d’abord fait pour les quincailleries de deux amis.
+  es: PockInv guarda el stock de una tienda pequeña en el móvil, con o sin conexión, y sincroniza cuando la hay. Lo hice primero para las ferreterías de dos amigos.
+  it: PockInv tiene le scorte di un piccolo negozio sul telefono, con o senza connessione, e si sincronizza quando c’è. L’ho fatto prima per le ferramenta di due amici.
+  ja: PockInvは小さな店の在庫をスマホで管理し、通信があってもなくても使え、つながったときに同期します。最初は友人ふたりの金物店のために作りました。

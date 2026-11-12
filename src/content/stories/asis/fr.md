@@ -1,0 +1,1 @@
+De la recherche augmentée (RAG) sur des sources versionnées, avec un contrôle d’accès à chaque étape et des textes générés toujours relus par un humain. Les modèles tournent en local : aucun document ne quitte l’institution.

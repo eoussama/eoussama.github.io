@@ -1,0 +1,27 @@
+name: formatex
+order: 31
+kind: contribution
+type: library
+org: Southclaws
+repo: https://github.com/Southclaws/formatex
+languages:
+  - Pawn
+tags:
+  - SA:MP
+  - Open:MP
+role:
+  en: Contributor
+  ar: مساهم
+  ary: ساهمت فيه
+  fr: Contributeur
+  es: Colaborador
+  it: Collaboratore
+  ja: コントリビューター
+blurb:
+  en: Changes to the formatex string formatting include.
+  ar: تعديلات في formatex، ملف التضمين لتنسيق النصوص.
+  ary: تعديلات ف formatex، الـ include ديال تنسيق النصوص.
+  fr: Des modifications de formatex, l’include de formatage de chaînes.
+  es: Cambios en formatex, el include de formateo de cadenas.
+  it: Modifiche a formatex, l’include per formattare le stringhe.
+  ja: 文字列整形のインクルード、formatexへの変更。

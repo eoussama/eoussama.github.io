@@ -1,0 +1,1 @@
+Recuperación aumentada (RAG) sobre fuentes versionadas, con control de acceso en cada paso y todo lo generado bajo revisión humana. Los modelos corren en local, así que ningún documento sale de la institución.

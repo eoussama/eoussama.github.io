@@ -1,0 +1,27 @@
+name: YSI-Includes
+order: 29
+kind: contribution
+type: library
+org: pawn-lang
+repo: https://github.com/pawn-lang/YSI-Includes
+languages:
+  - Pawn
+tags:
+  - SA:MP
+  - Open:MP
+role:
+  en: Contributor
+  ar: مساهم
+  ary: ساهمت فيه
+  fr: Contributeur
+  es: Colaborador
+  it: Collaboratore
+  ja: コントリビューター
+blurb:
+  en: Changes to YSI, the standard library of Pawn.
+  ar: تعديلات في YSI، المكتبة القياسية للغة Pawn.
+  ary: تعديلات ف YSI، المكتبة القياسية ديال Pawn.
+  fr: Des modifications de YSI, la bibliothèque standard de Pawn.
+  es: Cambios en YSI, la biblioteca estándar de Pawn.
+  it: Modifiche a YSI, la libreria standard di Pawn.
+  ja: Pawnの標準ライブラリ、YSIへの変更。

@@ -1,0 +1,39 @@
+name: samp-front
+order: 21
+kind: open-source
+type: site
+year: 2018
+repo: https://github.com/eoussama/samp-front
+languages:
+  - PHP
+  - JavaScript
+  - CSS
+tools:
+  - Docker
+tags:
+  - SA:MP
+  - Web
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
+blurb:
+  en: A landing page template for SA:MP servers.
+  ar: قالب صفحة تعريفية لخوادم SA:MP.
+  ary: قالب ديال صفحة تعريفية للسيرفورات ديال SA:MP.
+  fr: Un modèle de page d’accueil pour serveurs SA:MP.
+  es: Una plantilla de página de inicio para servidores de SA:MP.
+  it: Un modello di landing page per server SA:MP.
+  ja: SA:MPサーバー向けのランディングページのテンプレート。
+long:
+  en: A starter site for San Andreas Multiplayer servers.
+  ar: موقع جاهز للانطلاق لخوادم San Andreas Multiplayer.
+  ary: سيت واجد باش تبدا بيه للسيرفورات ديال San Andreas Multiplayer.
+  fr: Un site de départ pour les serveurs San Andreas Multiplayer.
+  es: Un sitio de partida para servidores de San Andreas Multiplayer.
+  it: Un sito di partenza per i server di San Andreas Multiplayer.
+  ja: San Andreas Multiplayerサーバーのための、土台になるサイト。

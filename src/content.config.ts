@@ -30,14 +30,30 @@ const projects = defineCollection({
     kind: z.enum(["open-source", "private", "side-project", "contribution"]),
     /** Whether its code is public; defaults to whether it has a repository. */
     access: z.enum(["open", "private"]).optional(),
-    type: z.enum(["tool", "library", "app", "game", "site"]),
-    /** Filled in from GitHub when left out. */
+    type: z.enum(["tool", "library", "app", "extension", "game", "site"]),
+    /**
+     * The organization it lives in, or the owner of the repository a contribution went
+     * to. Names show it before a slash, muted ("nakamaorg/circus").
+     */
+    org: z.string().nullable().default(null),
+    /** The main language. Filled in from the first of `languages`, else from GitHub. */
     language: z.string().nullable().default(null),
+    /** Every language its code is written in, the main one first, for the Language filter. */
+    languages: z.array(z.string()).default([]),
+    /** The key frameworks and libraries it is built on, for the "Built with" filter. */
+    tools: z.array(z.string()).default([]),
     /** Filled in from GitHub (the year the repository was created) when left out. */
     year: z.number().nullable().default(null),
-    repo: z.url().nullable().default(null),
+    /** Its repository, or a list of them when the code lives in several (the main one first). */
+    repo: z.union([z.url(), z.array(z.url()).min(1)]).nullable().default(null),
     live: z.url().nullable().default(null),
-    stack: z.array(z.string()).default([]),
+    /** Other places it lives, besides its repositories: its packages, a container image. */
+    links: z.array(z.url()).default([]),
+    /**
+     * Topics, to filter the list by; proper names stay as they are, a few common words
+     * are translated. Languages, tools, kinds and organizations have their own filters.
+     */
+    tags: z.array(z.string()).default([]),
     role: localized.nullable().default(null),
     /** One sentence, in lists. */
     blurb: localized,
@@ -47,6 +63,8 @@ const projects = defineCollection({
     note: localized.nullable().default(null),
     /** The lead on the project's own page; defaults to the blurb. */
     long: localized.optional(),
+    /** Waiting for review: shows while writing (pnpm dev) but is left out of the built site. */
+    draft: z.boolean().default(false),
   }),
 });
 

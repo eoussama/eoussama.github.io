@@ -1,12 +1,19 @@
 name: dx
-order: 1
-featured: true
+order: 11
 kind: open-source
-type: tool
-language: TypeScript
+type: library
 year: 2025
 repo: https://github.com/eoussama/dx
-stack: [TypeScript, ESLint]
+languages:
+  - JavaScript
+  - TypeScript
+tools:
+  - ESLint
+tags:
+  - Terminal
+links:
+  - https://www.npmjs.com/package/@eoussama/dx
+  - https://npmx.dev/package/@eoussama/dx
 role:
   en: Author and maintainer
   ar: المؤلف والمشرف على صيانته
@@ -15,6 +22,14 @@ role:
   es: Autor y mantenedor
   it: Autore e manutentore
   ja: 作者・メンテナー
+blurb:
+  en: My ESLint config and a small CLI for every repo I touch.
+  ar: إعداد ESLint الخاص بي وأداة سطر أوامر صغيرة لكل مستودع أعمل عليه.
+  ary: الإعداد ديالي ديال ESLint وأداة صغيرة ف سطر الأوامر لكل مستودع كنخدم عليه.
+  fr: Ma config ESLint et une petite CLI pour chaque dépôt que je touche.
+  es: Mi configuración de ESLint y una pequeña CLI para cada repositorio que toco.
+  it: La mia configurazione ESLint e una piccola CLI per ogni repository che tocco.
+  ja: 触るすべてのリポジトリで使う、自分のESLint設定と小さなCLI。
 desc:
   en: one ESLint config and a small CLI for every repo I touch.
   ar: إعداد ESLint واحد وأداة سطر أوامر صغيرة لكل مستودع أعمل عليه.
@@ -23,22 +38,14 @@ desc:
   es: una configuración de ESLint y una pequeña CLI para cada repositorio que toco.
   it: una configurazione ESLint e una piccola CLI per ogni repository che tocco.
   ja: 触るすべてのリポジトリ用の、ESLint設定ひとつと小さなCLI。
-blurb:
-  en: One ESLint config and a small CLI for every repo I touch.
-  ar: إعداد ESLint واحد وأداة سطر أوامر صغيرة لكل مستودع أعمل عليه.
-  ary: إعداد ESLint واحد وأداة صغيرة ف سطر الأوامر لكل مستودع كنخدم عليه.
-  fr: Une config ESLint et une petite CLI pour chaque dépôt que je touche.
-  es: Una configuración de ESLint y una pequeña CLI para cada repositorio que toco.
-  it: Una configurazione ESLint e una piccola CLI per ogni repository che tocco.
-  ja: 触るすべてのリポジトリ用の、ESLint設定ひとつと小さなCLI。
 note:
-  en: Open source. TypeScript and ESLint. This site is linted with it.
-  ar: مفتوح المصدر. TypeScript وESLint. هذا الموقع مدقَّق به.
-  ary: مفتوح المصدر. TypeScript وESLint. هاد الموقع مدقّق بيه.
-  fr: Open source. TypeScript et ESLint. Ce site est vérifié avec.
-  es: Código abierto. TypeScript y ESLint. Este sitio se revisa con él.
-  it: Open source. TypeScript ed ESLint. Questo sito è controllato con esso.
-  ja: オープンソース。TypeScriptとESLint。このサイトもこれでLintしています。
+  en: Open source. TypeScript and ESLint. This site, Sewnique and Nitfree are linted with it.
+  ar: مفتوح المصدر. TypeScript وESLint. يُدقَّق به هذا الموقع وSewnique وNitfree.
+  ary: مفتوح المصدر. TypeScript وESLint. هاد الموقع وSewnique وNitfree مدقّقين بيه.
+  fr: Open source. TypeScript et ESLint. Ce site, Sewnique et Nitfree sont vérifiés avec.
+  es: Código abierto. TypeScript y ESLint. Este sitio, Sewnique y Nitfree se revisan con él.
+  it: Open source. TypeScript ed ESLint. Questo sito, Sewnique e Nitfree sono controllati con esso.
+  ja: オープンソース。TypeScriptとESLint。このサイトもSewniqueもNitfreeも、これでLintしています。
 long:
   en: One ESLint config and a small command-line tool that lints, fixes and sets up every repo I touch.
   ar: إعداد ESLint واحد وأداة سطر أوامر صغيرة تدقّق كل مستودع أعمل عليه وتصلحه وتهيّئه.

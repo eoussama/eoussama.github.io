@@ -1,9 +1,25 @@
 name: temmejs
-order: 6
+order: 18
 kind: open-source
 type: library
+year: 2018
 repo: https://github.com/eoussama/temmejs
 live: https://temmejs.ouss.es/
+languages:
+  - TypeScript
+tools:
+  - Vitest
+  - Playwright
+tags:
+  - Web
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
 blurb:
   en: Emmet, but for JavaScript.
   ar: مثل Emmet، لكن لـ JavaScript.
@@ -12,3 +28,11 @@ blurb:
   es: Emmet, pero para JavaScript.
   it: Emmet, ma per JavaScript.
   ja: JavaScript版のEmmet。
+long:
+  en: "temmejs builds DOM trees in JavaScript the way Emmet writes HTML: describe the structure briefly, get the elements."
+  ar: "يبني temmejs أشجار DOM في JavaScript كما يكتب Emmet الـ HTML: صِف البنية باختصار، تحصل على العناصر."
+  ary: "temmejs كيبني أشجار DOM ف JavaScript بحال كيفاش Emmet كيكتب HTML: وصف البنية باختصار، وتاخد العناصر."
+  fr: "temmejs construit des arbres DOM en JavaScript comme Emmet écrit du HTML : décrivez brièvement la structure, obtenez les éléments."
+  es: "temmejs construye árboles DOM en JavaScript como Emmet escribe HTML: describe la estructura en breve y obtén los elementos."
+  it: "temmejs costruisce alberi DOM in JavaScript come Emmet scrive l’HTML: descrivi in breve la struttura, ottieni gli elementi."
+  ja: temmejsは、EmmetがHTMLを書くようにJavaScriptでDOMツリーを組み立てます。構造を短く書けば、要素ができあがります。

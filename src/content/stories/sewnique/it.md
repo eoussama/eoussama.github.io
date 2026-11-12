@@ -1,0 +1,1 @@
+È nato nel 2021 come prototipo in Angular. La riscrittura parte dal laboratorio e non dal database: tutto si salva prima sul dispositivo, e ogni laboratorio locale può sincronizzarsi con un account. Parla inglese, arabo (da destra a sinistra), francese, spagnolo e italiano, e ogni versione supera i controlli di accessibilità in chiaro e in scuro, in inglese e in arabo.

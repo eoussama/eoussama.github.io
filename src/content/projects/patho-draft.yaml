@@ -1,37 +1,65 @@
 name: Patho Draft
-order: 3
+order: 4
 featured: true
 kind: private
 type: app
-desc:
-  en: drafts pathology reports. A private case study.
-  ar: يصوغ مسودات تقارير التشريح المرضي. دراسة حالة خاصة.
-  ary: كيكتب مسودات تقارير التشريح المرضي. دراسة حالة خاصة.
-  fr: rédige des brouillons de comptes rendus d’anatomopathologie. Une étude de cas privée.
-  es: redacta borradores de informes de anatomía patológica. Un caso de estudio privado.
-  it: redige bozze di referti di anatomia patologica. Un caso di studio privato.
-  ja: 病理診断書の下書きを作る。非公開のケーススタディ。
+org: gomu-gomu
+languages:
+  - TypeScript
+tools:
+  - Next.js
+  - React
+  - Supabase
+  - Tailwind CSS
+  - shadcn/ui
+  - TanStack
+  - Lexical
+  - D3
+  - Zod
+  - Groq
+  - Ollama
+  - Jest
+  - Docker
+tags:
+  - AI
+  - Web
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
 blurb:
-  en: Drafts pathology reports. A case study.
-  ar: يصوغ مسودات تقارير التشريح المرضي. دراسة حالة.
-  ary: كيكتب مسودات تقارير التشريح المرضي. دراسة حالة.
-  fr: Rédige des brouillons de comptes rendus d’anatomopathologie. Une étude de cas.
-  es: Redacta borradores de informes de anatomía patológica. Un caso de estudio.
-  it: Redige bozze di referti di anatomia patologica. Un caso di studio.
-  ja: 病理診断書の下書きを作る。ケーススタディ。
+  en: Drafts pathology reports from a few keywords and the pathologist’s voice.
+  ar: يصوغ مسودات تقارير التشريح المرضي من بضع كلمات مفتاحية ومن صوت الطبيب.
+  ary: كيكتب مسودات تقارير التشريح المرضي من شي كلمات مفتاحية ومن الصوت ديال الطبيب.
+  fr: Rédige des comptes rendus d’anatomopathologie à partir de quelques mots-clés et de la voix du pathologiste.
+  es: Redacta informes de anatomía patológica a partir de unas pocas palabras clave y la voz del patólogo.
+  it: Redige referti di anatomia patologica da poche parole chiave e dalla voce del patologo.
+  ja: いくつかのキーワードと病理医の声から、病理診断書の下書きを作る。
+desc:
+  en: drafts pathology reports for a hospital.
+  ar: يصوغ تقارير التشريح المرضي لمستشفى.
+  ary: كيكتب تقارير التشريح المرضي لسبيطار.
+  fr: rédige les rapports de pathologie d’un CHU.
+  es: redacta informes de patología para un hospital.
+  it: redige referti di patologia per un ospedale.
+  ja: 大学病院のために病理診断書の下書きを作る。
 note:
-  en: Private. My master’s final-year project.
-  ar: خاص. مشروع تخرّجي في الماستر.
-  ary: خاص. مشروع التخرج ديالي ف الماستر.
-  fr: Privé. Mon projet de fin d’études de master.
-  es: Privado. Mi proyecto de fin de máster.
-  it: Privato. Il mio progetto di tesi magistrale.
-  ja: 非公開。修士の卒業制作。
+  en: Private. My master’s final-year project, with CHU Mohammed VI Tanger.
+  ar: خاص. مشروع تخرّجي في الماستر، مع المركز الاستشفائي الجامعي محمد السادس بطنجة.
+  ary: خاص. مشروع التخرج ديالي ف الماستر، مع CHU محمد السادس ف طنجة.
+  fr: Privé. Mon projet de fin d’études de master, avec le CHU Mohammed VI de Tanger.
+  es: Privado. Mi proyecto de fin de máster, con el CHU Mohammed VI de Tánger.
+  it: Privato. Il mio progetto di tesi magistrale, con il CHU Mohammed VI di Tangeri.
+  ja: 非公開。修士の卒業制作で、タンジェのモハメッド6世大学病院（CHU）と共同。
 long:
-  en: A tool that drafts pathology reports, built as my master’s final-year project. The code is private, so this is a case study.
-  ar: أداة تصوغ مسودات تقارير التشريح المرضي، بنيتها مشروعًا لتخرّجي في الماستر. الشيفرة خاصة، لذا هذه دراسة حالة.
-  ary: أداة كتكتب مسودات تقارير التشريح المرضي، بنيتها كمشروع التخرج ديالي ف الماستر. الكود خاص، داكشي علاش هادي دراسة حالة.
-  fr: Un outil qui rédige des brouillons de comptes rendus d’anatomopathologie, réalisé comme projet de fin d’études de master. Le code est privé, d’où cette étude de cas.
-  es: Una herramienta que redacta borradores de informes de anatomía patológica, hecha como mi proyecto de fin de máster. El código es privado, así que esto es un caso de estudio.
-  it: Uno strumento che redige bozze di referti di anatomia patologica, realizzato come progetto di tesi magistrale. Il codice è privato, quindi questo è un caso di studio.
-  ja: 修士の卒業制作として作った、病理診断書の下書きを作るツール。コードは非公開なので、ケーススタディとして紹介します。
+  en: "Pathologists write a long, structured report for every specimen. Patho Draft drafts it: from a few keywords it picks the template for that organ, fills it in, and takes dictation, and it keeps working offline. I built it as my master’s final-year project, for the good folks at CHU Mohammed VI Tanger."
+  ar: "يكتب أطباء التشريح المرضي تقريرًا طويلًا ومنظّمًا لكل عيّنة، وPatho Draft يصوغ مسودته: من بضع كلمات مفتاحية يختار قالب ذلك العضو ويملؤه، ويتلقّى الإملاء، ويواصل العمل دون اتصال. بنيته مشروعًا لتخرّجي في الماستر، للطيّبين في المركز الاستشفائي الجامعي محمد السادس بطنجة."
+  ary: "أطباء التشريح المرضي كيكتبو تقرير طويل ومنظّم على كل عيّنة، وPatho Draft كيكتب ليهم المسودة: من شي كلمات مفتاحية كيختار القالب ديال داك العضو وكيعمّرو، وكيكتب داكشي اللي كتملي عليه، وكيبقى خدام حتى بلا كونيكسيون. بنيتو كمشروع التخرج ديالي ف الماستر، للناس الزوينين ف CHU محمد السادس ف طنجة."
+  fr: "Les pathologistes rédigent un compte rendu long et structuré pour chaque prélèvement. Patho Draft en fait le brouillon : à partir de quelques mots-clés, il choisit le modèle de l’organe, le remplit et prend la dictée, et il continue de fonctionner hors ligne. Je l’ai réalisé comme projet de fin d’études de master, pour les belles personnes du CHU Mohammed VI de Tanger."
+  es: "Los patólogos escriben un informe largo y estructurado para cada muestra. Patho Draft hace el borrador: con unas pocas palabras clave elige la plantilla de ese órgano, la rellena y toma dictado, y sigue funcionando sin conexión. Lo hice como proyecto de fin de máster, para la buena gente del CHU Mohammed VI de Tánger."
+  it: "I patologi scrivono un referto lungo e strutturato per ogni campione. Patho Draft ne prepara la bozza: da poche parole chiave sceglie il modello per quell’organo, lo compila e prende la dettatura, e continua a funzionare offline. L’ho realizzato come progetto di tesi magistrale, per le brave persone del CHU Mohammed VI di Tangeri."
+  ja: 病理医は検体ごとに長く構造化された診断書を書きます。Patho Draftはその下書きを作ります。いくつかのキーワードから臓器に合ったテンプレートを選んで埋め、口述も書き取り、オフラインでも動き続けます。修士の卒業制作として、タンジェのモハメッド6世大学病院（CHU）のみなさんのために作りました。

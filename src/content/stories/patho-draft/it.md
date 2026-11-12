@@ -1,0 +1,1 @@
+Ogni organo ha diversi modelli di referto, quindi il cuore del progetto è una mappa dettagliata dalle parole chiave ai modelli. L’IA compila la bozza e trasforma la dettatura in testo; il patologo modifica il modello al volo.

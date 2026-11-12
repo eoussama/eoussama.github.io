@@ -30,7 +30,7 @@ function itemOf(url: string | undefined | null): string | null {
 }
 
 /**
- * Gives a list item's bullet and name the transition names its page uses.
+ * Gives a list item's name the transition name its page's title uses.
  *
  * @param link - The link to the project or post
  * @param key - Its key, from itemOf()
@@ -38,12 +38,7 @@ function itemOf(url: string | undefined | null): string | null {
  */
 function carry(link: HTMLAnchorElement, key: string): () => void {
   const item = link.closest(".ck-item, li") ?? link;
-  const dot = link.matches(".next") ? link.querySelector<HTMLElement>(".dot") : item.querySelector<HTMLElement>(".dot, .ck-ic");
   const label = link.matches(".next") ? link.querySelector<HTMLElement>("span") : item.matches(".ck-item") ? item.querySelector<HTMLElement>(".ck-l > span") : link;
-
-  if (dot) {
-    dot.style.viewTransitionName = `vt-dot-${key}`;
-  }
 
   if (label) {
     label.style.viewTransitionName = `vt-name-${key}`;
@@ -52,7 +47,6 @@ function carry(link: HTMLAnchorElement, key: string): () => void {
 
   return () => {
     label?.classList.remove("vt-carry");
-    dot?.style.removeProperty("view-transition-name");
     label?.style.removeProperty("view-transition-name");
   };
 }

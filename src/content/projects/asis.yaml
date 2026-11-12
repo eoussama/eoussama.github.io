@@ -1,0 +1,69 @@
+name: ASIS
+order: 1
+featured: true
+kind: private
+type: app
+year: 2026
+languages:
+  - TypeScript
+  - Python
+tools:
+  - Next.js
+  - React
+  - Tailwind CSS
+  - shadcn/ui
+  - TanStack
+  - NestJS
+  - Fastify
+  - Drizzle
+  - PostgreSQL
+  - Redis
+  - NATS
+  - llama.cpp
+  - Qwen
+  - Whisper
+  - Podman
+tags:
+  - AI
+  - RAG
+  - Web
+role:
+  en: Project architect and developer
+  ar: مهندس المشروع ومطوّره
+  ary: مهندس المشروع والمطوّر ديالو
+  fr: Architecte et développeur du projet
+  es: Arquitecto y desarrollador del proyecto
+  it: Architetto e sviluppatore del progetto
+  ja: プロジェクトのアーキテクト・開発者
+blurb:
+  en: "A strategic intelligence platform: sources in, cited briefs and alerts out."
+  ar: "منصة للذكاء الاستراتيجي: تدخلها المصادر، وتخرج منها موجزات وتنبيهات تستشهد بمصادرها."
+  ary: "منصة ديال الذكاء الاستراتيجي: كتدخل ليها المصادر، وكتخرج منها ملخصات وتنبيهات بالمصادر ديالها."
+  fr: "Une plateforme d’intelligence stratégique : des sources en entrée, des notes et des alertes sourcées en sortie."
+  es: "Una plataforma de inteligencia estratégica: entran fuentes, salen informes y alertas con sus citas."
+  it: "Una piattaforma di intelligence strategica: entrano le fonti, escono note e allerte con le citazioni."
+  ja: 戦略インテリジェンスのプラットフォーム。情報源を入れると、出典付きのブリーフとアラートが出てくる。
+desc:
+  en: strategic intelligence for IRES, with briefs that cite their sources.
+  ar: ذكاء استراتيجي لصالح IRES، بموجزات تستشهد بمصادرها.
+  ary: ذكاء استراتيجي ل IRES، بملخصات كتذكر المصادر ديالها.
+  fr: l’intelligence stratégique de l’IRES, en notes sourcées.
+  es: inteligencia estratégica para el IRES, con fuentes citadas.
+  it: intelligence strategica per l’IRES, con fonti citate.
+  ja: IRESのための、出典付きの戦略インテリジェンス。
+note:
+  en: Private, for IRES. NestJS, Next.js, Python and local AI models.
+  ar: خاص، لصالح IRES. NestJS وNext.js وPython ونماذج ذكاء اصطناعي محلية.
+  ary: خاص، ل IRES. NestJS وNext.js وPython ونماذج ديال الذكاء الاصطناعي خدامة محلياً.
+  fr: Privé, pour l’IRES. NestJS, Next.js, Python et des modèles d’IA locaux.
+  es: Privado, para el IRES. NestJS, Next.js, Python y modelos de IA locales.
+  it: Privato, per l’IRES. NestJS, Next.js, Python e modelli di IA locali.
+  ja: 非公開、IRES向け。NestJS、Next.js、Python、ローカルのAIモデル。
+long:
+  en: ASIS, the Augmented Strategic Intelligence System, is built for the Institut Royal des Études Stratégiques (IRES) in Rabat. It gathers the institute’s own material and approved outside sources in one controlled place. It supports monitoring, horizon scanning and analysis, and every brief, alert or report it drafts cites the sources behind it. It works in Arabic, French and English.
+  ar: ASIS، أي نظام الذكاء الاستراتيجي المعزَّز، مبنيّ للمعهد الملكي للدراسات الاستراتيجية (IRES) في الرباط. يجمع مواد المعهد نفسه والمصادر الخارجية المعتمدة في مكان واحد خاضع للرقابة. يدعم الرصد واستشراف المستقبل والتحليل، وكل موجز أو تنبيه أو تقرير يصوغه يستشهد بالمصادر التي بُني عليها. يعمل بالعربية والفرنسية والإنجليزية.
+  ary: ASIS، يعني نظام الذكاء الاستراتيجي المعزَّز، مبني للمعهد الملكي للدراسات الاستراتيجية (IRES) ف الرباط. كيجمع الوثائق ديال المعهد والمصادر الخارجية المعتمدة ف بلاصة وحدة متحكَّم فيها. كيعاون ف الرصد واستشراف المستقبل والتحليل، وكل ملخص ولا تنبيه ولا تقرير كيكتبو كيذكر المصادر اللي تبنى عليها. خدام بالعربية والفرنسية والنكليزية.
+  fr: ASIS, l’Augmented Strategic Intelligence System, est conçu pour l’Institut Royal des Études Stratégiques (IRES) à Rabat. Il réunit les fonds de l’institut et des sources extérieures validées en un seul lieu contrôlé. Il sert la veille, la prospective et l’analyse, et chaque note, alerte ou rapport qu’il rédige cite les sources sur lesquelles il s’appuie. Il fonctionne en arabe, en français et en anglais.
+  es: ASIS, el Augmented Strategic Intelligence System, está hecho para el Institut Royal des Études Stratégiques (IRES) de Rabat. Reúne el material propio del instituto y fuentes externas aprobadas en un único lugar controlado. Sirve para el seguimiento, la prospectiva y el análisis, y cada informe, alerta o reporte que redacta cita las fuentes en que se basa. Funciona en árabe, francés e inglés.
+  it: ASIS, l’Augmented Strategic Intelligence System, è costruito per l’Institut Royal des Études Stratégiques (IRES) di Rabat. Riunisce il materiale dell’istituto e fonti esterne approvate in un unico luogo controllato. Supporta il monitoraggio, l’analisi prospettica e l’analisi, e ogni nota, allerta o rapporto che redige cita le fonti su cui si basa. Funziona in arabo, francese e inglese.
+  ja: ASIS（Augmented Strategic Intelligence System）は、ラバトの王立戦略研究所（IRES）のために作っているシステムです。研究所自身の資料と承認済みの外部情報源を、管理されたひとつの場所に集めます。モニタリング、ホライズン・スキャニング、分析を支え、作成するブリーフ、アラート、レポートにはすべて根拠となった出典が付きます。アラビア語、フランス語、英語に対応しています。

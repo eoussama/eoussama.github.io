@@ -1,0 +1,39 @@
+name: Student Management
+order: 26
+kind: open-source
+type: app
+org: gomu-gomu
+repo:
+  - https://github.com/gomu-gomu/ma-java-avancee-projet
+  - https://github.com/gomu-gomu/ma-java-avancee-projet-backend
+  - https://github.com/gomu-gomu/ma-java-avancee-projet-frontend
+  - https://github.com/gomu-gomu/ma-java-avancee-projet-seed
+languages:
+  - Java
+  - TypeScript
+tools:
+  - Spring Boot
+  - Nuxt
+  - Vue
+  - Pinia
+  - PostgreSQL
+  - Docker
+tags:
+  - API
+  - Web
+blurb:
+  en: Tracks students’ grades over the years and suggests where to go next.
+  ar: يتتبّع درجات الطلاب على مرّ السنين ويقترح وجهتهم التالية.
+  ary: كيتبّع النقط ديال الطلبة عام بعام وكيقترح فين يمشيو من بعد.
+  fr: Suit les notes des élèves au fil des années et suggère la suite de leur parcours.
+  es: Sigue las notas de los alumnos a lo largo de los años y sugiere cómo seguir.
+  it: Segue i voti degli studenti negli anni e suggerisce dove andare dopo.
+  ja: 学生の成績を年ごとに追い、次の進路を提案する。
+long:
+  en: A web app for schools that follows each student’s results year by year and recommends orientations. A course project from my master’s.
+  ar: تطبيق ويب للمدارس يتابع نتائج كل طالب سنة بعد سنة ويوصي بالتوجيهات. مشروع مادة من الماستر.
+  ary: تطبيق ويب للمدارس كيتبّع النتائج ديال كل طالب عام بعام وكينصح بالتوجيه. مشروع ديال مادة من الماستر ديالي.
+  fr: Une appli web pour les établissements qui suit les résultats de chaque élève année après année et recommande des orientations. Un projet de cours de mon master.
+  es: Una app web para centros educativos que sigue los resultados de cada alumno año tras año y recomienda orientaciones. Un proyecto de asignatura de mi máster.
+  it: Un’app web per le scuole che segue i risultati di ogni studente anno per anno e consiglia gli orientamenti. Un progetto d’esame del mio master.
+  ja: 学生一人ひとりの成績を年ごとに追い、進路を勧める学校向けのウェブアプリ。修士課程の授業で作ったプロジェクトです。

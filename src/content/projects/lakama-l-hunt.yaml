@@ -1,8 +1,9 @@
 name: Lakama L Hunt
-order: 4
-featured: true
+order: 90
+draft: true
 kind: side-project
 type: game
+org: nakamaorg
 desc:
   en: "[one line about the game]."
   ar: "[سطر عن اللعبة]."

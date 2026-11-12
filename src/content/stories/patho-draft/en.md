@@ -1,0 +1,1 @@
+Each organ has several report templates, so the heart of it is a detailed map from keywords to templates. AI fills in the draft and turns dictation into text; the pathologist edits the template on the fly.

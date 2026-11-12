@@ -1,0 +1,26 @@
+name: vscode-pawn
+order: 30
+kind: contribution
+type: extension
+org: Southclaws
+repo: https://github.com/Southclaws/vscode-pawn
+languages:
+  - TypeScript
+tools:
+  - VS Code
+role:
+  en: Contributor
+  ar: مساهم
+  ary: ساهمت فيه
+  fr: Contributeur
+  es: Colaborador
+  it: Collaboratore
+  ja: コントリビューター
+blurb:
+  en: Changes to the Pawn tools for VS Code.
+  ar: تعديلات في أدوات Pawn لـ VS Code.
+  ary: تعديلات ف الأدوات ديال Pawn ل VS Code.
+  fr: Des modifications des outils Pawn pour VS Code.
+  es: Cambios en las herramientas de Pawn para VS Code.
+  it: Modifiche agli strumenti Pawn per VS Code.
+  ja: VS Code用のPawnツールへの変更。

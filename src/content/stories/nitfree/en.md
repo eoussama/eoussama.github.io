@@ -1,0 +1,1 @@
+Discord changes its page often, so every selector Nitfree relies on lives in one file, and a built-in diagnostic says which parts still work. A Discord update is usually a one-file fix. It began in Vue; the current version is a rewrite.

@@ -1,0 +1,52 @@
+name: True Drive
+order: 9
+kind: open-source
+type: tool
+org: true-drive
+repo:
+  - https://github.com/true-drive/core
+  - https://github.com/true-drive/cli
+links:
+  - https://hub.docker.com/r/eoussama/true-drive
+languages:
+  - C
+  - Shell
+tools:
+  - FFmpeg
+  - CMake
+  - Podman
+  - Docker
+tags:
+  - Terminal
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
+blurb:
+  en: Turns any file into a video of noise and back, so any video host can store files.
+  ar: يحوّل أي ملف إلى فيديو من التشويش ثم يعيده، فيصبح أي موقع لاستضافة الفيديو مخزنًا للملفات.
+  ary: كيحوّل أي ملف لفيديو ديال التشويش ويرجّعو، باش أي موقع ديال الفيديوهات يولّي يخبّي الملفات.
+  fr: "Transforme n’importe quel fichier en vidéo de bruit, et inversement : tout hébergeur de vidéos devient un stockage de fichiers."
+  es: Convierte cualquier archivo en un vídeo de ruido y viceversa, para que cualquier plataforma de vídeo guarde archivos.
+  it: Trasforma qualsiasi file in un video di rumore e viceversa, così qualsiasi piattaforma video può conservare file.
+  ja: どんなファイルもノイズの動画に変え、元に戻す。動画を置ける場所ならどこでもファイル置き場になる。
+note:
+  en: Open source. A C library and a command-line tool, with FFmpeg.
+  ar: مفتوح المصدر. مكتبة بلغة C وأداة سطر أوامر، مع FFmpeg.
+  ary: مفتوح المصدر. مكتبة ب C وأداة ف سطر الأوامر، مع FFmpeg.
+  fr: Open source. Une bibliothèque C et un outil en ligne de commande, avec FFmpeg.
+  es: Código abierto. Una biblioteca en C y una herramienta de línea de comandos, con FFmpeg.
+  it: Open source. Una libreria C e uno strumento da riga di comando, con FFmpeg.
+  ja: オープンソース。CライブラリとコマンドラインツールでFFmpegを使用。
+long:
+  en: True Drive turns a file into a video of black and white pixels, one bit each, and turns the video back into the file, so any platform that hosts video can double as file storage. It is a C library and a command-line tool that runs FFmpeg, also shipped as a container image.
+  ar: يحوّل True Drive الملف إلى فيديو من بكسلات سوداء وبيضاء، لكل بكسل بتّ واحد، ويعيد الفيديو ملفًا كما كان، فيصبح أي موقع يستضيف الفيديو مخزنًا للملفات. وهو مكتبة بلغة C وأداة سطر أوامر تشغّل FFmpeg، ومتاح أيضًا صورةَ حاوية.
+  ary: True Drive كيحوّل الملف لفيديو ديال بيكسلات كحلين وبيضين، كل بيكسل بيت واحد، وكيرجّع الفيديو ملف كيف كان، باش أي موقع كيستضيف الفيديوهات يولّي يخبّي الملفات. هو مكتبة ب C وأداة ف سطر الأوامر كتشغّل FFmpeg، وكاين حتى كصورة ديال الكونتينر.
+  fr: "True Drive transforme un fichier en vidéo de pixels noirs et blancs, un bit chacun, et retransforme la vidéo en fichier : tout hébergeur de vidéos peut ainsi servir de stockage. C’est une bibliothèque C et un outil en ligne de commande qui s’appuie sur FFmpeg, aussi livré en image de conteneur."
+  es: True Drive convierte un archivo en un vídeo de píxeles blancos y negros, un bit cada uno, y vuelve a convertir el vídeo en el archivo, así que cualquier plataforma que aloje vídeo sirve también para guardar archivos. Es una biblioteca en C y una herramienta de línea de comandos que usa FFmpeg, también disponible como imagen de contenedor.
+  it: True Drive trasforma un file in un video di pixel bianchi e neri, un bit ciascuno, e riporta il video al file, così qualsiasi piattaforma che ospita video può fare anche da archivio. È una libreria C e uno strumento da riga di comando che usa FFmpeg, distribuito anche come immagine container.
+  ja: True Driveはファイルを、1ピクセル1ビットの白黒の動画に変え、その動画を元のファイルに戻します。動画を置けるプラットフォームなら、どこでもファイルの保管場所になります。FFmpegを使うCライブラリとコマンドラインツールで、コンテナイメージとしても配布しています。

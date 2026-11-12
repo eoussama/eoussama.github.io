@@ -1,14 +1,36 @@
 name: phoshare
-order: 11
+order: 19
 kind: open-source
 type: app
+year: 2018
 repo: https://github.com/eoussama/phoshare
 live: https://phoshare.ouss.es/
+languages:
+  - Java
+tags:
+  - Android
+  - Mobile
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
 blurb:
   en: A simple offline photo-sharing app.
   ar: تطبيق بسيط لمشاركة الصور دون اتصال.
-  ary: تطبيق بسيط باش تبارطاجي التصاور بلا كونيكسيون.
-  fr: Une application simple de partage de photos hors ligne.
-  es: Una aplicación sencilla para compartir fotos sin conexión.
-  it: Una semplice app per condividere foto offline.
-  ja: オフラインで写真を共有するシンプルなアプリ。
+  ary: تطبيق ساهل باش تبارطاجي التصاور بلا كونيكسيون.
+  fr: Une appli simple de partage de photos hors ligne.
+  es: Una app sencilla para compartir fotos sin conexión.
+  it: Un’app semplice per condividere foto offline.
+  ja: オフラインで写真を共有する、シンプルなアプリ。
+long:
+  en: An Android app for sharing photos without a connection, made while learning Android. In its own words, for those who don’t have friends.
+  ar: "تطبيق Android لمشاركة الصور دون اتصال، صنعته وأنا أتعلّم Android. وبتعبيره هو: لمن ليس لديهم أصدقاء."
+  ary: "تطبيق ديال Android باش تبارطاجي التصاور بلا كونيكسيون، درتو وأنا كنتعلم Android. وكيف كيقول هو على راسو: للناس اللي ما عندهومش صحاب."
+  fr: Une appli Android pour partager des photos sans connexion, faite en apprenant Android. Selon ses propres mots, pour ceux qui n’ont pas d’amis.
+  es: Una app de Android para compartir fotos sin conexión, hecha mientras aprendía Android. En sus propias palabras, para quienes no tienen amigos.
+  it: Un’app Android per condividere foto senza connessione, fatta mentre imparavo Android. Con le sue parole, per chi non ha amici.
+  ja: Androidを学びながら作った、通信なしで写真を共有するアプリ。本人いわく、友だちのいない人のために。

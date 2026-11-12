@@ -18,10 +18,10 @@
   --text: "Newsreader Variable", "Noto Naskh Arabic", "Noto Serif JP", Georgia, serif;
   --fast: 150ms;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  /* Things that travel: the header opening, the drawer, page-to-page morphs. Slow
-     enough to be followed, eased at both ends. */
-  --move: 480ms;
-  --glide: cubic-bezier(0.55, 0, 0.15, 1);
+  /* Things that travel: the header opening, the drawer, page-to-page morphs. They set
+     off at once and settle slowly, so they answer a click without dragging. */
+  --move: 340ms;
+  --glide: cubic-bezier(0.2, 0, 0, 1);
   --fade: 260ms;
   --paper-a: 0.16;
   --paper-b: 0.1;
@@ -210,8 +210,13 @@ p {
   scroll-margin-top: 24px;
 }
 
-.lab.hello-lab {
-  padding-top: 17px;
+/* Whoami sits on the name's first line as the other labels sit on theirs: both are
+   trimmed to their capitals, so the tops of their letters meet whatever the script. */
+@media (min-width: 701px) {
+  .lab.hello-lab,
+  .row.first:has(.intro) h1 {
+    text-box: trim-start cap alphabetic;
+  }
 }
 
 h1 {
@@ -224,6 +229,13 @@ h1 {
 
 .mut {
   color: var(--mut);
+}
+
+/* A project's organization, before its name: there, but quieter. A long name breaks
+   after the slash, never inside the organization's own name. */
+.pn-org {
+  color: var(--mut);
+  white-space: nowrap;
 }
 
 .small {
@@ -268,6 +280,40 @@ a:focus-visible,
   border: 0;
   background-color: transparent;
   cursor: pointer;
+}
+
+/*
+ * A link laid out as a block (a flex item, like the drawer's names) would light up as
+ * one box when it wraps. Its text sits in this inline span instead, which lights up
+ * line by line, as an inline link does.
+ */
+.hl {
+  background-image: linear-gradient(var(--soft), var(--soft));
+  background-repeat: no-repeat;
+  background-size: 0 1.2em;
+  background-position: 100% 55%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  border-radius: 2px;
+  transition: background-size 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+a:is(:hover, :focus-visible) .hl {
+  background-size: 100% 1.2em;
+  background-position: 0 55%;
+}
+
+[dir="rtl"] .hl {
+  background-position: 0 55%;
+}
+
+[dir="rtl"] a:is(:hover, :focus-visible) .hl {
+  background-position: 100% 55%;
+}
+
+.link.dr-name,
+.link.dr-name:is(:hover, :focus-visible) {
+  background-image: none;
 }
 
 [dir="rtl"] a,
@@ -429,9 +475,12 @@ a:is(:hover, :focus-visible) > .lk-ic {
   height: 0.55em;
 }
 
-a:is(:hover, :focus-visible) > .lk-ic {
+a:is(:hover, :focus-visible) > .lk-ic,
+.next:is(:hover, :focus-visible) > span > .lk-ic {
   width: 0.55em;
   margin-inline-start: 0.2em;
+  opacity: 1;
+  color: var(--ink);
 }
 
 @media (hover: none) {
@@ -902,13 +951,13 @@ a:is(:hover, :focus-visible) > .lk-ic {
 }
 
 ::view-transition-group(*) {
-  animation-duration: 620ms;
+  animation-duration: 420ms;
   animation-timing-function: var(--glide);
 }
 
 /* The page itself cross-fades a little quicker, so what travels stands out. */
 ::view-transition-group(root) {
-  animation-duration: 380ms;
+  animation-duration: 260ms;
 }
 
 /* What carries over from page to page: the logo, the name and a project's star. */
@@ -2194,6 +2243,24 @@ html {
   opacity: 1;
 }
 
+/* And at the bottom, while there is more of it below, it fades into the paper there. */
+.dr::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 3;
+  height: 48px;
+  background: linear-gradient(transparent, color-mix(in srgb, var(--bg) 70%, transparent) 60%, var(--bg));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--fade) linear;
+}
+
+.dr[data-more]::after {
+  opacity: 1;
+}
+
 .dr-search {
   position: relative;
   z-index: 10;
@@ -2287,8 +2354,14 @@ html {
   position: absolute;
   left: 0;
   right: 0;
-  top: 52px;
+  /* Just under the search field (12px down, 44px tall), clear of its border. */
+  top: 62px;
   z-index: 9;
+  /* A short panel: past this it scrolls inside, without carrying the list along. */
+  max-height: min(380px, 100dvh - 200px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
   padding: 14px 16px 6px;
   background: var(--bg);
   border: 1px solid var(--line);
@@ -2567,8 +2640,6 @@ html {
 
 .hero {
   position: relative;
-  min-height: 216px;
-  padding-inline-end: 250px;
 }
 
 .hero h1 {
@@ -2588,16 +2659,6 @@ html {
   line-height: 33px;
 }
 
-.disc {
-  position: absolute;
-  inset-inline-end: 0;
-  top: 0;
-  width: 210px;
-  height: 210px;
-  background: var(--acc);
-  view-transition-name: var(--vt-dot);
-}
-
 .val {
   margin: 0;
 }
@@ -2611,6 +2672,49 @@ html {
   font-size: 16px;
 }
 
+/* Links: one address a line, as the source and site above them read. */
+.links {
+  padding: 0;
+  list-style: none;
+  overflow-wrap: anywhere;
+}
+
+.ext-tail {
+  white-space: nowrap;
+}
+
+/* What a project is built with: chips that open the list filtered by each. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  /* The row's line height, so the first chips sit where a line of text would. */
+  padding-top: 2px;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 15px;
+  text-decoration: none;
+  transition:
+    background-color var(--fast) linear,
+    border-color var(--fast) linear;
+}
+
+.chip:hover,
+.chip:focus-visible {
+  border-color: transparent;
+  background: var(--soft);
+}
+
 .prose p {
   margin: 0 0 22px;
 }
@@ -2621,8 +2725,21 @@ html {
 
 /* The rest of a project or post page follows its title in, once the morph is under way. */
 .rise {
-  animation: rise 520ms var(--ease) both;
-  animation-delay: calc(220ms + var(--d, 0ms) * 2);
+  animation: rise 380ms var(--ease) both;
+  animation-delay: calc(120ms + var(--d, 0ms) * 1.5);
+}
+
+/* Arriving from a list, chips follow their row in, one quickly after another. */
+:root.vt-arrive .rise .chips > li {
+  animation: rise 320ms var(--ease) both;
+  animation-delay: calc(230ms + var(--d, 0ms) * 1.5 + var(--i, 0) * 25ms);
+}
+
+/* Arriving from a list, the name is still flying into the title (420ms, most of it in
+   the first 200): the lead under it waits until it has nearly landed, and the rest
+   follow the lead. */
+:root.vt-arrive .rise {
+  animation-delay: calc(230ms + var(--d, 0ms) * 1.5);
 }
 
 @keyframes rise {
@@ -2649,29 +2766,12 @@ html {
 .next > span {
   text-decoration: underline 2px var(--acc);
   text-underline-offset: 4px;
-  background-image: linear-gradient(var(--soft), var(--soft));
-  background-repeat: no-repeat;
-  background-size: 0 1.2em;
-  background-position: 100% 55%;
-  border-radius: 2px;
-  transition:
-    background-size 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    text-decoration-color var(--fast) linear;
+  transition: text-decoration-color var(--fast) linear;
 }
 
 .next:hover > span,
 .next:focus-visible > span {
   text-decoration-color: var(--ink);
-  background-size: 100% 1.2em;
-  background-position: 0 55%;
-}
-
-[dir="rtl"] .next > span {
-  background-position: 0 55%;
-}
-
-[dir="rtl"] .next:hover > span {
-  background-position: 100% 55%;
 }
 
 .next .dot {
@@ -2696,17 +2796,6 @@ html {
   margin-bottom: 22px;
   font-size: 48px;
   line-height: 1.06;
-}
-
-/* The post's bullet stretches into this rule as the page opens. */
-.rule {
-  display: block;
-  width: 100%;
-  height: 3px;
-  margin: 0 0 22px;
-  border-radius: 2px;
-  background: var(--acc);
-  view-transition-name: var(--vt-dot);
 }
 
 /* ---------- Long-form text: posts and project stories ---------- */
@@ -2848,6 +2937,7 @@ html {
 
 a.anchor .rv-i,
 .crumb .rv-i,
+.chip .rv-i,
 .next .rv-i {
   text-decoration: none;
 }
@@ -2978,7 +3068,8 @@ a.anchor .rv-i,
  */
 .consent {
   position: fixed;
-  inset-inline-end: 24px;
+  /* The far corner from the signature, which keeps the other one. */
+  inset-inline-start: 24px;
   bottom: 16px;
   z-index: 20;
   width: min(360px, 100% - 32px);
@@ -3148,10 +3239,6 @@ a.anchor .rv-i,
     margin-bottom: 8px;
   }
 
-  .lab.hello-lab {
-    padding-top: 0;
-  }
-
   h1 {
     font-size: 38px;
   }
@@ -3286,14 +3373,7 @@ a.anchor .rv-i,
   }
 
   .hero h1 {
-    min-height: 96px;
-    padding-inline-end: 104px;
     font-size: 44px;
-  }
-
-  .disc {
-    width: 88px;
-    height: 88px;
   }
 
   .lead {

@@ -1,0 +1,1 @@
+It began in 2021 as an Angular prototype. The rebuild starts from the workshop rather than the database: everything is stored on the device first, and each local workshop can sync to one account. It speaks English, Arabic (right to left), French, Spanish and Italian, and every release passes accessibility checks in light and dark, English and Arabic.

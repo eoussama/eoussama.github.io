@@ -1,13 +1,14 @@
 name: core
-order: 2
-featured: true
+order: 12
 kind: open-source
 type: library
-language: TypeScript
 year: 2025
 repo: https://github.com/eoussama/core
-live: https://ouss.es/core/
-stack: [TypeScript]
+languages:
+  - TypeScript
+links:
+  - https://www.npmjs.com/package/@eoussama/core
+  - https://npmx.dev/package/@eoussama/core
 role:
   en: Author and maintainer
   ar: المؤلف والمشرف على صيانته
@@ -16,35 +17,35 @@ role:
   es: Autor y mantenedor
   it: Autore e manutentore
   ja: 作者・メンテナー
+blurb:
+  en: Error handling, type guards and utilities for TypeScript.
+  ar: معالجة الأخطاء وحرّاس الأنواع وأدوات مساعدة لـ TypeScript.
+  ary: تسيير الأخطاء، وحرّاس الأنواع، وأدوات مساعدة ل TypeScript.
+  fr: Gestion des erreurs, gardes de type et utilitaires pour TypeScript.
+  es: Manejo de errores, guardas de tipo y utilidades para TypeScript.
+  it: Gestione degli errori, type guard e utilità per TypeScript.
+  ja: TypeScriptのためのエラー処理、型ガード、ユーティリティ。
 desc:
   en: error handling and type guards for TypeScript.
-  ar: معالجة الأخطاء وحرّاس الأنواع في TypeScript.
-  ary: معالجة الأخطاء وحرّاس الأنواع ف TypeScript.
+  ar: معالجة الأخطاء وحرّاس الأنواع لـ TypeScript.
+  ary: تسيير الأخطاء وحرّاس الأنواع ل TypeScript.
   fr: gestion des erreurs et gardes de type pour TypeScript.
   es: manejo de errores y guardas de tipo para TypeScript.
   it: gestione degli errori e type guard per TypeScript.
-  ja: TypeScriptのエラー処理と型ガード。
-blurb:
-  en: Error handling and type guards for TypeScript.
-  ar: معالجة الأخطاء وحرّاس الأنواع في TypeScript.
-  ary: معالجة الأخطاء وحرّاس الأنواع ف TypeScript.
-  fr: Gestion des erreurs et gardes de type pour TypeScript.
-  es: Manejo de errores y guardas de tipo para TypeScript.
-  it: Gestione degli errori e type guard per TypeScript.
-  ja: TypeScriptのエラー処理と型ガード。
+  ja: TypeScriptのためのエラー処理と型ガード。
 note:
-  en: Open source. TypeScript. This site’s build scripts use it.
-  ar: مفتوح المصدر. TypeScript. تستخدمه سكربتات بناء هذا الموقع.
-  ary: مفتوح المصدر. TypeScript. سكريبتات البناء ديال هاد الموقع كتستعملو.
-  fr: Open source. TypeScript. Les scripts de build de ce site l’utilisent.
-  es: Código abierto. TypeScript. Los scripts de compilación de este sitio lo usan.
-  it: Open source. TypeScript. Gli script di build di questo sito lo usano.
-  ja: オープンソース。TypeScript。このサイトのビルドスクリプトでも使っています。
+  en: Open source. TypeScript. This is the foundation on which my projects are built.
+  ar: مفتوح المصدر. TypeScript. هذا هو الأساس الذي تُبنى عليه مشاريعي.
+  ary: مفتوح المصدر. TypeScript. هادا هو الأساس اللي كيتبناو عليه المشاريع ديالي.
+  fr: Open source. TypeScript. C’est la base sur laquelle mes projets sont construits.
+  es: Código abierto. TypeScript. Es la base sobre la que se construyen mis proyectos.
+  it: Open source. TypeScript. È la base su cui sono costruiti i miei progetti.
+  ja: オープンソース。TypeScript。自分のプロジェクトはすべてこれを土台にしています。
 long:
-  en: TypeScript helpers for error handling and type guards. This site runs on them.
-  ar: أدوات مساعدة في TypeScript لمعالجة الأخطاء وحرّاس الأنواع. هذا الموقع يعمل بها.
-  ary: أدوات ف TypeScript لمعالجة الأخطاء وحرّاس الأنواع. هاد الموقع خدام بيهم.
-  fr: Des utilitaires TypeScript pour gérer les erreurs et vérifier les types. Ce site tourne avec.
-  es: Utilidades de TypeScript para manejar errores y comprobar tipos. Este sitio funciona con ellas.
-  it: Utilità TypeScript per la gestione degli errori e i type guard. Questo sito funziona con esse.
-  ja: エラー処理と型ガードのためのTypeScriptヘルパー。このサイトもこれで動いています。
+  en: TypeScript helpers for error handling and type guards, shared by every project I start.
+  ar: أدوات مساعدة بـ TypeScript لمعالجة الأخطاء وحرّاس الأنواع، تشترك فيها كل المشاريع التي أبدؤها.
+  ary: أدوات مساعدة ب TypeScript لتسيير الأخطاء وحرّاس الأنواع، مشتركين بين كاع المشاريع اللي كنبدا.
+  fr: Des utilitaires TypeScript pour la gestion des erreurs et les gardes de type, partagés par chaque projet que je lance.
+  es: Utilidades de TypeScript para el manejo de errores y las guardas de tipo, compartidas por cada proyecto que empiezo.
+  it: Utilità TypeScript per la gestione degli errori e i type guard, condivise da ogni progetto che inizio.
+  ja: エラー処理と型ガードのためのTypeScriptヘルパー。始めるすべてのプロジェクトで共有しています。

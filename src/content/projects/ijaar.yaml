@@ -1,0 +1,38 @@
+name: Ijaar
+order: 24
+kind: private
+type: app
+org: flare-flare
+languages:
+  - TypeScript
+  - C#
+tools:
+  - Angular
+  - Angular Material
+  - RxJS
+  - Leaflet
+  - Transloco
+  - Vitest
+  - .NET
+  - ASP.NET Core
+  - Docker
+tags:
+  - API
+  - Mobile
+  - Web
+blurb:
+  en: Find, rent or sell a home in Morocco.
+  ar: ابحث عن منزل في المغرب، أو استأجره، أو بِعه.
+  ary: قلّب على دار ف المغرب، كريها، ولا بيعها.
+  fr: Trouver, louer ou vendre un logement au Maroc.
+  es: Encuentra, alquila o vende una casa en Marruecos.
+  it: Trova, affitta o vendi casa in Marocco.
+  ja: モロッコで家を探す、借りる、売る。
+long:
+  en: Ijaar is a property marketplace for Morocco, on the web and on mobile.
+  ar: Ijaar سوق عقارية للمغرب، على الويب وعلى الهاتف.
+  ary: Ijaar سوق ديال العقار ف المغرب، ف الويب وف التيليفون.
+  fr: Ijaar est une place de marché immobilière pour le Maroc, sur le web et sur mobile.
+  es: Ijaar es un portal inmobiliario para Marruecos, en la web y en el móvil.
+  it: Ijaar è un portale immobiliare per il Marocco, sul web e su mobile.
+  ja: Ijaarは、ウェブとモバイルで使えるモロッコの不動産マーケットプレイスです。

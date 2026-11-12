@@ -1,6 +1,7 @@
 ---
 import type { Lang } from "~/i18n/langs";
 
+import ProjectName from "~/components/ProjectName.astro";
 import { PROFILE } from "~/data/profile";
 import { LANG_NAMES, LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
@@ -28,6 +29,8 @@ interface Props {
 
 type Item = {
   label: string;
+  /** An organization shown muted before the label ("nakamaorg/"). */
+  owner?: string | null;
   hint?: string;
   icon?: "z-star" | "z-cross" | "z-dia";
   href?: string;
@@ -59,10 +62,11 @@ const groups: { label: string; items: Item[] }[] = [
     label: t.cProjects,
     items: projects.map(p => ({
       label: p.name,
+      owner: p.owner,
       hint: t.kinds[p.kind],
       icon: "z-star",
       href: localized(lang, projectPath(p)),
-      keywords: `${pick(p.blurb, lang)} ${p.language ?? ""} ${p.type} ${p.kind} ${p.year ?? ""}`,
+      keywords: `${p.org ?? ""} ${pick(p.blurb, lang)} ${p.languages.join(" ")} ${p.tools.join(" ")} ${p.tags.join(" ")} ${p.type} ${p.kind} ${p.year ?? ""}`,
     })),
   },
   {
@@ -145,11 +149,11 @@ let n = 0;
               <p class="ck-h" id={`ck-g${g}`}>{group.label}</p>
               {group.items.map((item) => {
                 const id = `ck-${n++}`;
-                const keywords = `${group.label} ${item.label} ${item.hint ?? ""} ${item.keywords}`.toLowerCase();
+                const keywords = `${group.label} ${item.owner ?? ""} ${item.label} ${item.hint ?? ""} ${item.keywords}`.toLowerCase();
                 const inner = (
                   <Fragment>
                     <i class:list={["ck-ic", item.icon ?? "z-dia"]}></i>
-                    <span class="ck-l"><span lang={item.lang} dir={item.dir}>{item.label}</span></span>
+                    <span class="ck-l"><span lang={item.lang} dir={item.dir}>{item.owner === undefined ? item.label : <ProjectName owner={item.owner} name={item.label} />}</span></span>
                     <span class="ck-hint" data-theme-hint={item.action === "theme" ? item.value : undefined}>{item.hint}</span>
                   </Fragment>
                 );

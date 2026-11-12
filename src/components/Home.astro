@@ -4,6 +4,7 @@ import type { Lang } from "~/i18n/langs";
 import Ext from "~/components/Ext.astro";
 import Footer from "~/components/Footer.astro";
 import LinkIcon from "~/components/LinkIcon.astro";
+import ProjectName from "~/components/ProjectName.astro";
 import { PROFILE } from "~/data/profile";
 import { HELLO_ORDER, langInfo } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
@@ -63,7 +64,7 @@ const posts = await getPosts(lang);
       <ul class="list">
         {featured.map(project => (
           <li>
-            <i class="dot z-star"></i><a class="link" href={localized(lang, projectPath(project))}>{project.name}<LinkIcon kind="page" /></a>{t.sep}{pick(project.desc ?? project.blurb, lang)}
+            <i class="dot z-star"></i><a class="link" href={localized(lang, projectPath(project))}><ProjectName owner={project.owner} name={project.name} /><LinkIcon kind="page" /></a>{t.sep}{pick(project.desc ?? project.blurb, lang)}
             {project.note && <p class="note">{pick(project.note, lang)}</p>}
           </li>
         ))}

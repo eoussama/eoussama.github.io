@@ -1,5 +1,6 @@
 name: eo-textdraw-editor
-order: 13
+order: 92
+draft: true
 kind: open-source
 type: tool
 repo: https://github.com/eoussama/eo-textdraw-editor

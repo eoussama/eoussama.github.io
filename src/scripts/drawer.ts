@@ -111,11 +111,18 @@ if (drawer) {
       let shown = 0;
 
       items.forEach((item) => {
-        const facets = JSON.parse(item.dataset.facets ?? "{}") as Record<string, string>;
+        // A facet holds one value (a year) or several (tags); an item matches a group when any of its values is picked.
+        const facets = JSON.parse(item.dataset.facets ?? "{}") as Record<string, string | string[]>;
         const matches = (!query || (item.dataset.kw ?? "").includes(query))
-          && [...wanted].every(([group, values]) => values.has(facets[group] ?? ""));
+          && [...wanted].every(([group, values]) => [facets[group] ?? ""].flat().some(value => values.has(value)));
 
         item.hidden = !matches;
+
+        // The entrance staggers what shows, in order, however far down the full list it sits.
+        if (matches) {
+          item.style.setProperty("--i", String(shown));
+        }
+
         shown += matches ? 1 : 0;
       });
 
@@ -313,7 +320,7 @@ if (drawer) {
         { transformOrigin: "0 0", transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, ...tint[0] },
         { transformOrigin: "0 0", transform: "none", ...tint[1] },
       ],
-      { duration: 480, easing: "cubic-bezier(.55,0,.15,1)" },
+      { duration: 340, easing: "cubic-bezier(.2,0,0,1)" },
     );
 
     if (mover !== element) {
@@ -469,15 +476,37 @@ if (drawer) {
       }
 
       event.preventDefault();
+
+      // A chip (a project's language or tool) opens the list filtered by it.
+      if (link.dataset.filter !== undefined) {
+        sheets.get(link.dataset.drawer as List)?.restore(new URL(link.href).searchParams);
+      }
+
       open(link.dataset.drawer as List, link.closest(".ck") ? null : link);
     });
   });
 
-  // Once the list is scrolled, it fades out under the search and filters at the top.
+  // Once the list is scrolled, it fades out under the search and filters at the top;
+  // while more of it waits below, it fades out at the bottom too.
   const scroller = drawer.querySelector<HTMLElement>(".dr-scroll");
-  const markScroll = () => drawer.toggleAttribute("data-scrolled", (scroller?.scrollTop ?? 0) > 4);
+  const markScroll = () => {
+    const top = scroller?.scrollTop ?? 0;
+    const below = scroller ? scroller.scrollHeight - scroller.clientHeight - top : 0;
+
+    drawer.toggleAttribute("data-scrolled", top > 4);
+    drawer.toggleAttribute("data-more", below > 4);
+  };
 
   scroller?.addEventListener("scroll", markScroll, { passive: true });
+
+  // The list's length changes as it is searched, filtered or switched.
+  if (scroller) {
+    const resized = new ResizeObserver(markScroll);
+
+    resized.observe(scroller);
+    [...scroller.children].forEach(child => resized.observe(child));
+  }
+
   markScroll();
 
   // The P and W shortcuts: a list opens, or closes when it is the one showing.

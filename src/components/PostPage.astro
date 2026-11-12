@@ -14,9 +14,9 @@ import { localized } from "~/lib/url";
 
 
 /**
- * A post's own page: its title over a lavender rule and its first sentence, then when
- * it was published, the post itself and the next post. Arriving from a list, the
- * post's bullet stretches into the rule and its name into the title.
+ * A post's own page: its title and its first sentence, then when it was published,
+ * the post itself and the next post. Arriving from a list, the post's name grows
+ * into the title.
  */
 interface Props {
   lang: Lang;
@@ -39,12 +39,11 @@ const own = { lang: post.lang, dir: langInfo(post.lang).dir };
 <Base lang={lang} path={postPath(post)} title={`${title} · ${t.name}`} description={summary} kind="article">
   <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
 
-  <article class="post" style={`--vt-dot: vt-dot-blog-${slug}; --vt-name: vt-name-blog-${slug}`}>
+  <article class="post" style={`--vt-name: vt-name-blog-${slug}`}>
     <section class="row first">
       <h2 class="lab" id="writing"><a class="anchor" href="#writing" aria-label={t.writing + t.anchor}>{t.writing}</a></h2>
       <div>
         <h1 {...own}><span class="title">{title}</span></h1>
-        <i class="rule" aria-hidden="true"></i>
         <p class="lead rise" {...own}>{summary}</p>
       </div>
     </section>
@@ -63,7 +62,7 @@ const own = { lang: post.lang, dir: langInfo(post.lang).dir };
       <section class="row">
         <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
         <p class="val">
-          <a class="next" href={localized(lang, postPath(next))}><i class="dot z-cross"></i><span lang={next.lang}>{next.entry.data.title}</span></a><span class="or">{t.or}</span><a class="link" href="?list=posts" data-drawer="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a>
+          <a class="next" href={localized(lang, postPath(next))}><i class="dot z-cross"></i><span lang={next.lang}><span class="hl">{next.entry.data.title}</span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href="?list=posts" data-drawer="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a>
         </p>
       </section>
     )}

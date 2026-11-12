@@ -1,0 +1,55 @@
+name: Fireguard & Firemitt
+order: 7
+kind: open-source
+type: library
+year: 2024
+repo:
+  - https://github.com/eoussama/fireguard
+  - https://github.com/eoussama/firemitt
+live: https://ouss.es/firemitt/
+languages:
+  - TypeScript
+tools:
+  - SvelteKit
+  - Svelte
+  - Firebase
+  - Zod
+  - Vite
+  - Vitest
+tags:
+  - Web
+links:
+  - https://www.npmjs.com/package/@eoussama/firemitt
+  - https://npmx.dev/package/@eoussama/firemitt
+role:
+  en: Author and maintainer
+  ar: المؤلف والمشرف على صيانته
+  ary: كتبتو وكنتهلا فيه
+  fr: Auteur et mainteneur
+  es: Autor y mantenedor
+  it: Autore e manutentore
+  ja: 作者・メンテナー
+blurb:
+  en: Firebase sign-in for browser extensions under Manifest V3, and the package that drives it.
+  ar: تسجيل الدخول بـ Firebase لإضافات المتصفح في ظل Manifest V3، والحزمة التي تشغّله.
+  ary: الدخول ب Firebase لإضافات المتصفح مع Manifest V3، والباكيج اللي كيحرّكو.
+  fr: La connexion Firebase pour les extensions sous Manifest V3, et le paquet qui la pilote.
+  es: Inicio de sesión con Firebase para extensiones con Manifest V3, y el paquete que lo maneja.
+  it: L’accesso con Firebase per le estensioni con Manifest V3, e il pacchetto che lo guida.
+  ja: Manifest V3のブラウザ拡張機能のためのFirebaseログインと、それを動かすパッケージ。
+note:
+  en: Open source. SvelteKit and TypeScript. Signs people in as a workaround for Chrome’s v3 manifest.
+  ar: مفتوح المصدر. SvelteKit وTypeScript. يسجّل دخول المستخدمين للالتفاف على الإصدار الثالث من بيان Chrome.
+  ary: مفتوح المصدر. SvelteKit وTypeScript. كيدخّل الناس كحل بديل للـ manifest v3 ديال Chrome.
+  fr: Open source. SvelteKit et TypeScript. Connecte les utilisateurs pour contourner le manifest v3 de Chrome.
+  es: Código abierto. SvelteKit y TypeScript. Inicia sesión como solución al manifiesto v3 de Chrome.
+  it: Open source. SvelteKit e TypeScript. Fa accedere gli utenti aggirando il manifest v3 di Chrome.
+  ja: オープンソース。SvelteKitとTypeScript。ChromeのManifest V3の回避策としてログインを担う。
+long:
+  en: Manifest V3 took the usual sign-in flow away from Chrome extensions. Fireguard is a small static page that signs the user in with Firebase in a popup or an iframe and hands the token back to the extension; Firemitt, an npm package, opens it, passes it the settings and waits for the result.
+  ar: انتزع Manifest V3 من إضافات Chrome طريقة تسجيل الدخول المعتادة. Fireguard صفحة ثابتة صغيرة تسجّل دخول المستخدم بـ Firebase في نافذة منبثقة أو إطار iframe وتعيد الرمز إلى الإضافة، وFiremitt حزمة npm تفتحها وتمرّر لها الإعدادات وتنتظر النتيجة.
+  ary: Manifest V3 حيّد لإضافات Chrome الطريقة العادية ديال الدخول. Fireguard صفحة ستاتيكية صغيرة كتدخّل المستخدم ب Firebase ف popup ولا iframe وكترجّع التوكن للإضافة، وFiremitt باكيج ف npm كيحلّها، وكيعطيها الإعدادات، وكيتسنى النتيجة.
+  fr: Manifest V3 a privé les extensions Chrome du parcours de connexion habituel. Fireguard est une petite page statique qui connecte l’utilisateur avec Firebase dans une fenêtre ou une iframe et rend le jeton à l’extension ; Firemitt, un paquet npm, l’ouvre, lui passe les réglages et attend le résultat.
+  es: Manifest V3 dejó a las extensiones de Chrome sin el flujo habitual de inicio de sesión. Fireguard es una pequeña página estática que inicia la sesión del usuario con Firebase en una ventana emergente o un iframe y devuelve el token a la extensión; Firemitt, un paquete de npm, la abre, le pasa la configuración y espera el resultado.
+  it: Manifest V3 ha tolto alle estensioni di Chrome il solito flusso di accesso. Fireguard è una piccola pagina statica che fa accedere l’utente con Firebase in un popup o in un iframe e restituisce il token all’estensione; Firemitt, un pacchetto npm, la apre, le passa le impostazioni e attende il risultato.
+  ja: Manifest V3によって、Chrome拡張機能はいつものログイン手順を使えなくなりました。Fireguardは、ポップアップかiframeの中でFirebaseによるログインを行い、トークンを拡張機能に返す小さな静的ページです。npmパッケージのFiremittがそれを開き、設定を渡し、結果を待ちます。

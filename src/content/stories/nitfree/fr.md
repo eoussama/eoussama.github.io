@@ -1,0 +1,1 @@
+Discord change souvent sa page : tous les sélecteurs dont dépend Nitfree tiennent donc dans un seul fichier, et un diagnostic intégré indique ce qui marche encore. Une mise à jour de Discord se répare en général dans un seul fichier. Il a commencé en Vue ; la version actuelle est une réécriture.

@@ -193,8 +193,8 @@ const speculation = JSON.stringify({
     <Shortcuts lang={lang} />
     {gaId && <Consent lang={lang} id={gaId} />}
     <!--
-      Back from a project or post, its bullet and name return to their place in the
-      list: the list names them for the view transition as it is shown. This has to
+      Back from a project or post, its name returns to its place in the list: the
+      list names it for the view transition as it is shown. This has to
       be in place before the first paint, so it runs here rather than in a bundled
       script.
     -->
@@ -206,6 +206,11 @@ const speculation = JSON.stringify({
       }
 
       addEventListener("pagereveal", (event) => {
+        // Arrived through a view transition: the page's own entrance waits for what travels.
+        if (event.viewTransition) {
+          document.documentElement.classList.add("vt-arrive");
+        }
+
         const page = /\/(projects|blog)\/([^/]+)\/$/;
         const from = globalThis.navigation?.activation?.from?.url;
         const match = from && page.exec(new URL(from).pathname);
@@ -217,17 +222,14 @@ const speculation = JSON.stringify({
         const shown = link => !link.closest("[inert], .crumb, .ck") && link.getClientRects().length > 0;
         const links = [...document.querySelectorAll(`a[href$="/${match[1]}/${match[2]}/"]`)];
         const link = links.find(l => shown(l) && l.closest(".dr")) ?? links.find(shown);
-        const dot = link?.closest("li")?.querySelector(".dot");
         const key = `${match[1]}-${match[2]}`;
 
-        if (link && dot) {
+        if (link) {
           link.style.viewTransitionName = `vt-name-${key}`;
           link.classList.add("vt-carry");
-          dot.style.viewTransitionName = `vt-dot-${key}`;
           event.viewTransition.finished.finally(() => {
             link.classList.remove("vt-carry");
             link.style.removeProperty("view-transition-name");
-            dot.style.removeProperty("view-transition-name");
           });
         }
       });

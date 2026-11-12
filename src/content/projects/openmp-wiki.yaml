@@ -1,0 +1,31 @@
+name: wiki
+order: 28
+kind: contribution
+type: site
+org: openmultiplayer
+repo: https://github.com/openmultiplayer/wiki
+languages:
+  - JavaScript
+  - CSS
+tools:
+  - Docusaurus
+  - React
+tags:
+  - Open:MP
+  - Web
+role:
+  en: Contributor
+  ar: مساهم
+  ary: ساهمت فيه
+  fr: Contributeur
+  es: Colaborador
+  it: Collaboratore
+  ja: コントリビューター
+blurb:
+  en: Additions to the open.mp API documentation.
+  ar: إضافات إلى توثيق واجهة open.mp البرمجية.
+  ary: زيادات ف التوثيق ديال API ديال open.mp.
+  fr: Des ajouts à la documentation de l’API d’open.mp.
+  es: Añadidos a la documentación de la API de open.mp.
+  it: Aggiunte alla documentazione dell’API di open.mp.
+  ja: open.mpのAPIドキュメントへの追記。

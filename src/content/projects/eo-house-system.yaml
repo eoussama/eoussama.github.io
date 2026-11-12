@@ -1,0 +1,36 @@
+name: eo-house-system
+order: 22
+kind: open-source
+type: library
+year: 2018
+repo: https://github.com/eoussama/eo-house-system
+languages:
+  - Pawn
+tags:
+  - SA:MP
+  - Gaming
+  - Script
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
+blurb:
+  en: A housing system for SA:MP servers.
+  ar: نظام منازل لخوادم SA:MP.
+  ary: سيستيم ديال الديور للسيرفورات ديال SA:MP.
+  fr: Un système de logements pour serveurs SA:MP.
+  es: Un sistema de casas para servidores de SA:MP.
+  it: Un sistema di case per server SA:MP.
+  ja: SA:MPサーバー向けの住宅システム。
+long:
+  en: A filterscript that lets players buy, furnish and lock houses.
+  ar: سكربت تصفية (filterscript) يتيح للاعبين شراء المنازل وتأثيثها وإقفالها.
+  ary: filterscript كيخلّي اللاعبين يشريو الديور، ويفرشوهم، ويسدّوهم بالساروت.
+  fr: Un filterscript qui permet aux joueurs d’acheter, de meubler et de verrouiller des maisons.
+  es: Un filterscript que permite a los jugadores comprar, amueblar y cerrar con llave casas.
+  it: Un filterscript che permette ai giocatori di comprare, arredare e chiudere a chiave le case.
+  ja: プレイヤーが家を買い、家具を置き、鍵をかけられるフィルタースクリプト。

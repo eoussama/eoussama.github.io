@@ -1,0 +1,1 @@
+Started in December 2024 and built mostly over the summer of 2025, in a neo-brutalist style with confetti on the logo. Permissions are bitmasks, so only historians add to the timeline and only some members add games or matches. The player cards come from my FUT Card Generator.

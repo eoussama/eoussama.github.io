@@ -1,14 +1,40 @@
 name: eo-translatorjs
-order: 7
+order: 16
 kind: open-source
 type: library
+year: 2018
 repo: https://github.com/eoussama/eo-translatorjs
 live: https://eo-translatorjs.ouss.es/
+languages:
+  - JavaScript
+tools:
+  - Vite
+  - Vitest
+  - VitePress
+  - Playwright
+tags:
+  - Web
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
 blurb:
   en: A small JavaScript library for translating web content.
   ar: مكتبة JavaScript صغيرة لترجمة محتوى الويب.
-  ary: مكتبة JavaScript صغيرة باش تترجم محتوى الويب.
+  ary: مكتبة صغيرة ب JavaScript باش تترجم المحتوى ديال الويب.
   fr: Une petite bibliothèque JavaScript pour traduire du contenu web.
   es: Una pequeña biblioteca de JavaScript para traducir contenido web.
   it: Una piccola libreria JavaScript per tradurre contenuti web.
-  ja: Webコンテンツを翻訳する小さなJavaScriptライブラリ。
+  ja: ウェブのコンテンツを翻訳する、小さなJavaScriptライブラリ。
+long:
+  en: eo-translatorjs translates a page’s text from dictionaries you give it, with a default language to fall back on.
+  ar: يترجم eo-translatorjs نصوص الصفحة من قواميس تعطيها له، مع لغة افتراضية يعود إليها.
+  ary: eo-translatorjs كيترجم النصوص ديال الصفحة من قواميس كتعطيهم ليه، مع لغة افتراضية يرجع ليها.
+  fr: eo-translatorjs traduit le texte d’une page à partir de dictionnaires que vous lui fournissez, avec une langue par défaut en repli.
+  es: eo-translatorjs traduce el texto de una página a partir de los diccionarios que le das, con un idioma por defecto al que recurrir.
+  it: eo-translatorjs traduce il testo di una pagina dai dizionari che gli fornisci, con una lingua predefinita come ripiego.
+  ja: eo-translatorjsは、渡した辞書をもとにページの文章を翻訳し、訳がなければ既定の言語で表示します。

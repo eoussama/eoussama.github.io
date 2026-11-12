@@ -29,11 +29,11 @@ async function main() {
 
   for (const file of files) {
     const text = await readFile(new URL(file, projects), "utf8");
-    const repo = /^repo:\s*(\S+)/m.exec(text)?.[1];
+    // One repository on the line, or a list of them under it.
+    const one = /^repo:[ \t]*(\S+)/m.exec(text)?.[1];
+    const list = /^repo:\s*\n((?:[ \t]+- \S+\n?)+)/m.exec(text)?.[1] ?? "";
 
-    if (repo) {
-      slugs.push(repoSlug(repo));
-    }
+    [one, ...[...list.matchAll(/- (\S+)/g)].map(m => m[1])].filter((url): url is string => !!url).forEach(url => slugs.push(repoSlug(url)));
   }
 
   const snapshot: Snapshot = { fetchedAt: new Date().toISOString(), repos: {} };

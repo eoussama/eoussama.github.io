@@ -15,6 +15,8 @@ type Unit = {
   atoms: HTMLElement[];
   fadeOnly?: boolean;
   after?: boolean;
+  /** Milliseconds between one atom and the next, for marks that come in a row (chips). */
+  stagger?: number;
   sig?: HTMLElement;
   sigEnd?: number;
   name?: Text;
@@ -79,7 +81,7 @@ function reveal() {
   const rtl = root.dir === "rtl";
 
   // 1. The visible text, block by block.
-  const skip = (el: Element | null) => !el || !!el.closest("svg, script, style, .sr, .note, .small, .sig, .bar .tools, .slot, .ck, .dr, .kbd, code.no-rv");
+  const skip = (el: Element | null) => !el || !!el.closest("svg, script, style, .sr, .note, .small, .sig, .bar .tools, .slot, .ck, .dr, .kbd, .chip, code.no-rv");
   const BLOCK = "h1, h2, h3, p, li, dt, dd, figcaption, blockquote, .crumb, .nf-path";
   const blocks = new Map<Element, Text[]>();
   const walker = document.createTreeWalker(col, NodeFilter.SHOW_TEXT, { acceptNode: node => (node.nodeValue?.trim() && !skip(node.parentElement)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
@@ -184,21 +186,17 @@ function reveal() {
     units.unshift({ block: tools, words: [], atoms: [tools], fadeOnly: true });
   }
 
+  // A row of chips arrives chip by chip, each whole, in its place in the page's order.
+  col.querySelectorAll<HTMLElement>(".chips").forEach((row) => {
+    const at = units.findIndex(u => row.compareDocumentPosition(u.block) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const unit: Unit = { block: row, words: [], atoms: [...row.querySelectorAll<HTMLElement>(".chip")], stagger: 25 };
+
+    units.splice(at < 0 ? units.length : at, 0, unit);
+  });
+
   col.querySelectorAll<HTMLElement>(".sig").forEach(sig => units.push({ block: sig, sig, words: [], atoms: [] }));
   col.querySelectorAll<HTMLElement>(".small").forEach(small => units.push({ block: small, words: [], atoms: [small], fadeOnly: true, after: true }));
 
-  // Shapes that belong to a row arrive with the row's first line.
-  col.querySelectorAll<HTMLElement>(".disc, .rule").forEach((shape) => {
-    const row = shape.closest(".row") ?? shape.parentElement!;
-    const unit = units.find(u => !u.fadeOnly && row.contains(u.block));
-
-    if (unit) {
-      unit.atoms.push(shape);
-    }
-    else {
-      units.push({ block: shape, words: [], atoms: [shape] });
-    }
-  });
 
   units.forEach((unit) => {
     unit.words.forEach((word) => {
@@ -308,15 +306,17 @@ function reveal() {
       word.style.transform = "";
     });
 
-    unit.atoms.forEach((atom) => {
+    unit.atoms.forEach((atom, k) => {
+      const at = delay + k * (unit.stagger ?? 0);
+
       atom.style.opacity = "";
 
       if (unit.fadeOnly) {
-        play(atom, [{ opacity: 0 }, { opacity: 1 }], { delay, duration: 600, easing: "linear", fill: "backwards" });
+        play(atom, [{ opacity: 0 }, { opacity: 1 }], { delay: at, duration: 600, easing: "linear", fill: "backwards" });
       }
       else {
-        play(atom, [{ opacity: 0 }, { opacity: 1 }], { delay, duration: DUR * 0.8, fill: "backwards" });
-        play(atom, [{ translate: "0 6px" }, { translate: "0 0" }], { delay, duration: DUR, fill: "backwards" });
+        play(atom, [{ opacity: 0 }, { opacity: 1 }], { delay: at, duration: DUR * 0.8, fill: "backwards" });
+        play(atom, [{ translate: "0 6px" }, { translate: "0 0" }], { delay: at, duration: DUR, fill: "backwards" });
       }
     });
 
@@ -332,7 +332,7 @@ function reveal() {
       unit.sigEnd = now() + end * 1000;
     }
 
-    lastEnd = Math.max(lastEnd, t0 + DUR + Math.min(unit.words.length * WSTEP, 220));
+    lastEnd = Math.max(lastEnd, t0 + DUR + Math.min(unit.words.length * WSTEP, 220) + unit.atoms.length * (unit.stagger ?? 0));
   };
 
   // 3. Lines are released in page order, a step apart, as they come into view.

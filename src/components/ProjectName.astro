@@ -1,0 +1,14 @@
+---
+/**
+ * A project's name, after its organization and a slash, both muted, when it lives in
+ * one ("nakamaorg/circus"). The whole reads left to right on right-to-left pages too.
+ */
+interface Props {
+  owner: string | null;
+  name: string;
+}
+
+const { owner, name } = Astro.props;
+---
+
+{owner ? <bdi class="pn" dir="ltr"><span class="pn-org">{owner}/</span><wbr />{name}</bdi> : name}

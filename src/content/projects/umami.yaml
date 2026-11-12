@@ -1,0 +1,32 @@
+name: umami
+order: 27
+kind: contribution
+type: app
+org: umami-software
+repo: https://github.com/umami-software/umami
+languages:
+  - TypeScript
+tools:
+  - Next.js
+  - React
+  - Prisma
+  - PostgreSQL
+  - ClickHouse
+tags:
+  - Web
+role:
+  en: Contributor
+  ar: مساهم
+  ary: ساهمت فيه
+  fr: Contributeur
+  es: Colaborador
+  it: Collaboratore
+  ja: コントリビューター
+blurb:
+  en: Fixes to Umami, the privacy-focused web analytics.
+  ar: إصلاحات في Umami، أداة تحليلات الويب التي تحترم الخصوصية.
+  ary: إصلاحات ف Umami، الأداة ديال التحليلات ديال الويب اللي كتحترم الخصوصية.
+  fr: Des correctifs pour Umami, la mesure d’audience respectueuse de la vie privée.
+  es: Correcciones para Umami, la analítica web centrada en la privacidad.
+  it: Correzioni a Umami, l’analisi web attenta alla privacy.
+  ja: プライバシー重視のウェブ解析ツール、Umamiへの修正。

@@ -1,0 +1,41 @@
+name: Plus+
+order: 25
+kind: private
+type: app
+org: flare-flare
+languages:
+  - Dart
+  - C++
+  - Kotlin
+  - JavaScript
+tools:
+  - Flutter
+  - mpv
+  - Video.js
+  - hls.js
+  - Express
+  - esbuild
+  - Podman
+tags:
+  - Streaming
+  - Android
+  - iOS
+  - Mobile
+  - Desktop
+  - Web
+blurb:
+  en: Live TV on the phone, over IPTV.
+  ar: بثّ تلفزيوني مباشر على الهاتف، عبر IPTV.
+  ary: التلفزة نيشان ف التيليفون، ب IPTV.
+  fr: La télé en direct sur le téléphone, via IPTV.
+  es: Televisión en directo en el móvil, por IPTV.
+  it: TV in diretta sul telefono, via IPTV.
+  ja: IPTVで、スマホでテレビの生放送を。
+long:
+  en: Plus+ is a mobile app for watching live TV channels, built on IPTV playlists, with its own about, privacy, terms and copyright pages.
+  ar: Plus+ تطبيق للهاتف لمشاهدة القنوات التلفزيونية مباشرة، مبنيّ على قوائم تشغيل IPTV، وله صفحاته الخاصة للتعريف والخصوصية والشروط وحقوق النشر.
+  ary: Plus+ تطبيق ديال التيليفون باش تتفرج ف القنوات ديال التلفزة نيشان، مبني على البلايليستات ديال IPTV، وعندو الصفحات ديالو ديال التعريف، والخصوصية، والشروط، وحقوق النشر.
+  fr: Plus+ est une appli mobile pour regarder des chaînes de télé en direct, construite sur des listes IPTV, avec ses propres pages à propos, confidentialité, conditions et droits d’auteur.
+  es: Plus+ es una app móvil para ver canales de televisión en directo, basada en listas IPTV, con sus propias páginas de información, privacidad, términos y derechos de autor.
+  it: Plus+ è un’app mobile per guardare canali TV in diretta, basata su playlist IPTV, con le sue pagine di informazioni, privacy, termini e copyright.
+  ja: Plus+は、IPTVのプレイリストをもとにテレビの生放送を観るモバイルアプリです。概要、プライバシー、利用規約、著作権のページも備えています。

@@ -3,6 +3,7 @@ import type { Lang } from "~/i18n/langs";
 
 import LinkIcon from "~/components/LinkIcon.astro";
 import Logo from "~/components/Logo.astro";
+import ProjectName from "~/components/ProjectName.astro";
 import { ui } from "~/i18n/ui";
 import { formatDate } from "~/lib/dates";
 import { getPosts, postPath } from "~/lib/posts";
@@ -21,7 +22,8 @@ interface Props {
   lang: Lang;
 }
 
-type Item = { name: string; href: string; kind: string; blurb: string; icon: "z-star" | "z-cross"; facets: Record<string, string>; lang?: Lang };
+/** A facet takes one value per item (its year) or several (its languages, tools and tags). */
+type Item = { name: string; owner?: string | null; href: string; kind: string; blurb: string; icon: "z-star" | "z-cross"; facets: Record<string, string | string[]>; lang?: Lang };
 type Group = { key: string; label: string; options: { value: string; label: string; count: number }[] };
 type Sheet = { list: "work" | "writing"; search: string; items: Item[]; groups: Group[] };
 
@@ -31,11 +33,12 @@ const projects = await getProjects();
 
 const projectItems: Item[] = projects.map(p => ({
   name: p.name,
+  owner: p.owner,
   href: localized(lang, projectPath(p)),
   kind: t.kinds[p.kind],
   blurb: pick(p.blurb, lang),
   icon: "z-star",
-  facets: { language: p.language ?? "", year: p.year ? String(p.year) : "", type: p.type, access: p.access },
+  facets: { language: p.languages, year: p.year ? String(p.year) : "", type: p.type, access: p.access, org: p.org ?? "", tool: p.tools, tag: p.tags },
 }));
 
 const posts = await getPosts(lang);
@@ -53,6 +56,9 @@ const postItems: Item[] = posts.map(post => ({
  * The filter groups for a list, each with the values its items take and how many
  * items take each. Groups with nothing to choose from are left out.
  *
+ * Years run newest first; languages, tools and tags, which an item can have several
+ * of, run most used first.
+ *
  * @param items - The list's items
  * @param keys - The facets to filter by, with their labels
  * @param labels - Display labels for some facets' values
@@ -63,11 +69,9 @@ function groupsOf(items: Item[], keys: [string, string][], labels: Record<string
     const counts = new Map<string, number>();
 
     items.forEach((item) => {
-      const value = item.facets[key];
-
-      if (value) {
+      [item.facets[key] ?? []].flat().filter(Boolean).forEach((value) => {
         counts.set(value, (counts.get(value) ?? 0) + 1);
-      }
+      });
     });
 
     const options = [...counts].map(([value, count]) => ({ value, label: labels[key]?.[value] ?? value, count }));
@@ -76,8 +80,26 @@ function groupsOf(items: Item[], keys: [string, string][], labels: Record<string
       options.sort((a, b) => Number(b.value) - Number(a.value));
     }
 
+    if (key === "language" || key === "tool" || key === "tag") {
+      options.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+    }
+
     return { key, label, options };
   }).filter(group => group.options.length > 1);
+}
+
+/**
+ * The words an item is found by: its name, sentence and kind, and every facet value
+ * with its label.
+ *
+ * @param item - The item
+ * @returns The words, lowercased
+ */
+function keywords(item: Item): string {
+  const values = Object.values(item.facets).flat();
+  const named = item.facets.tag ? [item.facets.tag].flat().map(tag => t.tagNames[tag] ?? "") : [];
+
+  return [item.name, item.blurb, item.kind, ...values, ...named].join(" ").toLowerCase();
 }
 
 const sheets: Sheet[] = [
@@ -85,7 +107,7 @@ const sheets: Sheet[] = [
     list: "work",
     search: t.searchProjects,
     items: projectItems,
-    groups: groupsOf(projectItems, [["language", t.gLanguage], ["year", t.gYear], ["type", t.gKind], ["access", t.gAccess]], { type: t.types, access: t.access }),
+    groups: groupsOf(projectItems, [["language", t.gLanguage], ["year", t.gYear], ["type", t.gKind], ["access", t.gAccess], ["org", t.gOrg], ["tool", t.built], ["tag", t.gTags]], { type: t.types, access: t.access, tag: t.tagNames }),
   },
   { list: "writing", search: t.searchPosts, items: postItems, groups: groupsOf(postItems, [["topic", t.gTopic], ["year", t.gYear]]) },
 ];
@@ -154,9 +176,9 @@ const sheets: Sheet[] = [
         <p class="dr-empty" hidden><span></span> <button type="button" class="link" data-clear>{t.clearSearch}</button></p>
         <ul class="list dr-list">
           {sheet.items.map((item, i) => (
-            <li style={`--i: ${i}`} data-kw={`${item.name} ${item.blurb} ${item.kind} ${Object.values(item.facets).join(" ")}`.toLowerCase()} data-facets={JSON.stringify(item.facets)}>
+            <li style={`--i: ${i}`} data-kw={keywords(item)} data-facets={JSON.stringify(item.facets)}>
               <i class:list={["dot", item.icon]}></i>
-              <span class="dr-line"><a class="link dr-name" href={item.href} lang={item.lang}>{item.name}<LinkIcon kind="page" /></a><span class="dr-kind">{item.kind}</span></span>
+              <span class="dr-line"><a class="link dr-name" href={item.href} lang={item.lang}><span class="hl"><ProjectName owner={item.owner ?? null} name={item.name} /></span><LinkIcon kind="page" /></a><span class="dr-kind">{item.kind}</span></span>
               <span class="dr-desc" lang={item.lang}>{item.blurb}</span>
             </li>
           ))}

@@ -1,0 +1,1 @@
+I compromessi fanno parte dello scherzo: lo spazio è gratis ovunque ci sia video, ma i video non sono cifrati, le piattaforme ne limitano la durata e potrebbero accorgersene, e un video cancellato si porta via il suo file.

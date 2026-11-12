@@ -1,0 +1,56 @@
+name: Langkama
+order: 10
+kind: open-source
+type: tool
+org: nakamaorg
+repo:
+  - https://github.com/nakamaorg/langkama
+  - https://github.com/nakamaorg/langkama-online
+  - https://github.com/nakamaorg/nakama-realm-vscode
+live: https://nakamaorg.github.io/langkama-online/
+languages:
+  - TypeScript
+  - JavaScript
+tools:
+  - Vue
+  - Pinia
+  - Vite
+  - Jest
+tags:
+  - Language
+  - Terminal
+  - Web
+links:
+  - https://marketplace.visualstudio.com/items?itemName=Eoussama.nakama-realm
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
+blurb:
+  en: A small scripting language in the Nakama Realm’s own slang.
+  ar: لغة برمجة نصية صغيرة بلهجة Nakama Realm الخاصة.
+  ary: لغة سكريبت صغيرة بالهضرة الخاصة ديال Nakama Realm.
+  fr: Un petit langage de script dans l’argot du Nakama Realm.
+  es: Un pequeño lenguaje de scripts en la jerga propia del Nakama Realm.
+  it: Un piccolo linguaggio di scripting nel gergo del Nakama Realm.
+  ja: Nakama Realm独自のスラングで書く、小さなスクリプト言語。
+note:
+  en: Open source. An interpreter, a REPL and a VS Code extension.
+  ar: مفتوح المصدر. مفسّر وREPL وإضافة لـ VS Code.
+  ary: مفتوح المصدر. مفسّر، REPL وإضافة ل VS Code.
+  fr: Open source. Un interpréteur, un REPL et une extension VS Code.
+  es: Código abierto. Un intérprete, un REPL y una extensión para VS Code.
+  it: Open source. Un interprete, un REPL e un’estensione per VS Code.
+  ja: オープンソース。インタプリタ、REPL、VS Code拡張機能。
+long:
+  en: Langkama is an embeddable scripting language whose keywords come from the Nakama Realm’s lingo. You can run scripts from the command line, type them into a REPL, or embed the language in your own code. It also has documentation, a VS Code extension and an online editor to try it in the browser.
+  ar: Langkama لغة برمجة نصية قابلة للتضمين، كلماتها المفتاحية مأخوذة من لهجة Nakama Realm. يمكنك تشغيل السكربتات من سطر الأوامر، أو كتابتها في REPL، أو تضمين اللغة في شيفرتك. ولها أيضًا توثيق وإضافة لـ VS Code ومحرّر على الإنترنت لتجربتها في المتصفح.
+  ary: Langkama لغة سكريبت تقدر تدخّلها ف برامج أخرى، والكلمات المفتاحية ديالها جايين من الهضرة ديال Nakama Realm. تقدر تشغّل السكريبتات من سطر الأوامر، ولا تكتبهم ف REPL، ولا تدخّل اللغة ف الكود ديالك. وعندها حتى توثيق، وإضافة ل VS Code، ومحرّر أونلاين تجرّبها فيه ف المتصفح.
+  fr: Langkama est un langage de script intégrable dont les mots-clés viennent de l’argot du Nakama Realm. On peut exécuter des scripts en ligne de commande, les saisir dans un REPL, ou intégrer le langage à son propre code. Il a aussi une documentation, une extension VS Code et un éditeur en ligne pour l’essayer dans le navigateur.
+  es: Langkama es un lenguaje de scripts integrable cuyas palabras clave vienen de la jerga del Nakama Realm. Puedes ejecutar scripts desde la línea de comandos, escribirlos en un REPL o integrar el lenguaje en tu propio código. También tiene documentación, una extensión para VS Code y un editor en línea para probarlo en el navegador.
+  it: Langkama è un linguaggio di scripting incorporabile le cui parole chiave vengono dal gergo del Nakama Realm. Puoi eseguire script dalla riga di comando, scriverli in un REPL o incorporare il linguaggio nel tuo codice. Ha anche la documentazione, un’estensione per VS Code e un editor online per provarlo nel browser.
+  ja: Langkamaは、Nakama Realmの言葉をキーワードにした、組み込み可能なスクリプト言語です。コマンドラインでスクリプトを実行したり、REPLに打ち込んだり、自分のコードに組み込んだりできます。ドキュメント、VS Code拡張機能、ブラウザで試せるオンラインエディタもあります。

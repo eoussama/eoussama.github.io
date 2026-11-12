@@ -1,14 +1,40 @@
 name: eo-typewriterjs
-order: 8
+order: 17
 kind: open-source
 type: library
+year: 2018
 repo: https://github.com/eoussama/eo-typewriterjs
 live: https://eo-typewriterjs.ouss.es/
+languages:
+  - TypeScript
+tools:
+  - Vite
+  - Vitest
+  - VitePress
+  - Playwright
+tags:
+  - Web
+role:
+  en: Author
+  ar: المؤلف
+  ary: كتبتو
+  fr: Auteur
+  es: Autor
+  it: Autore
+  ja: 作者
 blurb:
   en: A typewriter effect for JavaScript, on the go.
-  ar: تأثير الآلة الكاتبة في JavaScript، جاهز للاستخدام.
-  ary: تأثير الماكينة ديال الكتابة ف JavaScript، واجد للاستعمال.
+  ar: تأثير الآلة الكاتبة لـ JavaScript، جاهز للاستعمال.
+  ary: تأثير ديال الماكينة ديال الكتابة ل JavaScript، واجد للاستعمال.
   fr: Un effet machine à écrire pour JavaScript, prêt à l’emploi.
   es: Un efecto de máquina de escribir para JavaScript, listo para usar.
   it: Un effetto macchina da scrivere per JavaScript, pronto all’uso.
-  ja: すぐ使える、JavaScriptのタイプライター効果。
+  ja: すぐに使える、JavaScriptのタイプライター効果。
+long:
+  en: eo-typewriterjs types, pauses and erases text on a page, one character at a time.
+  ar: يكتب eo-typewriterjs النص على الصفحة ويتوقف ويمحوه، حرفًا حرفًا.
+  ary: eo-typewriterjs كيكتب النص ف الصفحة، وكيوقف، وكيمسحو، حرف بحرف.
+  fr: eo-typewriterjs tape, marque des pauses et efface du texte sur une page, un caractère à la fois.
+  es: eo-typewriterjs escribe, pausa y borra texto en una página, carácter a carácter.
+  it: eo-typewriterjs scrive, mette in pausa e cancella il testo su una pagina, un carattere alla volta.
+  ja: eo-typewriterjsは、ページ上の文字を1文字ずつ打ち、止め、消します。
