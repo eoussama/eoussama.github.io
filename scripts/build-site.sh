@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 #
 # Builds the hosted site into _site/:
-#   /            -> the current site (this working tree)
+#   /            -> the current site (this working tree), built as its manifest entry says
 #   /v/<x.y>/    -> each version listed in archive/versions.json, pulled from git
-#   /archive/    -> the version switcher and its manifest
+#   /archive/    -> the version switcher, its manifest, and the archived versions' analytics
 #
-# Versions are plain static files, except those marked "build": "next" in the
-# manifest, which are built with npm and exported for their sub-folder.
+# Versions are plain static files, unless the manifest gives them a "build":
+#   "next"  -> built with npm and exported for their sub-folder (v0.3)
+#   "astro" -> built with pnpm for their sub-folder (v0.5 on); these carry their own
+#              version menu and analytics, so nothing is injected into them
 #
-# Requires: bash, git, perl, tar (and node/npm for built versions).
+# With PUBLIC_GA_ID set, the current site asks before it counts visits, and the archived
+# versions count the visitors who said yes there, each page view tagged with its version.
+#
+# Requires: bash, git, perl, tar (and node with npm and pnpm for built versions).
 # The repo must have full history and tags.
 
 set -euo pipefail
@@ -17,6 +22,7 @@ ROOT="$(git rev-parse --show-toplevel)"
 OUT="$ROOT/_site"
 MANIFEST="$ROOT/archive/versions.json"
 SWITCHER_TAG='<script src="/archive/switcher.js" defer></script>'
+GA_ID="${PUBLIC_GA_ID:-}"
 
 cd "$ROOT"
 
@@ -67,17 +73,44 @@ build_next() {
 	rm -rf "$work"
 }
 
-# Strips dead analytics, injects the switcher and, for archived versions, noindex.
+# Builds an Astro version for a base path (/ or /v/<version>/) into a directory.
+build_astro() {
+	local ref="$1" dest="$2" base="$3" work
+	command -v pnpm > /dev/null || fail "pnpm is needed to build $ref"
+	work="$(mktemp -d)"
+	export_ref "$ref" "$work"
+	(
+		cd "$work"
+		pnpm install --frozen-lockfile --reporter=silent
+		ASTRO_TELEMETRY_DISABLED=1 BASE_PATH="$base" pnpm run build
+	) >&2 || fail "build of $ref for $base failed"
+	[[ -f "$work/dist/index.html" ]] || fail "build of $ref produced no dist/index.html"
+	mkdir -p "$dest"
+	cp -R "$work/dist/." "$dest/"
+	rm -rf "$work"
+}
+
+# Strips dead analytics, adds the switcher and analytics (for versions without their
+# own), and, for archived versions, noindex.
 patch_html() {
-	local file="$1" noindex="$2"
+	local file="$1" noindex="$2" own="$3" version="$4"
 	[[ -f "$file" ]] || fail "missing $file"
 
-	# Remove the defunct Universal Analytics snippet (comment + loader + config script).
-	perl -0pi -e 's{\s*<!--\s*Global site tag.*?-->\s*<script[^>]*googletagmanager[^>]*>\s*</script>\s*<script>.*?</script>}{}s' "$file"
+	if [[ "$own" == "no" ]]; then
+		# Remove the defunct Universal Analytics snippet (comment + loader + config script).
+		perl -0pi -e 's{\s*<!--\s*Global site tag.*?-->\s*<script[^>]*googletagmanager[^>]*>\s*</script>\s*<script>.*?</script>}{}s' "$file"
 
-	# Inject the switcher right before </body>.
-	SWITCHER_TAG="$SWITCHER_TAG" perl -0pi -e 's{</body>}{\t$ENV{SWITCHER_TAG}\n</body>}i' "$file"
-	grep -qF "$SWITCHER_TAG" "$file" || fail "could not inject switcher into $file"
+		# Inject the switcher right before </body>.
+		SWITCHER_TAG="$SWITCHER_TAG" perl -0pi -e 's{</body>}{\t$ENV{SWITCHER_TAG}\n</body>}i' "$file"
+		grep -qF "$SWITCHER_TAG" "$file" || fail "could not inject switcher into $file"
+
+		# And the analytics, which count only visitors who allowed them on the current site.
+		if [[ -n "$GA_ID" ]]; then
+			GA_TAG="<script src=\"/archive/analytics.js\" data-ga=\"$GA_ID\" data-version=\"$version\" defer></script>" \
+				perl -0pi -e 's{</body>}{\t$ENV{GA_TAG}\n</body>}i' "$file"
+			grep -qF 'src="/archive/analytics.js"' "$file" || fail "could not inject analytics into $file"
+		fi
+	fi
 
 	if [[ "$noindex" == "yes" ]]; then
 		# At the end of <head>: React (in built versions) hydrates the start of <head>
@@ -96,11 +129,26 @@ patch_html() {
 rm -rf "$OUT"
 mkdir -p "$OUT"
 
-# Current site at the root.
-export_ref HEAD "$OUT"
-strip_repo_files "$OUT"
-patch_html "$OUT/index.html" no
-echo "built /  (working tree)"
+# Current site at the root, built the way its manifest entry says.
+IFS=$'\t' read -r current_version current_build < <(perl -MJSON::PP -0777 -ne '
+	my ($c) = grep { $_->{current} } @{ decode_json($_) };
+	print join("\t", $c->{version}, $c->{build} // "static"), "\n" if $c;
+' "$MANIFEST") || fail "no current version in $MANIFEST"
+
+case "$current_build" in
+	static)
+		export_ref HEAD "$OUT"
+		strip_repo_files "$OUT"
+		patch_html "$OUT/index.html" no no "$current_version"
+		;;
+	astro)
+		build_astro HEAD "$OUT" "/"
+		;;
+	*)
+		fail "the current version can't be built with '$current_build'"
+		;;
+esac
+echo "built /  (working tree, v$current_version, $current_build)"
 
 # Every archived version under /v/<version>/.
 while IFS=$'\t' read -r version ref build; do
@@ -113,12 +161,17 @@ while IFS=$'\t' read -r version ref build; do
 		next)
 			build_next "$ref" "$dest" "$version"
 			;;
+		astro)
+			build_astro "$ref" "$dest" "/v/$version"
+			;;
 		*)
 			fail "unknown build type '$build' for $version"
 			;;
 	esac
+	own=no
+	[[ "$build" == "astro" ]] && own=yes
 	while IFS= read -r -d '' page; do
-		patch_html "$page" yes
+		patch_html "$page" yes "$own" "$version"
 	done < <(find "$dest" -name '*.html' -print0)
 	echo "built /v/$version/  ($ref, $build)"
 done < <(perl -MJSON::PP -0777 -ne '
@@ -142,8 +195,8 @@ cat > "$OUT/v/index.html" <<'EOF'
 </html>
 EOF
 
-# The switcher and its manifest.
+# The switcher, its manifest, and the archived versions' analytics.
 mkdir -p "$OUT/archive"
-cp "$ROOT/archive/switcher.js" "$ROOT/archive/versions.json" "$OUT/archive/"
+cp "$ROOT/archive/switcher.js" "$ROOT/archive/versions.json" "$ROOT/archive/analytics.js" "$OUT/archive/"
 
 echo "done: $OUT"

@@ -2,6 +2,7 @@
 import type { Lang } from "~/i18n/langs";
 
 import { ui } from "~/i18n/ui";
+import { CURRENT } from "~/lib/versions";
 
 
 
@@ -19,7 +20,7 @@ const { lang, id } = Astro.props;
 const t = ui(lang);
 ---
 
-<section class="consent" id="consent" aria-label={t.cConsent} data-ga={id} hidden>
+<section class="consent" id="consent" aria-label={t.cConsent} data-ga={id} data-version={CURRENT} hidden>
   <p>{t.consentText}</p>
   <div class="consent-actions">
     <button type="button" class="pill-btn consent-yes" data-consent="granted">{t.consentYes}</button>

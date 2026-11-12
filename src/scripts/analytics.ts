@@ -4,8 +4,9 @@ import { tryCatchSync } from "@eoussama/core";
 
 /*
  * Google Analytics 4, after consent. Nothing loads until the visitor allows it; ads
- * signals stay off either way. Counted: page views, project opens, language and theme
- * changes, plus GA's own outbound links and downloads.
+ * signals stay off either way. Counted: page views, each with the version of the site
+ * seen (site_version, as the archived versions send too), project opens, language and
+ * theme changes, plus GA's own outbound links and downloads.
  */
 
 type Gtag = (...args: unknown[]) => void;
@@ -35,7 +36,7 @@ function load() {
   gtag = w.gtag;
   gtag("consent", "default", { analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
   gtag("js", new Date());
-  gtag("config", id);
+  gtag("config", id, { site_version: banner?.dataset.version ?? "" });
 
   const script = document.createElement("script");
 

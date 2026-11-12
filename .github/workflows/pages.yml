@@ -3,6 +3,10 @@ name: Deploy site
 on:
   push:
     branches: [master]
+  # Weekly, so the projects' stars and languages from GitHub stay fresh.
+  schedule:
+    - cron: "17 5 * * 1"
+  # And by hand: Actions → Deploy site → Run workflow.
   workflow_dispatch:
 
 permissions:
@@ -17,16 +21,35 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      # Google Analytics 4, from the repository's Actions variables (Settings →
+      # Secrets and variables → Actions → Variables). Left unset, nothing is tracked.
+      PUBLIC_GA_ID: ${{ vars.PUBLIC_GA_ID }}
+      # Read-only, for the projects' stars and languages without rate limits.
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout (full history and tags)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Node (for versions built with npm)
+      - name: Set up pnpm (the version in package.json)
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node (the version in .nvmrc)
         uses: actions/setup-node@v4
         with:
-          node-version: 26
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Check types
+        run: pnpm check
 
       - name: Build site with all versions
         run: bash scripts/build-site.sh
