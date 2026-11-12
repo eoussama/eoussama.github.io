@@ -7,7 +7,8 @@ import fragment from "./hole.frag?raw";
  * own canvas; dust, scraps of paper and the letters of the missing address swirl in
  * on a second canvas over the page; and the page's own letters and the header lean
  * toward it. The cursor stirs its light; a click tears a few scraps off and sends a
- * ripple through the page. With reduced motion everything holds still.
+ * ripple through the page. It opens as a pinprick that strains, then tears wide with a
+ * gulp. With reduced motion everything holds still, already open.
  */
 
 type GL = { gl: WebGLRenderingContext; u: Record<string, WebGLUniformLocation | null>; canvas: HTMLCanvasElement };
@@ -17,6 +18,42 @@ type Wave = { t: number; s: number; rad: number; amp: number };
 type Leaner = { el: HTMLElement; bar: boolean; unit: boolean; on: boolean; x: number; y: number; ph: number; off: [number, number] };
 
 const root = document.documentElement;
+
+/** When the paper first gives, in seconds from the start. */
+const PRICK = 0.12;
+/** When the pinprick tears wide open. */
+const TEAR = 0.6;
+/** How long tearing open takes. */
+const WIDE = 1;
+/** How big the pinprick gets before it tears, as a share of the hole. */
+const PIN = 0.07;
+
+/**
+ * How far open the hole is, a while after the page shows: nothing, then a pinprick
+ * that grows and trembles, then a tear that opens past its size and settles back.
+ *
+ * @param t - Seconds since the start
+ * @returns Its size as a share of the full hole, and how much of everything around
+ * it (scraps in flight, the lean of the page) has come in
+ */
+function opening(t: number): { grow: number; appear: number } {
+  if (t < PRICK) {
+    return { grow: 0, appear: 0 };
+  }
+
+  if (t < TEAR) {
+    const k = (t - PRICK) / (TEAR - PRICK);
+    const s = 1 - (1 - k) ** 2;
+
+    return { grow: PIN * s * (1 + 0.18 * Math.sin(k * 46) * s), appear: 0 };
+  }
+
+  const k = Math.min(1, (t - TEAR) / WIDE);
+  const back = 1 + 2.5 * (k - 1) ** 3 + 1.5 * (k - 1) ** 2;
+  const a = Math.min(1, k * 1.4);
+
+  return { grow: PIN + (1 - PIN) * back, appear: a * a * (3 - 2 * a) };
+}
 
 /**
  * Sets up the shader that draws the hole.
@@ -112,7 +149,7 @@ function start() {
 
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const GLX = holeGL(hole.querySelector("canvas"));
-  const H = { last: performance.now(), T: 0, flow: 0, life: 0, pull: 1, prox: 0, pulse: 0, pv: 0, calm: 0, m: [0, 0], cd: [1, 0], mx: null as number | null, my: null as number | null, stir: [] as Stir[], waves: [] as Wave[], q: Math.min(2, devicePixelRatio || 1), slow: 0, n: 0, stirT: 0, sl: null as number[] | null, scan: 0, chars: null as Leaner[] | null, map: null as Map<HTMLElement, Leaner> | null, bar: null as HTMLElement | null };
+  const H = { last: performance.now(), open: 0, torn: false, T: 0, flow: 0, life: 0, pull: 1, prox: 0, pulse: 0, pv: 0, calm: 0, m: [0, 0], cd: [1, 0], mx: null as number | null, my: null as number | null, stir: [] as Stir[], waves: [] as Wave[], q: Math.min(2, devicePixelRatio || 1), slow: 0, n: 0, stirT: 0, sl: null as number[] | null, scan: 0, chars: null as Leaner[] | null, map: null as Map<HTMLElement, Leaner> | null, bar: null as HTMLElement | null };
   let seed = 7;
   const rnd = () => {
     seed = (seed * 16807) % 2147483647;
@@ -263,6 +300,22 @@ function start() {
     const R = G.half * 0.62;
     const ease = (rate: number) => 1 - Math.exp(-dt * rate);
 
+    // Opening, on the clock rather than by frames, so slow first frames while the page
+    // loads do not drag it out. The tear gulps once, a ripple through the page.
+    H.open = reduce ? TEAR + WIDE : H.open + Math.min(0.25, Math.max(0, raw));
+
+    const { grow, appear } = opening(H.open);
+    const hr = R * grow;
+
+    if (!H.torn && H.open >= TEAR) {
+      H.torn = true;
+
+      if (!reduce) {
+        H.pv += 9;
+        H.waves.push({ t: 0.05, s: 1.1, rad: 0, amp: 0 }, { t: -0.2, s: 0.35, rad: 0, amp: 0 });
+      }
+    }
+
     // The pointer: how near it is, where it is, whether it is over the hole.
     let prox = 0;
     let inside = false;
@@ -377,7 +430,7 @@ function start() {
       gl.uniform2f(u.uC!, gw / 2, gh / 2);
       gl.uniform2f(u.uM!, H.m[0]!, H.m[1]!);
       gl.uniform2f(u.uCd!, H.cd[0]! / cl, H.cd[1]! / cl);
-      gl.uniform1f(u.uR!, R * q);
+      gl.uniform1f(u.uR!, Math.max(0.75, hr * q));
       gl.uniform1f(u.uT!, T);
       gl.uniform1f(u.uFlow!, H.flow + 40);
       gl.uniform1f(u.uLife!, H.life + 40);
@@ -421,16 +474,16 @@ function start() {
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, W, Hh);
 
-    if (!GLX) {
+    if (!GLX && hr > 0.5) {
       // Without WebGL, a plain dark disc stands in for the hole.
-      const v = g.createRadialGradient(cx, cy, 0, cx, cy, R);
+      const v = g.createRadialGradient(cx, cy, 0, cx, cy, hr);
 
       v.addColorStop(0, "#000");
       v.addColorStop(0.7, "#05060b");
       v.addColorStop(1, "#151829");
       g.fillStyle = v;
       g.beginPath();
-      g.arc(cx, cy, R, 0, 6.2832);
+      g.arc(cx, cy, hr, 0, 6.2832);
       g.fill();
       g.lineWidth = 2;
       g.strokeStyle = bg;
@@ -562,7 +615,7 @@ function start() {
       y += p.dy;
 
       const within = p.r < 0.97;
-      const fade = Math.max(0, Math.min(1, (p.r - 0.25) / 0.22)) * p.born * (p.temp ? 1 : Math.max(0, Math.min(1, (2.62 - p.r) / 0.3)));
+      const fade = Math.max(0, Math.min(1, (p.r - 0.25) / 0.22)) * p.born * (p.temp ? 1 : Math.max(0, Math.min(1, (2.62 - p.r) / 0.3))) * appear;
 
       if (fade <= 0.004) {
         continue;
@@ -690,7 +743,7 @@ function start() {
       let wave = 0;
       let swell = 0;
 
-      f = f * f * f;
+      f = f * f * f * appear;
 
       for (const w of H.waves) {
         if (w.amp <= 0) {
