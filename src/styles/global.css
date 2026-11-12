@@ -1053,6 +1053,117 @@ a:is(:hover, :focus-visible) > .lk-ic,
     margin var(--move) var(--glide);
 }
 
+/* ---------- Back to the top ---------- */
+
+/*
+ * A round button at the column's edge, under the header's controls, there only once
+ * the top of the page is out of sight. Its rim is a ring that fills in lavender as the
+ * page is read; on hover the inside takes the lavender too and the arrow lifts.
+ */
+.to-top {
+  position: fixed;
+  inset-inline-end: max(24px, calc((100% - 1060px) / 2));
+  bottom: 28px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(0.9);
+  transition:
+    opacity var(--fade) linear,
+    transform var(--move) var(--glide),
+    visibility 0s linear var(--fade),
+    background-color var(--fast) linear;
+}
+
+.to-top[hidden] {
+  display: none;
+}
+
+.to-top[data-shown="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity var(--fade) linear,
+    transform var(--move) var(--glide),
+    visibility 0s,
+    background-color var(--fast) linear;
+}
+
+.to-top > svg {
+  grid-area: 1 / 1;
+}
+
+.to-top-ring {
+  display: block;
+  overflow: visible;
+  transform: rotate(-90deg);
+}
+
+.to-top-ring circle {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1.5;
+}
+
+.to-top-ring .to-top-read {
+  stroke: var(--acc);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--read, 0));
+}
+
+[dir="rtl"] .to-top-ring {
+  transform: rotate(-90deg) scaleY(-1);
+}
+
+.to-top-arrow {
+  display: block;
+  transition: transform var(--fast) var(--ease);
+}
+
+.to-top:hover {
+  background: var(--soft);
+}
+
+.to-top:is(:hover, :focus-visible) .to-top-arrow {
+  transform: translateY(-2px);
+}
+
+.to-top:active {
+  transform: scale(0.94);
+}
+
+/* Out of the way while a list is open over the page. */
+:root[data-open] .to-top {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (max-width: 700px) {
+  .to-top {
+    inset-inline-end: 16px;
+    bottom: 16px;
+  }
+}
+
+@media print {
+  .to-top {
+    display: none;
+  }
+}
+
 /* ---------- The eclipse logo settling in, on the first visit ---------- */
 
 .lg-disc,

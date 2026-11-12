@@ -188,6 +188,11 @@ const speculation = JSON.stringify({
         </main>
       </div>
     </div>
+    <!-- Far down a page, a way back up, ringed by how much of the page has been read: scripts/top.ts. -->
+    <button type="button" class="to-top" aria-label={t.toTop} title={t.toTop} data-shown="false" tabindex="-1" hidden>
+      <svg class="to-top-ring" width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="21" pathLength="1"></circle><circle class="to-top-read" cx="22" cy="22" r="21" pathLength="1"></circle></svg>
+      <svg class="to-top-arrow" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3.5M3.5 8 8 3.5 12.5 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </button>
     <Drawer lang={lang} />
     <Palette lang={lang} path={path} hello={hello} consent={!!gaId} />
     <Shortcuts lang={lang} />
@@ -242,6 +247,7 @@ const speculation = JSON.stringify({
       import "~/scripts/tug";
       import "~/scripts/drawer";
       import "~/scripts/vt";
+      import "~/scripts/top";
       import "~/scripts/reveal";
       import "~/scripts/name";
       import "~/scripts/analytics";
