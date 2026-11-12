@@ -2498,6 +2498,8 @@ html {
 .dr-scroll {
   height: 100%;
   padding: 18px 48px 60px 62px;
+  /* It scrolls up and down only. */
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
@@ -2653,13 +2655,15 @@ html {
   transition: background-color var(--fast) linear;
 }
 
-/* Once the list scrolls, it fades out softly as it runs under them, not cut off. */
+/* Once the list scrolls, it fades out softly as it runs under them, not cut off. The
+   fade reaches the paper's sides as a border image's outset, which is only painted:
+   as a box that wide it would let the list scroll sideways. */
 .dr-tools::after {
   content: "";
   position: absolute;
-  inset: 100% -100vw auto;
+  inset: 100% 0 auto;
   height: 36px;
-  background: linear-gradient(var(--bg), color-mix(in srgb, var(--bg) 70%, transparent) 40%, transparent);
+  border-image: linear-gradient(var(--bg), color-mix(in srgb, var(--bg) 70%, transparent) 40%, transparent) fill 0 / / 0 100vw;
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--fade) linear;
