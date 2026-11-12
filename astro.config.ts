@@ -4,6 +4,7 @@ import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
 
 import { CODE_THEMES } from "./src/lib/code-themes";
+import externalLinks from "./src/lib/external-links";
 
 
 
@@ -20,8 +21,10 @@ const base = process.env.BASE_PATH ?? "/";
  */
 const building = process.argv.includes("build");
 
+const site = "https://ouss.es";
+
 export default defineConfig({
-  site: "https://ouss.es",
+  site,
   base,
   trailingSlash: building ? "always" : "ignore",
   build: {
@@ -36,6 +39,8 @@ export default defineConfig({
   integrations: [
     // Every page but the 404s, which are not meant to be found.
     sitemap({ filter: page => !/\/404\/?$/.test(page) }),
+    // Links out of a post get the arrow and the new tab the site's own links have.
+    externalLinks(site),
   ],
   markdown: {
     shikiConfig: {

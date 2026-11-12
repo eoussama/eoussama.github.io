@@ -17,6 +17,8 @@ type Unit = {
   after?: boolean;
   /** Milliseconds between one atom and the next, for marks that come in a row (chips). */
   stagger?: number;
+  /** For a mark inside a sentence, the words before it, so it waits for them. */
+  wait?: Map<HTMLElement, number>;
   sig?: HTMLElement;
   sigEnd?: number;
   name?: Text;
@@ -180,8 +182,20 @@ function reveal() {
       texts.push({ orig: node, span });
     });
 
-    // Bullets, arrows and other marks arrive with the first sentence of their line.
-    block.querySelectorAll<HTMLElement>(".dot, .arrow, .nf-dot, code").forEach(atom => own[0]!.atoms.push(atom));
+    // Bullets, arrows and other marks arrive with the sentence they sit in: a bullet,
+    // before every word, with the first; a link's arrow with the words it ends.
+    const before = (word: HTMLElement, atom: HTMLElement) => !!(word.compareDocumentPosition(atom) & Node.DOCUMENT_POSITION_FOLLOWING);
+
+    block.querySelectorAll<HTMLElement>(".dot, .arrow, .nf-dot, code").forEach((atom) => {
+      const unit = own.findLast(u => u.words[0] && before(u.words[0], atom)) ?? own[0]!;
+      const words = unit.words.filter(word => before(word, atom)).length;
+
+      unit.atoms.push(atom);
+
+      if (words > 1) {
+        (unit.wait ??= new Map()).set(atom, words - 1);
+      }
+    });
     own.filter(u => u.words.length || u.atoms.length || u.name).forEach(u => units.push(u));
   });
 
@@ -321,7 +335,7 @@ function reveal() {
     });
 
     unit.atoms.forEach((atom, k) => {
-      const at = delay + k * (unit.stagger ?? 0);
+      const at = delay + k * (unit.stagger ?? 0) + Math.min((unit.wait?.get(atom) ?? 0) * WSTEP, 220);
 
       atom.style.opacity = "";
 
