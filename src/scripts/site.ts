@@ -83,9 +83,17 @@ function movePill(from: DOMRect | null, button: HTMLElement) {
       { transformOrigin: "0 0", transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})` },
       { transformOrigin: "0 0", transform: "none" },
     ],
-    { duration: 150, easing: "cubic-bezier(.2,.8,.2,1)" },
+    { duration: 340, easing: "cubic-bezier(.55,0,.15,1)" },
   );
 }
+
+/** Where the pointer was last seen. */
+const pointer = { x: -1, y: -1 };
+
+document.addEventListener("pointermove", (event) => {
+  pointer.x = event.clientX;
+  pointer.y = event.clientY;
+}, { capture: true, passive: true });
 
 /**
  * Switches the theme. When the colours change, the new theme spreads in a circle
@@ -158,8 +166,22 @@ function pickTheme(theme: Theme, button: HTMLElement) {
   transition.finished.catch(() => {}).finally(() => {
     root.classList.remove("vt-theme");
 
-    if (keepOpen) {
-      bar?.setAttribute("data-busy", String(!!open));
+    if (!keepOpen || !bar) {
+      return;
+    }
+
+    const release = () => bar.setAttribute("data-busy", String(!!open));
+    const box = bar.getBoundingClientRect();
+    const over = pointer.x >= box.left && pointer.x <= box.right && pointer.y >= box.top && pointer.y <= box.bottom;
+
+    // The browser takes a moment to find the pointer over the header again once the
+    // snapshot is gone: until the pointer next moves, the header stays open if it is
+    // still there, rather than folding up and opening again.
+    if (over) {
+      document.addEventListener("pointermove", release, { once: true });
+    }
+    else {
+      release();
     }
   });
 }
@@ -262,19 +284,3 @@ if (hello) {
     hello.dataset.g = index % 2 ? "a" : "b";
   });
 }
-
-/* ---------- Signature: draws in when it scrolls into view ---------- */
-
-const signature = document.querySelector<HTMLElement>(".sig");
-
-if (signature && !root.classList.contains("sig-drawn")) {
-  const watch = new IntersectionObserver((entries) => {
-    if (entries.some(entry => entry.isIntersecting)) {
-      watch.disconnect();
-      signature.classList.add("is-drawing");
-    }
-  }, { threshold: 0.6 });
-
-  watch.observe(signature);
-}
-

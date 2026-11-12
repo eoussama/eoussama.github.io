@@ -246,34 +246,95 @@ if (drawer) {
    * @param element - The element to move
    * @param from - Where it starts
    * @param uniform - Whether to scale it evenly, for text
+   * @param fromSize - The font size of the text it starts as, when that differs from
+   * its box's height: the word then grows or shrinks to exactly that size
+   * @param over - Whether it flies in from outside the drawer, whose scrolling box
+   * would cut it off: a copy above everything makes the trip instead, to where the
+   * element rests once the drawer has slid in
+   * @param fromColor - The colour of the text it starts as, for a copy
+   * @returns The flight, or null when nothing moves
    */
-  const fly = (element: Element | null, from: DOMRect | undefined, uniform = true) => {
+  const fly = (element: Element | null, from: DOMRect | undefined, uniform = true, fromSize = 0, over = false, fromColor = ""): Animation | null => {
     if (!element || !from?.width || reducedMotion()) {
-      return;
+      return null;
     }
 
-    const to = element.getBoundingClientRect();
+    let to = element.getBoundingClientRect();
 
     if (!to.width || !to.height) {
-      return;
+      return null;
     }
 
-    const sx = from.width / to.width;
-    const sy = from.height / to.height;
+    let mover = element;
 
-    element.animate(
+    if (over) {
+      // The drawer is only starting to slide in: where it will be is where it is,
+      // less the slide still to come.
+      const slide = new DOMMatrix(getComputedStyle(drawer).transform);
+      const style = getComputedStyle(element);
+      const copy = element.cloneNode(true) as HTMLElement;
+
+      to = new DOMRect(to.left - slide.m41, to.top - slide.m42, to.width, to.height);
+      copy.removeAttribute("id");
+      copy.setAttribute("aria-hidden", "true");
+      Object.assign(copy.style, {
+        position: "fixed",
+        left: `${to.left}px`,
+        top: `${to.top}px`,
+        width: `${to.width}px`,
+        height: `${to.height}px`,
+        margin: "0",
+        zIndex: "80",
+        pointerEvents: "none",
+        font: style.font,
+        color: style.color,
+        letterSpacing: style.letterSpacing,
+        whiteSpace: "nowrap",
+        direction: style.direction,
+      });
+      document.body.append(copy);
+      // Not hidden: the copy's masks are still the original's, which must keep drawing.
+      (element as HTMLElement).style.opacity = "0";
+      mover = copy;
+    }
+
+    const size = fromSize && Number.parseFloat(getComputedStyle(element).fontSize);
+    const sy = size ? fromSize / size : from.height / to.height;
+    const sx = size || uniform ? sy : from.width / to.width;
+    // Text scaled by its font size lines up on the middle of its line, and on the
+    // side it starts from.
+    const dy = size ? from.top + from.height / 2 - to.top - to.height * sy / 2 : from.top - to.top;
+    const dx = size && root.dir === "rtl" ? from.right - to.left - to.width * sx : from.left - to.left;
+
+    // Text flying in from the page starts in the page's colour, muted for a label.
+    const tint = over && fromColor ? [{ color: fromColor }, { color: getComputedStyle(element).color }] : [{}, {}];
+    const flight = mover.animate(
       [
-        { transformOrigin: "0 0", transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${uniform ? sy : sx}, ${sy})` },
-        { transformOrigin: "0 0", transform: "none" },
+        { transformOrigin: "0 0", transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, ...tint[0] },
+        { transformOrigin: "0 0", transform: "none", ...tint[1] },
       ],
-      { duration: 150, easing: "cubic-bezier(.2,.8,.2,1)" },
+      { duration: 480, easing: "cubic-bezier(.55,0,.15,1)" },
     );
+
+    if (mover !== element) {
+      const land = () => {
+        (element as HTMLElement).style.removeProperty("opacity");
+        mover.remove();
+      };
+
+      flight.finished.then(land, land);
+    }
+
+    return flight;
   };
 
   const pageLogo = () => document.querySelector(".bar .logo svg");
-  const pageLabel = (list: List) => document.querySelector(list === "writing" ? "#writing" : "#work");
+  // A section's name on the page: its link, not its heading, which runs the list's height.
+  const pageLabel = (list: List) => document.querySelector(list === "writing" ? "#writing > a" : "#work > a");
   const drawerLogo = () => drawer.querySelector(".dr-mark svg");
   const drawerTitle = (list: List) => drawer.querySelector(`.dr-title [data-show="${list}"]`);
+  const drawerTab = (list: List) => drawer.querySelector(`.dr-tabs [data-show="${list}"]`);
+  const fontSize = (element: Element | null) => element ? Number.parseFloat(getComputedStyle(element).fontSize) : 0;
 
   /**
    * Shows a list, switches to the other one, or closes the drawer. The address is
@@ -281,6 +342,8 @@ if (drawer) {
    *
    * @param list - The list to show, or "" to close
    */
+  let swapping = 0;
+
   const show = (list: List) => {
     const was = current();
 
@@ -292,8 +355,27 @@ if (drawer) {
     const from = was === ""
       ? { logo: pageLogo()?.getBoundingClientRect(), label: pageLabel(list)?.getBoundingClientRect() }
       : { logo: drawerLogo()?.getBoundingClientRect(), label: drawerTitle(was)?.getBoundingClientRect() };
+    const swap = was === "" ? null : { title: drawerTitle(was), tab: drawerTab(was) };
+    const swapFrom = swap && {
+      title: swap.title?.getBoundingClientRect(),
+      titleSize: fontSize(swap.title),
+      tab: swap.tab?.getBoundingClientRect(),
+      tabSize: fontSize(swap.tab),
+    };
 
     closeMenus();
+
+    // Switching lists, the section names on the page behind fade rather than blink.
+    // Opening or closing, the name on the page flies instead: it shows or hides at once.
+    window.clearTimeout(swapping);
+
+    if (list && was) {
+      root.dataset.swap = "";
+      swapping = window.setTimeout(() => delete root.dataset.swap, 600);
+    }
+    else {
+      delete root.dataset.swap;
+    }
 
     if (list) {
       drawer.dataset.list = list;
@@ -308,17 +390,32 @@ if (drawer) {
     document.title = titleFor(list);
 
     if (list) {
-      if (was === "") {
-        fly(drawerLogo(), from.logo, false);
-        fly(drawerTitle(list), from.label);
+      // Unless the list is scrolled down, out of sight of its header.
+      if (was === "" && !drawer.querySelector(".dr-scroll")?.scrollTop) {
+        fly(drawerLogo(), from.logo, false, 0, true);
+        const label = pageLabel(list);
+
+        fly(drawerTitle(list), from.label, true, fontSize(label), true, label ? getComputedStyle(label).color : "");
+      }
+      else if (swapFrom) {
+        // Switching lists, the two names trade places: the tab pressed grows into the
+        // title, and the old title shrinks into the tab.
+        fly(drawerTitle(list), swapFrom.tab, true, swapFrom.tabSize);
+        fly(drawerTab(list), swapFrom.title, true, swapFrom.titleSize);
       }
 
       // The title takes focus, also when switching lists: the tab pressed is gone.
       drawer.querySelector<HTMLElement>(".dr-title")?.focus({ preventScroll: true });
     }
     else {
-      fly(pageLogo(), from.logo, false);
-      fly(pageLabel(was), from.label);
+      const flights = [fly(pageLogo(), from.logo, false), fly(pageLabel(was), from.label, true, fontSize(drawerTitle(was)))];
+      // What flies back to the page is no longer in the drawer sliding away.
+      const left = [drawerLogo(), drawerTitle(was)] as (HTMLElement | null)[];
+
+      if (flights.some(Boolean)) {
+        left.forEach(element => element?.style.setProperty("opacity", "0"));
+        Promise.allSettled(flights.map(flight => flight?.finished)).then(() => left.forEach(element => element?.style.removeProperty("opacity")));
+      }
       (opener ?? document.querySelector<HTMLElement>(`.page [data-drawer="${was}"]`))?.focus({ preventScroll: true });
       opener = null;
     }
@@ -374,6 +471,27 @@ if (drawer) {
       event.preventDefault();
       open(link.dataset.drawer as List, link.closest(".ck") ? null : link);
     });
+  });
+
+  // Once the list is scrolled, it fades out under the search and filters at the top.
+  const scroller = drawer.querySelector<HTMLElement>(".dr-scroll");
+  const markScroll = () => drawer.toggleAttribute("data-scrolled", (scroller?.scrollTop ?? 0) > 4);
+
+  scroller?.addEventListener("scroll", markScroll, { passive: true });
+  markScroll();
+
+  // The P and W shortcuts: a list opens, or closes when it is the one showing.
+  document.addEventListener("drawer:toggle", (event) => {
+    const list = (event as CustomEvent<string>).detail as List;
+
+    if (!list || list === current()) {
+      if (current()) {
+        close();
+      }
+    }
+    else {
+      open(list, null);
+    }
   });
 
   document.querySelectorAll<HTMLElement>("[data-drawer-close]").forEach((button) => {

@@ -1,6 +1,7 @@
 ---
 import type { Lang } from "~/i18n/langs";
 
+import LinkIcon from "~/components/LinkIcon.astro";
 import Logo from "~/components/Logo.astro";
 import { ui } from "~/i18n/ui";
 import { formatDate } from "~/lib/dates";
@@ -91,7 +92,7 @@ const sheets: Sheet[] = [
 ---
 
 <button type="button" class="dr-scrim" tabindex="-1" aria-label={t.closeList} data-drawer-close></button>
-<aside
+<div
   class="dr"
   id="drawer"
   role="dialog"
@@ -111,8 +112,8 @@ const sheets: Sheet[] = [
       <span class="dr-mark"><Logo id="lg-drawer" size={44} /></span>
       <h2 class="dr-title" id="dr-title" tabindex="-1"><span data-show="work">{t.work}</span><span data-show="writing">{t.writing}</span></h2>
       <div class="dr-tabs">
-        <a class="link" href="?list=posts" data-drawer="writing" data-show="work">{t.writing}</a>
-        <a class="link" href="?list=projects" data-drawer="work" data-show="writing">{t.work}</a>
+        <a class="link" href="?list=posts" data-drawer="writing" data-show="work">{t.writing}<LinkIcon kind="switch" /></a>
+        <a class="link" href="?list=projects" data-drawer="work" data-show="writing">{t.work}<LinkIcon kind="switch" /></a>
         <button type="button" class="dr-x" aria-label={t.closeList} title={t.closeList} data-drawer-close>
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
         </button>
@@ -155,7 +156,7 @@ const sheets: Sheet[] = [
           {sheet.items.map((item, i) => (
             <li style={`--i: ${i}`} data-kw={`${item.name} ${item.blurb} ${item.kind} ${Object.values(item.facets).join(" ")}`.toLowerCase()} data-facets={JSON.stringify(item.facets)}>
               <i class:list={["dot", item.icon]}></i>
-              <span class="dr-line"><a class="link dr-name" href={item.href} lang={item.lang}>{item.name}</a><span class="dr-kind">{item.kind}</span></span>
+              <span class="dr-line"><a class="link dr-name" href={item.href} lang={item.lang}>{item.name}<LinkIcon kind="page" /></a><span class="dr-kind">{item.kind}</span></span>
               <span class="dr-desc" lang={item.lang}>{item.blurb}</span>
             </li>
           ))}
@@ -163,4 +164,4 @@ const sheets: Sheet[] = [
       </section>
     ))}
   </div>
-</aside>
+</div>

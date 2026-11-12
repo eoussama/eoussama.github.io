@@ -1,7 +1,8 @@
 ---
 /**
- * The eclipse mark: a disc with an off-centre crescent cut out of it and a wedge
- * pointing in. `id` keeps the clip and mask ids unique when it appears twice.
+ * The eclipse mark, drawn from the brand logo: a disc with an off-centre hole, a
+ * lavender crescent inside the hole, and a wedge pointing in.
+ * `id` keeps the clip and mask ids unique when it appears twice.
  */
 interface Props {
   id: string;
@@ -12,14 +13,18 @@ const { id, size = 52 } = Astro.props;
 ---
 
 <svg class="logo-mark" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
-  <clipPath id={`${id}-clip`}><circle cx="32" cy="32" r="31"></circle></clipPath>
+  <clipPath id={`${id}-clip`}><circle cx="32" cy="32" r="31.81"></circle></clipPath>
   <mask id={`${id}-cut`} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
     <rect x="0" y="0" width="64" height="64" fill="#fff"></rect>
-    <circle class="lg-hole" cx="35.5" cy="32" r="24.5" fill="#000"></circle>
+    <ellipse class="lg-hole" cx="38.7" cy="32" rx="24.77" ry="24.05" fill="#000"></ellipse>
   </mask>
-  <g class="lg-disc"><circle cx="32" cy="32" r="31" fill="var(--lg-ink)" mask={`url(#${id}-cut)`}></circle></g>
+  <mask id={`${id}-moon`} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+    <rect x="0" y="0" width="64" height="64" fill="#fff"></rect>
+    <ellipse cx="34.42" cy="32" rx="20.99" ry="19.8" fill="#000"></ellipse>
+  </mask>
+  <g class="lg-disc"><circle cx="32" cy="32" r="31.81" fill="var(--lg-a)" mask={`url(#${id}-cut)`}></circle></g>
   <g clip-path={`url(#${id}-clip)`}>
-    <path class="lg-moon" fill="var(--lg-acc)" fill-rule="evenodd" d="M12.5 32a23 23 0 1 0 46 0a23 23 0 1 0 -46 0ZM15 32a17.5 17.5 0 1 0 35 0a17.5 17.5 0 1 0 -35 0Z"></path>
+    <g class="lg-moon"><ellipse cx="38.7" cy="32" rx="24.54" ry="23.83" fill="var(--lg-b)" mask={`url(#${id}-moon)`}></ellipse></g>
+    <path class="lg-wedge" fill="var(--lg-a)" d="M-1 23.8L44.1 32L-1 40.2Z"></path>
   </g>
-  <path class="lg-wedge" fill="var(--lg-ink)" d="M8 24.6L41 30.2a1.8 1.8 0 0 1 0 3.6L8 39.4Z"></path>
 </svg>

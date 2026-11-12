@@ -1,4 +1,8 @@
+import { askConsent } from "./analytics";
 import { copyEmail } from "./copy";
+import { openKeys } from "./keys";
+import { lakamaRain } from "./lakama";
+import { closeNote, foldOnDismiss, openNote } from "./note";
 
 
 
@@ -71,32 +75,44 @@ if (dialog) {
   };
 
   const open = () => {
-    if (dialog.open) {
+    if (dialog.open && !dialog.classList.contains("is-closing")) {
       return;
+    }
+
+    const keys = document.querySelector<HTMLDialogElement>("#keys");
+
+    if (keys) {
+      closeNote(keys, true);
     }
 
     input.value = "";
     markTheme();
     filter();
-    dialog.showModal();
+    openNote(dialog);
     input.focus();
   };
 
-  const close = () => dialog.close();
+  const close = (instant = false) => closeNote(dialog, instant);
 
   /**
    * Does what an item says: follows its link, or runs its action.
    *
    * @param item - The item chosen
+   * @returns Once the action has run
    */
-  const run = (item: HTMLElement) => {
+  const run = async (item: HTMLElement) => {
     const action = item.dataset.action;
-
-    close();
+    // Leaving for another page: the note goes at once, out of the way of the page's
+    // own transition. Otherwise it folds away first, then the action runs.
+    const leaving = item instanceof HTMLAnchorElement && !item.dataset.drawer && item.target !== "_blank";
 
     if (!action) {
+      close(leaving);
+
       return;
     }
+
+    await close();
 
     if (action === "theme") {
       document.querySelector<HTMLButtonElement>(`.bar [data-theme-pick="${item.dataset.value}"]`)?.click();
@@ -107,9 +123,27 @@ if (dialog) {
     else if (action === "hello") {
       document.querySelector<HTMLButtonElement>("[data-hellos]")?.click();
     }
+    else if (action === "consent") {
+      askConsent();
+    }
+    else if (action === "keys") {
+      openKeys();
+    }
   };
 
-  input.addEventListener("input", filter);
+  let typed = "";
+
+  input.addEventListener("input", () => {
+    const word = input.value.trim().toLowerCase();
+
+    // A secret, only answered when the whole word is typed.
+    if (word === "lakama" && typed !== "lakama") {
+      lakamaRain();
+    }
+
+    typed = word;
+    filter();
+  });
 
   input.addEventListener("keydown", (event) => {
     const shown = visible();
@@ -139,14 +173,10 @@ if (dialog) {
     item.addEventListener("click", () => run(item));
   });
 
-  // A click on the shaded page around the box closes it.
-  dialog.addEventListener("click", (event) => {
-    if (event.target === dialog) {
-      close();
-    }
-  });
+  // Escape, or a click on the veil around the note, folds it away.
+  foldOnDismiss(dialog);
 
-  dialog.querySelector("[data-palette-close]")?.addEventListener("click", close);
+  dialog.querySelector("[data-palette-close]")?.addEventListener("click", () => close());
 
   document.querySelectorAll("[data-palette-open]").forEach((button) => {
     button.addEventListener("click", open);
@@ -156,7 +186,7 @@ if (dialog) {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
       event.preventDefault();
 
-      if (dialog.open) {
+      if (dialog.open && !dialog.classList.contains("is-closing")) {
         close();
       }
       else {

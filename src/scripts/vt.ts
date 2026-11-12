@@ -47,9 +47,11 @@ function carry(link: HTMLAnchorElement, key: string): () => void {
 
   if (label) {
     label.style.viewTransitionName = `vt-name-${key}`;
+    label.classList.add("vt-carry");
   }
 
   return () => {
+    label?.classList.remove("vt-carry");
     dot?.style.removeProperty("view-transition-name");
     label?.style.removeProperty("view-transition-name");
   };

@@ -1,0 +1,93 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import LinkIcon from "~/components/LinkIcon.astro";
+import { DEFAULT_LANG, langInfo, LANGS } from "~/i18n/langs";
+import { ui } from "~/i18n/ui";
+import Base from "~/layouts/Base.astro";
+import { getPosts } from "~/lib/posts";
+import { getProjects } from "~/lib/projects";
+import { localized } from "~/lib/url";
+
+
+
+/**
+ * The page for an address that leads nowhere: a black hole torn in the page. Flaps of
+ * paper flutter and tear off into it, stretch marks crawl toward it, and the text and
+ * the header lean in. The cursor stirs its light; a click sends a ripple through the
+ * page. Its text is split into letters here, so the hole can pull on each of them.
+ */
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui(lang);
+const rtl = langInfo(lang).dir === "rtl";
+const projects = await getProjects();
+const posts = await getPosts(lang);
+
+type Word = { space: boolean; chars: string[] };
+
+/**
+ * Text cut into words and letters. Arabic letters join, so they stay whole words.
+ *
+ * @param text - The text
+ * @returns Its words, each with its letters
+ */
+function split(text: string): Word[] {
+  return text.split(/(\s+)/).filter(Boolean).map(part => /^\s+$/.test(part) ? { space: true, chars: [part] } : { space: false, chars: rtl ? [part] : Array.from(part) });
+}
+
+const codes = LANGS.filter(l => l.code !== DEFAULT_LANG).map(l => l.code);
+---
+
+<Base lang={lang} path={lang === DEFAULT_LANG ? "" : "404/"} title={`${t.nfTitle} · ${t.name}`} description={t.nfLead} noindex>
+  {lang === DEFAULT_LANG && (
+    <script is:inline slot="head" define:vars={{ codes }}>
+      // One 404 page answers for every missing address. An address in another
+      // language, or a visitor who picked one, gets that language's version, which
+      // still shows the address asked for.
+      const path = location.pathname;
+      let want = /^\/p\/([a-z]+)\//.exec(path)?.[1];
+
+      try {
+        want ??= localStorage.getItem("lang");
+      }
+      catch {}
+
+      if (codes.includes(want)) {
+        location.replace(`/p/${want}/404/?from=${encodeURIComponent(path)}`);
+      }
+    </script>
+  )}
+
+  <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
+
+  <canvas class="nf-sky" aria-hidden="true"></canvas>
+
+  <section class="row first nf-top">
+    <h2 class="lab" id="whoops"><a class="anchor" href="#whoops" aria-label={t.nfLabel + t.anchor}>{split(t.nfLabel).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</a></h2>
+    <div class="hero nf-hero">
+      <div class="nf-hole" aria-hidden="true"><canvas class="nf-gl"></canvas></div>
+      <h1 class="nf-h1" aria-label={t.nfTitle}>{split(t.nfTitle).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</h1>
+      <p class="lead rise">{split(t.nfLead).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</p>
+      <p class="nf-path rise">{split(t.nfPath).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)} <code dir="ltr" class="nf-url">ouss.es</code></p>
+    </div>
+  </section>
+
+  <section class="row rise" style="--d: 40ms">
+    <h2 class="lab" id="where-to"><a class="anchor" href="#where-to" aria-label={t.nfWhere + t.anchor}>{split(t.nfWhere).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</a></h2>
+    <ul class="list">
+      <li><i class="dot nf-dot"></i><a class="link" href={localized(lang)}>{split(t.nfHome).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}<LinkIcon kind="page" /></a></li>
+      <li><i class="dot nf-dot"></i><a class="link" href="?list=projects" data-drawer="work">{split(t.allProjects(projects.length)).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}<LinkIcon kind="list" /></a></li>
+      <li><i class="dot nf-dot"></i><a class="link" href="?list=posts" data-drawer="writing">{split(t.allPosts(posts.length)).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}<LinkIcon kind="list" /></a></li>
+      <li><i class="dot nf-dot"></i><button type="button" class="link" data-palette-open>{split(t.nfSearch).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</button> <span class="mut nf-kbd" dir="ltr"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></span></li>
+      <li><i class="dot nf-dot"></i><a class="link ext" href="/v/0.4/" target="_blank" rel="noopener noreferrer">{split(t.nfOld).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}<svg class="arrow" width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M2.5 8.5l6-6M3.5 2.5h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="sr">{t.newTab}</span></a></li>
+    </ul>
+  </section>
+
+  <script>
+    import "~/scripts/hole";
+  </script>
+</Base>

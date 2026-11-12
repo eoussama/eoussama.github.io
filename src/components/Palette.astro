@@ -22,6 +22,8 @@ interface Props {
   path: string;
   /** Whether the page has the greeting, which the menu can cycle. */
   hello: boolean;
+  /** Whether analytics are set up, so the menu can bring back the question. */
+  consent: boolean;
 }
 
 type Item = {
@@ -30,7 +32,7 @@ type Item = {
   icon?: "z-star" | "z-cross" | "z-dia";
   href?: string;
   external?: boolean;
-  action?: "theme" | "copy" | "hello";
+  action?: "theme" | "copy" | "hello" | "consent" | "keys";
   value?: string;
   lang?: Lang;
   dir?: string;
@@ -39,7 +41,7 @@ type Item = {
   keywords: string;
 };
 
-const { lang, path, hello } = Astro.props;
+const { lang, path, hello, consent } = Astro.props;
 const t = ui(lang);
 const projects = await getProjects();
 const posts = await getPosts(lang);
@@ -110,43 +112,59 @@ const groups: { label: string; items: Item[] }[] = [
   },
 ];
 
+const extras: Item[] = [{ label: t.keysTitle, hint: "?", action: "keys", keywords: "keyboard shortcuts keys help" }];
+
 if (hello) {
-  groups.push({ label: t.cExtras, items: [{ label: t.cHi, action: "hello", keywords: "greeting hello hi" }] });
+  extras.push({ label: t.cHi, action: "hello", keywords: "greeting hello hi" });
+}
+
+if (consent) {
+  extras.push({ label: t.cConsent, action: "consent", keywords: "analytics cookies privacy consent" });
+}
+
+if (extras.length) {
+  groups.push({ label: t.cExtras, items: extras });
 }
 
 let n = 0;
 ---
 
 <dialog class="ck" id="palette" aria-label={t.palTitle} data-none={t.palNone} data-current={t.cCurrent}>
-  <div class="ck-box">
-    <div class="ck-top">
-      <svg width="17" height="17" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
-      <input type="text" class="ck-q" role="combobox" aria-expanded="true" aria-controls="ck-list" aria-autocomplete="list" aria-label={t.palPh} placeholder={t.palPh} autocomplete="off" spellcheck="false" />
-      <button type="button" class="ck-esc" aria-label={t.palClose} data-palette-close><kbd class="ck-kbd" dir="ltr">esc</kbd></button>
-    </div>
-    <div class="ck-list" id="ck-list" role="listbox" aria-label={t.palTitle}>
-      {groups.map((group, g) => (
-        <div class="ck-group" role="group" aria-labelledby={`ck-g${g}`}>
-          <p class="ck-h" id={`ck-g${g}`}>{group.label}</p>
-          {group.items.map((item) => {
-            const id = `ck-${n++}`;
-            const keywords = `${group.label} ${item.label} ${item.hint ?? ""} ${item.keywords}`.toLowerCase();
-            const inner = (
-              <Fragment>
-                <i class:list={["ck-ic", item.icon ?? "z-dia"]}></i>
-                <span class="ck-l"><span lang={item.lang} dir={item.dir}>{item.label}</span></span>
-                <span class="ck-hint" data-theme-hint={item.action === "theme" ? item.value : undefined}>{item.hint}</span>
-              </Fragment>
-            );
-
-            return item.href
-              ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} data-kw={keywords}>{inner}</a>
-              : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} data-kw={keywords}>{inner}</button>;
-          })}
+  <div class="ck-note">
+    <div class="ck-sheet">
+      <span class="note-shadow" aria-hidden="true"></span>
+      <div class="ck-box">
+        <div class="ck-top">
+          <svg width="17" height="17" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+          <input type="text" class="ck-q" role="combobox" aria-expanded="true" aria-controls="ck-list" aria-autocomplete="list" aria-label={t.palPh} placeholder={t.palPh} autocomplete="off" spellcheck="false" />
+          <button type="button" class="ck-esc" aria-label={t.palClose} data-palette-close><kbd class="ck-kbd" dir="ltr">esc</kbd></button>
         </div>
-      ))}
-      <p class="ck-empty" hidden></p>
+        <div class="ck-list" id="ck-list" role="listbox" aria-label={t.palTitle}>
+          {groups.map((group, g) => (
+            <div class="ck-group" role="group" aria-labelledby={`ck-g${g}`}>
+              <p class="ck-h" id={`ck-g${g}`}>{group.label}</p>
+              {group.items.map((item) => {
+                const id = `ck-${n++}`;
+                const keywords = `${group.label} ${item.label} ${item.hint ?? ""} ${item.keywords}`.toLowerCase();
+                const inner = (
+                  <Fragment>
+                    <i class:list={["ck-ic", item.icon ?? "z-dia"]}></i>
+                    <span class="ck-l"><span lang={item.lang} dir={item.dir}>{item.label}</span></span>
+                    <span class="ck-hint" data-theme-hint={item.action === "theme" ? item.value : undefined}>{item.hint}</span>
+                  </Fragment>
+                );
+
+                return item.href
+                  ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} data-kw={keywords}>{inner}</a>
+                  : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} data-kw={keywords}>{inner}</button>;
+              })}
+            </div>
+          ))}
+          <p class="ck-empty" hidden></p>
+        </div>
+        <p class="ck-foot"><span><kbd class="ck-kbd">↑</kbd><kbd class="ck-kbd">↓</kbd> {t.move}</span><span><kbd class="ck-kbd">↵</kbd> {t.run}</span><span><kbd class="ck-kbd">esc</kbd> {t.close}</span></p>
+      </div>
+      <span class="note-tear" aria-hidden="true"><i></i></span>
     </div>
-    <p class="ck-foot"><span><kbd class="ck-kbd">↑</kbd><kbd class="ck-kbd">↓</kbd> {t.move}</span><span><kbd class="ck-kbd">↵</kbd> {t.run}</span><span><kbd class="ck-kbd">esc</kbd> {t.close}</span></p>
   </div>
 </dialog>

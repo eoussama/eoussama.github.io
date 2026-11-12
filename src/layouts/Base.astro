@@ -1,20 +1,22 @@
 ---
 import type { Lang } from "~/i18n/langs";
 
-import newsreaderLatin from "@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url";
 import naskh400 from "@fontsource/noto-naskh-arabic/arabic-400.css?url";
 import naskh500 from "@fontsource/noto-naskh-arabic/arabic-500.css?url";
 import jp400 from "@fontsource/noto-serif-jp/400.css?url";
 import jp500 from "@fontsource/noto-serif-jp/500.css?url";
+import newsreaderItalic from "~/assets/fonts/newsreader-latin-italic.woff2?url";
+import newsreaderLatin from "~/assets/fonts/newsreader-latin-normal.woff2?url";
+import Consent from "~/components/Consent.astro";
 import Drawer from "~/components/Drawer.astro";
 import Header from "~/components/Header.astro";
 import Palette from "~/components/Palette.astro";
+import Shortcuts from "~/components/Shortcuts.astro";
 import { langInfo, LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import { localized, url } from "~/lib/url";
 
-import "@fontsource-variable/newsreader/opsz.css";
-import "@fontsource-variable/newsreader/opsz-italic.css";
+import "~/styles/fonts.css";
 import "~/styles/global.css";
 
 
@@ -27,14 +29,40 @@ interface Props {
   description: string;
   /** Whether the page has the greeting, which the command menu can cycle. */
   hello?: boolean;
+  /** Keeps search engines away, and leaves out the links to other languages. */
+  noindex?: boolean;
+  /** How the page shows when shared: a site page, or an article (a post). */
+  kind?: "website" | "article";
 }
 
-const { lang, path = "", title, description, hello = false } = Astro.props;
+const { lang, path = "", title, description, hello = false, noindex = false, kind = "website" } = Astro.props;
+/** Google Analytics' measurement ID; without one, nothing is asked and nothing loads. */
+const gaId = import.meta.env.PUBLIC_GA_ID ?? "";
+const LOCALES: Record<Lang, string> = { ar: "ar_MA", ary: "ar_MA", en: "en_GB", fr: "fr_FR", es: "es_ES", it: "it_IT", ja: "ja_JP" };
 const t = ui(lang);
 const info = langInfo(lang);
 const alternates = Object.fromEntries(LANGS.map(l => [l.code, localized(l.code, path)]));
 const codes = LANGS.map(l => l.code);
 const absolute = (href: string) => new URL(href, Astro.site).href;
+
+/*
+ * Pages of the site are prerendered as a link is pointed at (or touched), so they open
+ * at once. Not the lists (they open over the page), new tabs, files, or other versions.
+ */
+const base = import.meta.env.BASE_URL;
+const speculation = JSON.stringify({
+  prerender: [{
+    where: {
+      and: [
+        { href_matches: `${base}*` },
+        { not: { selector_matches: "[data-drawer], [target=_blank], [download]" } },
+        { not: { href_matches: `${base}*.(pdf|xml|txt|svg|jpg)` } },
+        ...(base === "/" ? [{ not: { href_matches: "/v/*" } }] : []),
+      ],
+    },
+    eagerness: "moderate",
+  }],
+});
 ---
 
 <!doctype html>
@@ -96,6 +124,10 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
       if (nav?.type === "back_forward" || (fromHere && nav?.type !== "reload")) {
         d.classList.add("is-seen", "sig-drawn");
       }
+      else if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        // The text rises in as the page first shows: hold it back until it starts.
+        d.dataset.rv = "pre";
+      }
 
       if (lang === "en") {
         let want = read(localStorage, "lang");
@@ -115,14 +147,30 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
         }
       }
     </script>
+    <script is:inline type="speculationrules" set:html={speculation} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={absolute(localized(lang, path))} />
-    {LANGS.map(l => <link rel="alternate" hreflang={l.code} href={absolute(alternates[l.code] ?? url())} />)}
-    <link rel="alternate" hreflang="x-default" href={absolute(localized("en", path))} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {!noindex && <link rel="canonical" href={absolute(localized(lang, path))} />}
+    {!noindex && LANGS.map(l => <link rel="alternate" hreflang={l.code} href={absolute(alternates[l.code] ?? url())} />)}
+    {!noindex && <link rel="alternate" hreflang="x-default" href={absolute(localized("en", path))} />}
+    <meta property="og:type" content={kind} />
+    <meta property="og:site_name" content={t.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={absolute(localized(lang, path))} />
+    <meta property="og:locale" content={LOCALES[lang]} />
+    <meta property="og:image" content={absolute(url("og.jpg"))} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.name} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@OussamaEssamadi" />
+    <slot name="head" />
     <link rel="icon" href={url("favicon.svg")} type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title={t.feed} href={localized(lang, "rss.xml")} />
     <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={newsreaderItalic} as="font" type="font/woff2" crossorigin />
     {info.dir === "rtl" && <link rel="stylesheet" href={naskh400} />}
     {info.dir === "rtl" && <link rel="stylesheet" href={naskh500} />}
     {lang === "ja" && <link rel="stylesheet" href={jp400} />}
@@ -141,7 +189,9 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
       </div>
     </div>
     <Drawer lang={lang} />
-    <Palette lang={lang} path={path} hello={hello} />
+    <Palette lang={lang} path={path} hello={hello} consent={!!gaId} />
+    <Shortcuts lang={lang} />
+    {gaId && <Consent lang={lang} id={gaId} />}
     <!--
       Back from a project or post, its bullet and name return to their place in the
       list: the list names them for the view transition as it is shown. This has to
@@ -172,8 +222,10 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
 
         if (link && dot) {
           link.style.viewTransitionName = `vt-name-${key}`;
+          link.classList.add("vt-carry");
           dot.style.viewTransitionName = `vt-dot-${key}`;
           event.viewTransition.finished.finally(() => {
+            link.classList.remove("vt-carry");
             link.style.removeProperty("view-transition-name");
             dot.style.removeProperty("view-transition-name");
           });
@@ -184,8 +236,13 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
       import "~/scripts/site";
       import "~/scripts/copy";
       import "~/scripts/palette";
+      import "~/scripts/keys";
+      import "~/scripts/tug";
       import "~/scripts/drawer";
       import "~/scripts/vt";
+      import "~/scripts/reveal";
+      import "~/scripts/name";
+      import "~/scripts/analytics";
     </script>
   </body>
 </html>

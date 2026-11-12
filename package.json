@@ -21,8 +21,8 @@
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
     "@eoussama/core": "^0.1.2",
-    "@fontsource-variable/newsreader": "^5.3.0",
     "@fontsource/noto-naskh-arabic": "^5.3.0",
     "@fontsource/noto-serif-jp": "^5.3.1",
     "astro": "^7.4.8"
@@ -30,6 +30,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
     "@eoussama/dx": "^0.1.3",
+    "@shikijs/themes": "4.6.0",
     "@types/node": "^24.19.2",
     "astro-eslint-parser": "^3.2.0",
     "eslint-plugin-astro": "^3.2.1",

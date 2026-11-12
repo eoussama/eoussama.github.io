@@ -1,0 +1,28 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import { ui } from "~/i18n/ui";
+
+
+
+/**
+ * The question asked before Google Analytics loads. It shows only once the site has a
+ * measurement ID (PUBLIC_GA_ID) and until the visitor answers; the command menu can
+ * bring it back.
+ */
+interface Props {
+  lang: Lang;
+  id: string;
+}
+
+const { lang, id } = Astro.props;
+const t = ui(lang);
+---
+
+<section class="consent" id="consent" aria-label={t.cConsent} data-ga={id} hidden>
+  <p>{t.consentText}</p>
+  <div class="consent-actions">
+    <button type="button" class="pill-btn consent-yes" data-consent="granted">{t.consentYes}</button>
+    <button type="button" class="pill-btn" data-consent="denied">{t.consentNo}</button>
+  </div>
+</section>

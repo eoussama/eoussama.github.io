@@ -9,14 +9,27 @@
   --mut: #5c6272;
   --acc: #b5a9f0;
   --soft: #e4dff8;
+  --sel: #d5ccf7;
   --line: rgba(30, 34, 48, 0.16);
-  --lg-ink: var(--ink);
+  /* The logo: the ink, with a lavender crescent. */
+  --lg-a: var(--ink);
+  --lg-b: var(--lg-acc);
   --lg-acc: #5b4bc4;
   --text: "Newsreader Variable", "Noto Naskh Arabic", "Noto Serif JP", Georgia, serif;
   --fast: 150ms;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Things that travel: the header opening, the drawer, page-to-page morphs. Slow
+     enough to be followed, eased at both ends. */
+  --move: 480ms;
+  --glide: cubic-bezier(0.55, 0, 0.15, 1);
+  --fade: 260ms;
   --paper-a: 0.16;
   --paper-b: 0.1;
+  /* The shadow a sheet over the page casts: the drawer sideways, a note downwards. */
+  --shade-near: rgba(30, 34, 48, 0.2);
+  --shade-far: rgba(30, 34, 48, 0.2);
+  --shade-reach: 10px;
+  --shade-blur: 16px;
 
   color-scheme: light;
 }
@@ -27,10 +40,15 @@
   --mut: #a2a7b6;
   --acc: #8d82d6;
   --soft: #2e2a4f;
+  --sel: #4a4283;
   --line: rgba(236, 234, 243, 0.18);
   --lg-acc: #b8aef5;
   --paper-a: 0.8;
   --paper-b: 0.55;
+  --shade-near: rgba(0, 0, 0, 0.55);
+  --shade-far: rgba(0, 0, 0, 0.6);
+  --shade-reach: 12px;
+  --shade-blur: 18px;
 
   color-scheme: dark;
 }
@@ -100,9 +118,20 @@ body::after {
   opacity: var(--paper-b);
 }
 
+/* Selected text in the site's lavender, not the browser's blue. */
+::selection {
+  background: var(--sel);
+  color: var(--ink);
+}
+
 button {
   font: inherit;
   color: inherit;
+}
+
+/* Hidden means hidden, whatever display a component's own rule sets. */
+[hidden] {
+  display: none !important;
 }
 
 :focus-visible {
@@ -256,6 +285,8 @@ a:focus-visible,
 /* A margin heading is a link to its own section, and shows a "#" on hover. */
 a.anchor {
   position: relative;
+  /* A box of its own, so a section's name can fly to and from the list drawer. */
+  display: inline-block;
   color: inherit;
   text-decoration: none;
   background-image: none;
@@ -314,6 +345,134 @@ a.anchor:focus-visible::before {
 
 [dir="rtl"] .ext:hover .arrow {
   transform: translate(-1.5px, -1.5px) scaleX(-1);
+}
+
+/*
+ * "Copy my email": its words sit in a small window, where "Copied" rises in from
+ * below as they leave through the top, and back. The copy icon beside them shows on
+ * hover or focus, and morphs into a tick once the address is copied.
+ */
+.cp-win {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  clip-path: inset(0 -0.4em);
+}
+
+.cp-t {
+  display: inline-block;
+  text-decoration: underline 2px var(--acc);
+  text-underline-offset: 4px;
+  transition: text-decoration-color var(--fast) linear;
+}
+
+.cp-t + .cp-t {
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+}
+
+.copy:is(:hover, :focus-visible) .cp-t {
+  text-decoration-color: var(--ink);
+}
+
+.copy-ic,
+.lk-ic {
+  display: inline-block;
+  width: 0;
+  margin-inline-start: 0;
+  overflow: visible;
+  vertical-align: 0.12em;
+  color: var(--mut);
+  opacity: 0;
+  transition:
+    width var(--fade) var(--ease),
+    margin var(--fade) var(--ease),
+    opacity var(--fade) linear,
+    color var(--fast) linear;
+}
+
+.copy:is(:hover, :focus-visible, [data-done]) .copy-ic,
+a:is(:hover, :focus-visible) > .lk-ic {
+  width: 11px;
+  margin-inline-start: 4px;
+  opacity: 1;
+}
+
+.copy:is(:hover, :focus-visible) .copy-ic,
+a:is(:hover, :focus-visible) > .lk-ic {
+  color: var(--ink);
+}
+
+.copy[data-done] .copy-ic {
+  color: var(--lg-acc);
+}
+
+/* Touch screens have no hover: the icon is always there. */
+@media (hover: none) {
+  .copy-ic,
+  .lk-ic {
+    width: 11px;
+    margin-inline-start: 4px;
+    opacity: 1;
+  }
+}
+
+/* Links within the site: a drawer for a list, a chevron for a page, pointing the way
+   the page reads. Left out of the name a link lends to the next page's title. */
+[dir="rtl"] .lk-ic {
+  transform: scaleX(-1);
+}
+
+/* They grow with their link's text: 11px beside body text, larger on the drawer's names. */
+.lk-ic {
+  height: 0.55em;
+}
+
+a:is(:hover, :focus-visible) > .lk-ic {
+  width: 0.55em;
+  margin-inline-start: 0.2em;
+}
+
+@media (hover: none) {
+  .lk-ic {
+    width: 0.55em;
+    margin-inline-start: 0.2em;
+  }
+}
+
+.vt-carry .lk-ic {
+  display: none;
+}
+
+/* An at sign reads the same way in every script. */
+[dir="rtl"] .lk-mail {
+  transform: none;
+}
+
+.ic-copy {
+  transform-box: view-box;
+  transform-origin: 5.5px 5.5px;
+  transition:
+    transform 280ms var(--ease) 140ms,
+    opacity 200ms linear 140ms;
+}
+
+.copy[data-done] .ic-copy {
+  opacity: 0;
+  transform: scale(0.35) rotate(-35deg);
+  transition-delay: 0s;
+}
+
+.ic-check {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 220ms var(--ease);
+}
+
+.copy[data-done] .ic-check {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 320ms var(--ease) 170ms;
 }
 
 /* ---------- Lists and zellige bullets ---------- */
@@ -400,7 +559,7 @@ a.anchor:focus-visible::before {
   margin-inline-start: auto;
   font-size: 15px;
   line-height: 1;
-  transition: gap var(--fast) var(--ease);
+  transition: gap var(--move) var(--glide);
 }
 
 .menu-wrap {
@@ -419,7 +578,7 @@ a.anchor:focus-visible::before {
   cursor: pointer;
   transition:
     border-color var(--fast) linear,
-    padding var(--fast) var(--ease),
+    padding var(--move) var(--glide),
     color var(--fast) linear;
 }
 
@@ -440,10 +599,10 @@ a.anchor:focus-visible::before {
 
 .chev {
   transition:
-    transform var(--fast) var(--ease),
-    width var(--fast) var(--ease),
-    opacity 110ms linear,
-    margin var(--fast) var(--ease);
+    transform var(--move) var(--glide),
+    width var(--move) var(--glide),
+    opacity var(--fade) linear,
+    margin var(--move) var(--glide);
 }
 
 .pill-btn[aria-expanded="true"] .chev {
@@ -476,12 +635,12 @@ a.anchor:focus-visible::before {
   white-space: nowrap;
 }
 
-.kbd .k-mac,
-:root.is-mac .kbd .k-pc {
+.k-mac,
+:root.is-mac .k-pc {
   display: none;
 }
 
-:root.is-mac .kbd .k-mac {
+:root.is-mac .k-mac {
   display: inline;
 }
 
@@ -659,7 +818,7 @@ a.anchor:focus-visible::before {
   border-radius: 999px;
   transition:
     border-color var(--fast) linear,
-    padding var(--fast) var(--ease);
+    padding var(--move) var(--glide);
 }
 
 .th {
@@ -676,8 +835,8 @@ a.anchor:focus-visible::before {
   color: var(--mut);
   cursor: pointer;
   transition:
-    width var(--fast) var(--ease),
-    opacity 110ms linear,
+    width var(--move) var(--glide),
+    opacity var(--fade) linear,
     color var(--fast) linear;
 }
 
@@ -701,7 +860,7 @@ a.anchor:focus-visible::before {
   border-radius: 999px;
   background: var(--soft);
   opacity: 0;
-  transition: opacity 110ms linear;
+  transition: opacity var(--fade) linear;
 }
 
 /* The current theme is read from <html>, so it shows before any script runs. */
@@ -743,8 +902,13 @@ a.anchor:focus-visible::before {
 }
 
 ::view-transition-group(*) {
-  animation-duration: 150ms;
-  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation-duration: 620ms;
+  animation-timing-function: var(--glide);
+}
+
+/* The page itself cross-fades a little quicker, so what travels stands out. */
+::view-transition-group(root) {
+  animation-duration: 380ms;
 }
 
 /* What carries over from page to page: the logo, the name and a project's star. */
@@ -818,9 +982,9 @@ a.anchor:focus-visible::before {
 .ver-wrap {
   max-width: 110px;
   transition:
-    max-width var(--fast) var(--ease),
-    opacity 110ms linear,
-    margin var(--fast) var(--ease);
+    max-width var(--move) var(--glide),
+    opacity var(--fade) linear,
+    margin var(--move) var(--glide);
 }
 
 /* ---------- The eclipse logo settling in, on the first visit ---------- */
@@ -835,11 +999,11 @@ a.anchor:focus-visible::before {
 
 .lg-hole,
 .lg-moon {
-  transform-origin: 35.5px 32px;
+  transform-origin: 38.7px 32px;
 }
 
 .lg-wedge {
-  transform-origin: 8px 32px;
+  transform-origin: 0 32px;
 }
 
 @keyframes lg-disc {
@@ -850,11 +1014,11 @@ a.anchor:focus-visible::before {
 
 @keyframes lg-open {
   0% {
-    transform: translateX(-3.5px) scale(0);
+    transform: translateX(-6.7px) scale(0);
   }
 
   48% {
-    transform: translateX(-3.5px) scale(1);
+    transform: translateX(-6.7px) scale(1);
   }
 
   100% {
@@ -865,12 +1029,12 @@ a.anchor:focus-visible::before {
 @keyframes lg-ring {
   0% {
     opacity: 0;
-    transform: translateX(-3px) scale(0.4);
+    transform: translateX(-6px) scale(0.4);
   }
 
   48% {
     opacity: 1;
-    transform: translateX(-3px) scale(1);
+    transform: translateX(-6px) scale(1);
   }
 
   100% {
@@ -958,9 +1122,14 @@ a.anchor:focus-visible::before {
   animation: sig-draw forwards;
 }
 
-/* With scripts on, it waits until it scrolls into view, and draws once a visit. */
+/* With scripts on, it waits for the first-load reveal to draw it, last of all. */
 :root.js .sig:not(.is-drawing) mask path {
   animation-play-state: paused;
+}
+
+:root.js:not([data-rv]) .sig mask path {
+  animation: none;
+  stroke-dashoffset: 0;
 }
 
 :root.sig-drawn .sig mask path {
@@ -971,6 +1140,144 @@ a.anchor:focus-visible::before {
 @keyframes sig-draw {
   to {
     stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- The home page: one screen, the signature beside the last list ---------- */
+
+.where {
+  position: relative;
+}
+
+/* The copyright sits centred under the signature. */
+.foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: max-content;
+}
+
+.foot .sig {
+  margin: 0 0 8px;
+}
+
+.foot .small {
+  text-align: center;
+}
+
+/* Wide screens: in the right margin, where the side notes show, level with the list. */
+@media (min-width: 1101px) {
+  .foot {
+    position: absolute;
+    inset-inline-start: calc(100% + 56px);
+    bottom: 0;
+  }
+}
+
+/* Narrower: beside the list when there is room, else under it. */
+@media (max-width: 1100px) {
+  .where {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 10px 32px;
+  }
+
+  .foot .sig svg {
+    width: 180px;
+    height: auto;
+  }
+}
+
+/* The rhythm tightens with the screen's height, so the whole page fits in one. */
+@media (min-width: 701px) {
+  .col:has(.home) {
+    padding-top: clamp(12px, 2.2vh, 18px);
+    padding-bottom: clamp(16px, 4vh - 8px, 62px);
+  }
+
+  .col:has(.home) .row {
+    margin-top: clamp(16px, 6vh - 20px, 46px);
+  }
+
+  .col:has(.home) .row.first {
+    margin-top: clamp(10px, 4vh - 10px, 32px);
+  }
+
+  .col:has(.home) h1 {
+    margin-bottom: clamp(10px, 3.4vh - 8px, 26px);
+  }
+
+  .home .list > li {
+    margin-bottom: clamp(2px, 1.4vh - 4px, 9px);
+  }
+}
+
+@media (min-width: 701px) and (max-height: 780px) {
+  .col:has(.home) {
+    font-size: 18px;
+    line-height: 27px;
+  }
+
+  .col:has(.home) .lab {
+    font-size: 17px;
+    line-height: 27px;
+  }
+}
+
+@media (min-width: 701px) and (max-height: 660px) {
+  .col:has(.home) {
+    font-size: 17px;
+    line-height: 24px;
+  }
+
+  .col:has(.home) .lab {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .col:has(.home) h1 {
+    font-size: 40px;
+  }
+
+  .col:has(.home) .row {
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 700px) {
+  .col:has(.home) {
+    padding-top: 20px;
+    padding-bottom: 24px;
+    font-size: 18px;
+    line-height: 27px;
+  }
+
+  .col:has(.home) .row {
+    margin-top: clamp(18px, 3.4vh, 38px);
+  }
+
+  .col:has(.home) .row.first {
+    margin-top: 14px;
+  }
+
+  .col:has(.home) .lab {
+    margin-bottom: 2px;
+    font-size: 17px;
+    line-height: 26px;
+  }
+
+  .col:has(.home) h1 {
+    margin-bottom: 10px;
+  }
+
+  .home .list > li {
+    margin-bottom: 4px;
+  }
+
+  .foot .sig svg {
+    width: 150px;
   }
 }
 
@@ -1013,8 +1320,69 @@ a.anchor:focus-visible::before {
   transform: none;
 }
 
-.copy[data-done] {
-  animation: hello-a 140ms var(--ease);
+/* ---------- Keyboard shortcuts: the list, in the command menu's box ---------- */
+
+.kd .ck-note {
+  width: min(460px, 100% - 32px);
+}
+
+.kd-top {
+  justify-content: space-between;
+  height: 62px;
+  padding-inline: 20px 14px;
+  color: var(--ink);
+}
+
+.kd-box:focus {
+  outline: none;
+}
+
+.kd-title {
+  margin: 0;
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+/* The drawer's close button, a little smaller, clear of the box's edges. */
+.kd .kd-x {
+  width: 36px;
+  height: 36px;
+  margin: 0;
+}
+
+.kd-list {
+  margin: 0;
+  padding: 6px 18px 12px;
+}
+
+.kd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 17px;
+  line-height: 24px;
+}
+
+.kd-row:last-child {
+  border-bottom: 0;
+}
+
+.kd-row dt {
+  margin: 0;
+}
+
+.kd-row dd {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+}
+
+.kd .ck-kbd {
+  min-width: 24px;
 }
 
 /* ---------- Command menu ---------- */
@@ -1035,37 +1403,296 @@ a.anchor:focus-visible::before {
   font: inherit;
 }
 
+/*
+ * The same veil as behind the list drawer: the page itself fades to a quarter of its
+ * strength, under its paper texture, and so does an open drawer.
+ */
 .ck::backdrop {
-  background: color-mix(in srgb, var(--bg) 72%, transparent);
-  animation: ck-fade 110ms linear;
+  background: transparent;
+}
+
+html:has(.ck[open]:not(.is-closing)) :is(.page, .dr) {
+  opacity: 0.26;
 }
 
 html:has(.ck[open]) {
   overflow: hidden;
 }
 
-.ck-box {
+/*
+ * Over the veil, the cursor is a cross: a click there closes what is open. The open
+ * thing itself (this note, the drawer) keeps the usual cursor.
+ */
+.ck,
+.dr-scrim {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%23faf7f2' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%231e2230' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, pointer;
+}
+
+:root[data-mode="dark"] :is(.ck, .dr-scrim) {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%2314161d' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%23eceaf3' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, pointer;
+}
+
+.ck-note {
+  cursor: auto;
+}
+
+/*
+ * The command menu and the shortcuts are notes on a sheet torn from a notepad: two
+ * staples along the top, a torn edge along the bottom. A note unfolds down from its
+ * staples as it opens, and folds back up as it closes.
+ */
+.ck-note {
   position: absolute;
   top: 96px;
   left: 0;
   right: 0;
   width: min(580px, 100% - 32px);
   margin-inline: auto;
+  transition: translate 420ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+/*
+ * The sheet's shadow: the drawer's, all around it and a little heavier below. A layer
+ * of its own behind the paper, ending inside the torn edge, so every browser draws it
+ * and it folds along with the sheet.
+ */
+.note-shadow {
+  position: absolute;
+  inset: 0 0 10px;
+  pointer-events: none;
+  box-shadow:
+    0 1px 1px color-mix(in srgb, var(--shade-near) 60%, transparent),
+    0 4px calc(var(--shade-blur) * 1.6) color-mix(in srgb, var(--shade-far) 75%, transparent),
+    0 calc(var(--shade-reach) * 2.2) calc(var(--shade-blur) * 3.4) color-mix(in srgb, var(--shade-far) 90%, transparent);
+}
+
+.ck-sheet {
+  position: relative;
+  transform-origin: 50% 0;
+}
+
+/*
+ * Two staples, each a little crooked, through the top of the sheet: a bar of bent
+ * steel with its ends pressed into the paper, catching the light along its top.
+ */
+.ck-sheet::before,
+.ck-sheet::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  z-index: 4;
+  width: 36px;
+  height: 6px;
+  border-radius: 3px;
+  background:
+    radial-gradient(circle at 3px 50%, rgba(30, 34, 48, 0.55) 0 1.6px, transparent 2.2px),
+    radial-gradient(circle at calc(100% - 3px) 50%, rgba(30, 34, 48, 0.55) 0 1.6px, transparent 2.2px),
+    linear-gradient(#fdfdfe, #c4c8d0 38%, #8b909b 72%, #656a76);
+  box-shadow:
+    0 1.5px 1.5px rgba(30, 34, 48, 0.35),
+    0 0 0 0.5px rgba(30, 34, 48, 0.35);
+  pointer-events: none;
+}
+
+.ck-sheet::before {
+  left: 12%;
+  transform: rotate(-4deg);
+}
+
+.ck-sheet::after {
+  right: 12%;
+  transform: rotate(2.5deg);
+}
+
+:root[data-mode="dark"] :is(.ck-sheet::before, .ck-sheet::after) {
+  background:
+    radial-gradient(circle at 3px 50%, rgba(0, 0, 0, 0.6) 0 1.6px, transparent 2.2px),
+    radial-gradient(circle at calc(100% - 3px) 50%, rgba(0, 0, 0, 0.6) 0 1.6px, transparent 2.2px),
+    linear-gradient(#e6e8ee, #a3a8b3 38%, #6e7380 72%, #4c505b);
+  box-shadow:
+    0 1.5px 2px rgba(0, 0, 0, 0.6),
+    0 0 0 0.5px rgba(0, 0, 0, 0.5);
+}
+
+/*
+ * The sheet is the same paper as the page and the drawer, with the same grain, and
+ * ends in the same torn edge. Its last 24px hold the tear: the sheet is cut there to
+ * the edge's shape, and a fringe of lighter fibres shows just beyond it.
+ */
+.ck-box {
+  position: relative;
+  z-index: 1;
   overflow: hidden;
+  padding-bottom: 24px;
   background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  box-shadow: 0 24px 60px -30px rgba(30, 34, 48, 0.5);
+  border-radius: 2px 2px 0 0;
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 24px) no-repeat,
+    url("../assets/tear-bottom-edge.svg") bottom left / 480px 24px repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 24px) no-repeat,
+    url("../assets/tear-bottom-edge.svg") bottom left / 480px 24px repeat-x;
 }
 
-.ck[open] .ck-box {
-  animation: ck-in 150ms var(--ease);
+/* The page's paper grain, both of its layers, over the whole sheet. */
+.ck-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: url("../assets/paper-light.webp"), url("../assets/paper-light.webp");
+  background-position: 0 0, 383px 211px;
+  background-size: 1024px 1024px, 1408px 1408px;
+  opacity: calc(var(--paper-a) * 0.85);
+  pointer-events: none;
 }
 
-@keyframes ck-in {
-  from {
+:root[data-mode="dark"] .ck-box::before {
+  background-image: url("../assets/paper.webp"), url("../assets/paper.webp");
+  mix-blend-mode: soft-light;
+}
+
+/* Behind the sheet's last 24px, where the tear is, so only the fringe shows past it. */
+.note-tear {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: none;
+}
+
+.note-tear i {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--bg), #fff 80%);
+  -webkit-mask: url("../assets/tear-bottom-fiber.svg") bottom left / 480px 24px repeat-x;
+  mask: url("../assets/tear-bottom-fiber.svg") bottom left / 480px 24px repeat-x;
+}
+
+:root[data-mode="dark"] .note-tear i {
+  background: color-mix(in srgb, var(--bg), #fff 20%);
+}
+
+/* A shadow crosses the sheet while it folds, deepest when it is most folded. */
+.ck-box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(rgba(20, 22, 30, 0.04), rgba(20, 22, 30, 0.34));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ck[open] .ck-sheet {
+  animation: note-open 760ms linear both;
+}
+
+.ck[open] .ck-box::after {
+  animation: note-open-shade 760ms linear both;
+}
+
+.ck.is-closing .ck-sheet {
+  animation: note-close 340ms linear forwards;
+}
+
+.ck.is-closing .ck-box::after {
+  animation: note-close-shade 340ms linear forwards;
+}
+
+/*
+ * Paper, not a board: it drops down past flat, rocks back, and settles with a little
+ * sway, each swing smaller than the last. The shadow follows how far it is turned.
+ */
+@keyframes note-open {
+  0% {
     opacity: 0;
-    transform: translateY(-8px) scale(0.98);
+    transform: perspective(900px) translateY(-12px) rotateX(-78deg) rotateZ(-1.4deg) scaleY(0.86);
+    animation-timing-function: cubic-bezier(0.3, 0.55, 0.45, 1);
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  38% {
+    transform: perspective(900px) translateY(2px) rotateX(11deg) rotateZ(0.7deg) scaleY(1.015);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  60% {
+    transform: perspective(900px) translateY(-1px) rotateX(-4.5deg) rotateZ(-0.35deg);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  80% {
+    transform: perspective(900px) rotateX(1.6deg) rotateZ(0.12deg);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes note-open-shade {
+  0% {
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.3, 0.55, 0.45, 1);
+  }
+
+  30% {
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 0.16;
+  }
+
+  80% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* It dips first, as a hand takes it, then lifts and folds up out of sight. */
+@keyframes note-close {
+  0% {
+    opacity: 1;
+    transform: none;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+
+  28% {
+    opacity: 1;
+    transform: perspective(900px) translateY(3px) rotateX(9deg) rotateZ(-0.4deg);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.8, 0.4);
+  }
+
+  78% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: perspective(900px) translateY(-12px) rotateX(-80deg) rotateZ(1.2deg) scaleY(0.86);
+  }
+}
+
+@keyframes note-close-shade {
+  0%,
+  28% {
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.8, 0.4);
+  }
+
+  100% {
+    opacity: 1;
   }
 }
 
@@ -1240,8 +1867,8 @@ html {
 
 .page {
   transition:
-    transform var(--fast) var(--ease),
-    opacity var(--fast) linear;
+    transform var(--move) var(--glide),
+    opacity var(--fade) linear;
 }
 
 :root[data-open] .page {
@@ -1254,10 +1881,18 @@ html {
 }
 
 /* The logo and the section name fly into the drawer's header. */
-:root[data-open] .bar .logo,
+:root[data-open] .bar .logo {
+  visibility: hidden;
+}
+
 :root[data-open="work"] #work,
 :root[data-open="writing"] #writing {
-  visibility: hidden;
+  opacity: 0;
+}
+
+/* Switching lists, the names on the page behind trade places softly. */
+:root[data-swap] :is(#work, #writing) {
+  transition: opacity var(--move) var(--glide);
 }
 
 .dr-scrim {
@@ -1268,7 +1903,6 @@ html {
   padding: 0;
   border: 0;
   background: transparent;
-  cursor: default;
 }
 
 :root[data-open] .dr-scrim {
@@ -1284,13 +1918,19 @@ html {
   width: 540px;
   max-width: 100%;
   background: var(--bg);
+  /* Paper past the screen's edge, for when the drawer leans toward the cursor. */
+  box-shadow: 24px 0 0 var(--bg);
   transform: translateX(calc(100% + 90px));
   transition:
-    transform var(--fast) var(--ease),
-    background-color var(--fast) linear;
+    transform var(--move) var(--glide),
+    translate 420ms cubic-bezier(0.2, 0.8, 0.3, 1),
+    opacity var(--fade) linear,
+    background-color var(--fast) linear,
+    box-shadow var(--fast) linear;
 }
 
 [dir="rtl"] .dr {
+  box-shadow: -24px 0 0 var(--bg);
   transform: translateX(calc(-100% - 90px));
 }
 
@@ -1326,15 +1966,11 @@ html {
   width: 24px;
   pointer-events: none;
   clip-path: inset(0 0 0 -80px);
-  filter: drop-shadow(-1px 0 0.5px rgba(30, 34, 48, 0.2)) drop-shadow(-10px 0 16px rgba(30, 34, 48, 0.2));
+  filter: drop-shadow(-1px 0 0.5px var(--shade-near)) drop-shadow(calc(var(--shade-reach) * -1) 0 var(--shade-blur) var(--shade-far));
 }
 
 [dir="rtl"] .dr-tear {
   transform: scaleX(-1);
-}
-
-:root[data-mode="dark"] .dr-tear {
-  filter: drop-shadow(-1px 0 0.5px rgba(0, 0, 0, 0.55)) drop-shadow(-12px 0 18px rgba(0, 0, 0, 0.6));
 }
 
 .dr-tear i,
@@ -1442,12 +2078,38 @@ html {
   transform: rotate(90deg);
 }
 
+/*
+ * Search and filters stay at the top of the drawer as its list scrolls under them. The
+ * paper reaches past the drawer's margins, so nothing shows beside the search box.
+ */
 .dr-tools {
-  position: relative;
+  position: sticky;
+  top: -18px;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin: -10px 0 28px;
+  margin: -22px 0 16px;
+  padding: 12px 0;
+  background: var(--bg);
+  border-image: conic-gradient(var(--bg) 0 0) fill 0 / / 0 100vw;
+  transition: background-color var(--fast) linear;
+}
+
+/* Once the list scrolls, it fades out softly as it runs under them, not cut off. */
+.dr-tools::after {
+  content: "";
+  position: absolute;
+  inset: 100% -100vw auto;
+  height: 36px;
+  background: linear-gradient(var(--bg), color-mix(in srgb, var(--bg) 70%, transparent) 40%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--fade) linear;
+}
+
+.dr[data-scrolled] .dr-tools::after {
+  opacity: 1;
 }
 
 .dr-search {
@@ -1649,10 +2311,6 @@ html {
   margin-top: 12px;
 }
 
-.dr-active[hidden] {
-  display: none;
-}
-
 .dr-on {
   display: inline-flex;
   align-items: center;
@@ -1716,10 +2374,6 @@ html {
 
 .dr-list > li {
   margin-bottom: 20px;
-}
-
-.dr-list > li[hidden] {
-  display: none;
 }
 
 .dr-list .dot {
@@ -1883,9 +2537,10 @@ html {
   margin-bottom: 0;
 }
 
+/* The rest of a project or post page follows its title in, once the morph is under way. */
 .rise {
-  animation: rise 150ms var(--ease) both;
-  animation-delay: var(--d, 0ms);
+  animation: rise 520ms var(--ease) both;
+  animation-delay: calc(220ms + var(--d, 0ms) * 2);
 }
 
 @keyframes rise {
@@ -2064,9 +2719,217 @@ html {
   background: var(--line);
 }
 
+/* ---------- First load: the text rises out of its baseline ---------- */
+
+/* Held back until the reveal starts (and shown anyway after 1.5 s, should it not). */
+:root[data-rv="pre"] .col {
+  visibility: hidden;
+  animation: rv-safe 0s 1.5s forwards;
+}
+
+:root[data-rv="pre"] .slot {
+  visibility: visible;
+}
+
+@keyframes rv-safe {
+  to {
+    visibility: visible;
+  }
+}
+
+/* Each word sits in a little window it rises into. */
+.rv-w {
+  display: inline-block;
+  clip-path: inset(-0.4em -0.3em 0 -0.3em);
+}
+
+.rv-i {
+  display: inline-block;
+  will-change: transform;
+}
+
+.rv-o,
+.rv-e,
+.rv-e > .rv-w {
+  display: inline-block;
+}
+
+/* Underlines travel with their words, not under the empty windows. */
+:root[data-rv="run"] :is(a, .link, .ext) {
+  text-decoration-color: transparent;
+}
+
+:is(a, .link) .rv-i {
+  text-decoration: underline 2px var(--acc);
+  text-underline-offset: 4px;
+}
+
+a.anchor .rv-i,
+.crumb .rv-i,
+.next .rv-i {
+  text-decoration: none;
+}
+
+.next > span .rv-i {
+  text-decoration: underline 2px var(--acc);
+  text-underline-offset: 4px;
+}
+
+/* The confetti of the easter egg: a popover over everything, the command menu too. */
+.lk-sky {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.lk-sky::backdrop {
+  display: none;
+}
+
+/* ---------- 404: a black hole torn in the page ---------- */
+
+.nf-sky {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.nf-hero {
+  padding-inline-end: 190px;
+}
+
+.nf-hole {
+  position: absolute;
+  inset-inline-end: -270px;
+  top: -110px;
+  display: block;
+  width: 470px;
+  height: 470px;
+  cursor: crosshair;
+}
+
+.nf-gl {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.nf-path {
+  margin: 16px 0 0;
+  color: var(--mut);
+  font-size: 17px;
+  font-style: italic;
+}
+
+.nf-path code {
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--ink);
+  font: 500 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap;
+}
+
+.nf-kbd {
+  font-size: 15px;
+}
+
+.nf-ch {
+  display: inline-block;
+  will-change: transform;
+}
+
+.nf-w {
+  white-space: nowrap;
+}
+
+.link .nf-ch {
+  text-decoration: underline 2px var(--acc);
+  text-underline-offset: 4px;
+  transition: text-decoration-color var(--fast) linear;
+}
+
+.link:hover .nf-ch {
+  text-decoration-color: var(--ink);
+}
+
+.dot.nf-dot {
+  inset-inline-start: -23px;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mut);
+  opacity: 0.6;
+}
+
+.list > li:hover > .nf-dot {
+  opacity: 1;
+  transform: none;
+}
+
+:root[data-lang="ja"] .nf-h1 {
+  font-size: 40px;
+}
+
+/* ---------- The analytics question ---------- */
+
+.consent {
+  position: fixed;
+  inset-inline-end: 24px;
+  bottom: 24px;
+  z-index: 20;
+  width: min(380px, 100% - 32px);
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow: 0 18px 44px -26px rgba(30, 34, 48, 0.45);
+  font-size: 16px;
+  line-height: 24px;
+  animation: ck-in 150ms var(--ease);
+}
+
+.consent p {
+  margin: 0 0 12px;
+}
+
+.consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.consent .pill-btn {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 16px;
+}
+
+.consent .consent-yes {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
 /* ---------- Other scripts ---------- */
 
-:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty, .dr-kind, .dr-fh, .dr-on-k, .dr-empty, .or) {
+:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty, .dr-kind, .dr-fh, .dr-on-k, .dr-empty, .or, .nf-path) {
   font-style: normal;
 }
 
@@ -2129,6 +2992,14 @@ html {
 @media (max-width: 1100px) {
   .note {
     display: none;
+  }
+
+  .nf-hero {
+    padding-inline-end: 340px;
+  }
+
+  .nf-hole {
+    inset-inline-end: -80px;
   }
 
   .col {
@@ -2208,7 +3079,7 @@ html {
     display: none;
   }
 
-  .ck-box {
+  .ck-note {
     top: 20px;
   }
 
@@ -2224,6 +3095,10 @@ html {
 
   .dr-tear {
     display: none;
+  }
+
+  .dr-tools {
+    top: -28px;
   }
 
   :root[data-open] .page,
@@ -2259,6 +3134,33 @@ html {
 
   .post h1 {
     font-size: 36px;
+  }
+
+  .nf-hero {
+    padding: 0;
+  }
+
+  .nf-hole {
+    position: relative;
+    inset: auto;
+    width: 300px;
+    height: 300px;
+    margin: -30px auto -6px;
+  }
+
+  .nf-top h1.nf-h1 {
+    min-height: 0;
+    padding: 0;
+    font-size: 38px;
+    text-align: center;
+  }
+
+  .nf-top .lab {
+    text-align: center;
+  }
+
+  .nf-top a.anchor::before {
+    display: none;
   }
 
   .hero h1 {
@@ -2305,12 +3207,12 @@ html {
   }
 
   .hello,
-  .copy,
   .rise,
   .dr-list > li,
   .dr-on,
   .dr-badge,
-  .ck-box,
+  .ck-sheet,
+  .ck-box::after,
   .ck::backdrop,
   .logo *,
   .sig mask path {

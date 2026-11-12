@@ -6,7 +6,7 @@ import { ui } from "~/i18n/ui";
 
 
 
-/** The home page's sign-off: the signature, drawn in, and the copyright under it. */
+/** The home page's sign-off, beside its last list: the signature, drawn in, and the copyright under it. */
 interface Props {
   lang: Lang;
 }
@@ -14,10 +14,7 @@ interface Props {
 const t = ui(Astro.props.lang);
 ---
 
-<footer class="row foot">
-  <div></div>
-  <div>
-    <Signature label={t.signature} />
-    <p class="small">{t.copyright}</p>
-  </div>
+<footer class="foot">
+  <Signature label={t.signature} />
+  <p class="small">{t.copyright}</p>
 </footer>

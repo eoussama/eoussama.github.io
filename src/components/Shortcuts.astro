@@ -1,0 +1,57 @@
+---
+import type { Lang } from "~/i18n/langs";
+
+import { PROFILE } from "~/data/profile";
+import { ui } from "~/i18n/ui";
+
+
+
+/**
+ * The keyboard shortcuts, listed in a dialog opened with "?" or from the command menu.
+ * Single keys work anywhere on the page except while typing.
+ */
+interface Props {
+  lang: Lang;
+}
+
+const t = ui(Astro.props.lang);
+
+const rows: { label: string; keys: string[] }[] = [
+  { label: t.kTheme, keys: ["T"] },
+  { label: t.allProjectsLabel, keys: ["P"] },
+  { label: t.allPostsLabel, keys: ["W"] },
+  { label: t.cHome, keys: ["H"] },
+  { label: t.kMail, keys: ["C"] },
+  { label: t.kKeys, keys: ["?"] },
+  { label: t.kClose, keys: ["esc"] },
+];
+---
+
+<dialog class="ck kd" id="keys" aria-labelledby="kd-title" data-mail={`mailto:${PROFILE.email}`}>
+  <div class="ck-note">
+    <div class="ck-sheet">
+      <span class="note-shadow" aria-hidden="true"></span>
+      <div class="ck-box kd-box" tabindex="-1">
+        <div class="ck-top kd-top">
+          <h2 class="kd-title" id="kd-title">{t.keysTitle}</h2>
+          <button type="button" class="dr-x kd-x" aria-label={t.keysClose} title={t.keysClose} data-keys-close>
+            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+        <dl class="kd-list">
+          <div class="kd-row">
+            <dt>{t.kPalette}</dt>
+            <dd dir="ltr"><kbd class="ck-kbd"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></kbd></dd>
+          </div>
+          {rows.map(row => (
+            <div class="kd-row">
+              <dt>{row.label}</dt>
+              <dd dir="ltr">{row.keys.map(key => <kbd class="ck-kbd">{key}</kbd>)}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <span class="note-tear" aria-hidden="true"><i></i></span>
+    </div>
+  </div>
+</dialog>
