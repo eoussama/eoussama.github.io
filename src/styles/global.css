@@ -698,7 +698,6 @@ a:is(:hover, :focus-visible) > .lk-ic,
   padding: 0;
   border: 0;
   color: var(--mut);
-  opacity: 0.7;
   white-space: nowrap;
 }
 
@@ -1272,10 +1271,17 @@ a:is(:hover, :focus-visible) > .lk-ic,
   height: 26px;
 }
 
+.mm:is(:hover, :has(:focus-visible)) .mm-link {
+  pointer-events: auto;
+}
+
 .mm-link {
   position: relative;
   display: block;
   height: 100%;
+  /* Closed, the dashes are too close together to aim at; pointing at them opens the
+     list, whose rows are, before a click can land. The keyboard reaches them either way. */
+  pointer-events: none;
   border-radius: 6px;
   background: none;
   color: var(--mut);
@@ -3328,7 +3334,8 @@ html {
 }
 
 .prose a.anchor::before {
-  inset-inline-start: -0.8em;
+  /* Never further out than the narrowest margin beside the column. */
+  inset-inline-start: max(-0.8em, -19px);
   top: 0;
   margin-top: 0;
   line-height: inherit;
@@ -3386,6 +3393,71 @@ html {
 :root[data-mode="dark"] .prose pre,
 :root[data-mode="dark"] .prose pre span {
   color: var(--shiki-dark);
+}
+
+/*
+ * The old posts colour some words and code, and their text names the colours (red,
+ * green and blue channels; "highlighted in green"). Each keeps its colour, in a shade
+ * that reads on the paper and in a block of code, in either theme.
+ */
+:root:not([data-mode="dark"]) .prose :is([style="color: red"], [style="color: #ff0000"]) {
+  color: #c80000 !important;
+}
+
+:root:not([data-mode="dark"]) .prose [style="color: green"] {
+  color: #007a00 !important;
+}
+
+:root:not([data-mode="dark"]) .prose [style="color: grey"] {
+  color: #666 !important;
+}
+
+:root:not([data-mode="dark"]) .prose [style="color: darkorange"] {
+  color: #9c5300 !important;
+}
+
+:root:not([data-mode="dark"]) .prose [style="color: royalblue"] {
+  color: #3354c4 !important;
+}
+
+:root:not([data-mode="dark"]) .prose [style="color: seagreen"] {
+  color: #226b43 !important;
+}
+
+:root:not([data-mode="dark"]) .prose [style="color: #00ff00ff"] {
+  color: #007a08 !important;
+}
+
+:root:not([data-mode="dark"]) .prose [style="color: #ee11cc"] {
+  color: #b0009a !important;
+}
+
+:root[data-mode="dark"] .prose :is([style="color: red"], [style="color: #ff0000"]) {
+  color: #ff5c5c !important;
+}
+
+:root[data-mode="dark"] .prose [style="color: blue"] {
+  color: #8090ff !important;
+}
+
+:root[data-mode="dark"] .prose [style="color: green"] {
+  color: #45b845 !important;
+}
+
+:root[data-mode="dark"] .prose [style="color: grey"] {
+  color: #a0a0a0 !important;
+}
+
+:root[data-mode="dark"] .prose [style="color: royalblue"] {
+  color: #86a0ff !important;
+}
+
+:root[data-mode="dark"] .prose [style="color: seagreen"] {
+  color: #4fbf84 !important;
+}
+
+:root[data-mode="dark"] .prose [style="color: #ee11cc"] {
+  color: #f04fd6 !important;
 }
 
 .prose img {
@@ -3722,7 +3794,8 @@ a.anchor .rv-i,
   }
 
   .nf-hole {
-    inset-inline-end: -80px;
+    /* Into the margin, but never past the window's edge. */
+    inset-inline-end: max(-80px, (min(800px, 100vw - 48px) - 100vw) / 2);
   }
 
   .col {
@@ -3866,8 +3939,9 @@ a.anchor .rv-i,
   .nf-hole {
     position: relative;
     inset: auto;
-    width: 300px;
-    height: 300px;
+    width: min(300px, 100%);
+    height: auto;
+    aspect-ratio: 1;
     margin: -30px auto -6px;
   }
 
@@ -3887,7 +3961,16 @@ a.anchor .rv-i,
   }
 
   .hero h1 {
-    font-size: 44px;
+    font-size: clamp(34px, 11vw, 44px);
+  }
+
+  /* A long name breaks rather than run off a small screen, its organization too. */
+  .hero h1 .title {
+    overflow-wrap: anywhere;
+  }
+
+  .hero h1 .pn-org {
+    white-space: normal;
   }
 
   .lead {

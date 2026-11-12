@@ -71,7 +71,7 @@ Next start making the commands,
 
 so in the first line, declare the cuff command
 
-<pre class="hand"><code><span style="color: darkorange">CMD:cuff(playerid, params[])
+<pre class="hand" tabindex="0"><code><span style="color: darkorange">CMD:cuff(playerid, params[])
 {
       <span style="color: seagreen">// do something here</span>
       return 1;
@@ -83,7 +83,7 @@ This creates the command, but it has no functionality yet,
 
 so after the player enters the command, the server would check if that player is in LSPD class, then execute the command, but if he's not in LSPD class, the server would display an error, It would look like the following
 
-<pre class="hand"><code>CMD:cuff(playerid, params[])
+<pre class="hand" tabindex="0"><code>CMD:cuff(playerid, params[])
 {
      <span style="color: darkorange"> if(gTeam[playerid] == LSPD)
       {
@@ -104,7 +104,7 @@ Ok, now we gave the permission for only LSPD member to use that command,
 
 next, let's define the target id(the person whom we're going to cuff) and make it as if the player doesn't enter the params(if he only typed /cuff without typing any ID), the server would give him an Error
 
-<pre class="hand"><code>CMD:cuff(playerid, params[])
+<pre class="hand" tabindex="0"><code>CMD:cuff(playerid, params[])
 {
       if(gTeam[playerid] == LSPD)
       {
@@ -126,7 +126,7 @@ The **"u"** stands for the target's ID parameter,
 
 next, let's and see if that player is online or not,
 
-<pre class="hand"><code>CMD:cuff(playerid, params[])
+<pre class="hand" tabindex="0"><code>CMD:cuff(playerid, params[])
 {
       if(gTeam[playerid] == LSPD)
       {
@@ -156,7 +156,7 @@ next, let's and see if that player is online or not,
 
 Ok here is a problem, if we don't add any other conditions, and just executed the command, the target would be cuffed whatever the distance between the player and the target is, so let's limit the use of this in a specific distance,
 
-<pre class="hand"><code>CMD:cuff(playerid, params[])
+<pre class="hand" tabindex="0"><code>CMD:cuff(playerid, params[])
 {
       if(gTeam[playerid] == LSPD)
       {
@@ -199,7 +199,7 @@ So the last part was all about the distance between the two players, so I create
 
 and now, we need to check if the target belongs to the LSPD class himself too, so he won't be cuffed, (it makes sense actually :D)
 
-<pre class="hand"><code>CMD:cuff(playerid, params[])
+<pre class="hand" tabindex="0"><code>CMD:cuff(playerid, params[])
 {
       if(gTeam[playerid] == LSPD)
       {
@@ -253,7 +253,7 @@ checks if the target is NOT a LSPD member, then if it's true, the command will e
 
 and now, the last step before executing the command, is to check if the target is already cuffed or not,
 
-<pre class="hand"><code>CMD:cuff(playerid, params[])
+<pre class="hand" tabindex="0"><code>CMD:cuff(playerid, params[])
 {
       if(gTeam[playerid] == LSPD)
       {
@@ -314,7 +314,7 @@ and here we have made use of that boolean which we've created at the beginning, 
 
 and now, let's add some functionality to the command,
 
-<pre class="hand"><code>CMD:cuff(playerid, params[])
+<pre class="hand" tabindex="0"><code>CMD:cuff(playerid, params[])
 {
       if(gTeam[playerid] == LSPD)
       {
@@ -387,7 +387,7 @@ I want you to make attention to this, I stated on the command lines, this "**IsC
 
 So, to make the uncuff command, It's pretty much the same, just do everything exactly as the cuff command, but you have to change some parts, exactly like the following
 
-<pre class="hand"><code>CMD:<span style="color: green">uncuff</span>(playerid, params[])
+<pre class="hand" tabindex="0"><code>CMD:<span style="color: green">uncuff</span>(playerid, params[])
 {
       if(gTeam[playerid] == LSPD)
       {

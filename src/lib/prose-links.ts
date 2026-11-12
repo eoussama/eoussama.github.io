@@ -1,5 +1,7 @@
 import type { AstroIntegration } from "astro";
 
+import { keepFrom } from "./tail";
+
 
 
 /**
@@ -75,7 +77,8 @@ function decorated(children: readonly Node[]): Node[] {
 
   if (last?.type === "text") {
     const { value } = last as Text;
-    const cut = Math.max(value.search(/\S+\s*$/), 0);
+    const word = Math.max(value.search(/\S+\s*$/), 0);
+    const cut = word + keepFrom(value.slice(word).trimEnd());
 
     out.pop();
 

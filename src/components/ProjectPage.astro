@@ -9,6 +9,7 @@ import ProjectName from "~/components/ProjectName.astro";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
 import { fullName, getProjects, pick, projectPath } from "~/lib/projects";
+import { keepFrom } from "~/lib/tail";
 import { localized } from "~/lib/url";
 
 
@@ -59,20 +60,20 @@ function short(url: string): string {
 }
 
 /**
- * The short address up to its last slash, and what follows it: the second keeps the
- * link's arrow on its line.
+ * The short address up to its end, and its end: the second keeps the link's arrow
+ * on its line.
  *
  * @param url - The address
- * @returns Its start, through the last slash
+ * @returns Its start, before its end
  */
 function head(url: string): string {
   const text = short(url);
 
-  return text.slice(0, text.lastIndexOf("/") + 1);
+  return text.slice(0, cut(text));
 }
 
 /**
- * The last part of a short address, after its last slash.
+ * The end of a short address, kept on one line with the arrow.
  *
  * @param url - The address
  * @returns Its end
@@ -80,7 +81,20 @@ function head(url: string): string {
 function tail(url: string): string {
   const text = short(url);
 
-  return text.slice(text.lastIndexOf("/") + 1);
+  return text.slice(cut(text));
+}
+
+/**
+ * Where a short address's end, kept on one line with the arrow, starts: after its
+ * last slash, or later in a long last part.
+ *
+ * @param text - The short address
+ * @returns Where its end starts
+ */
+function cut(text: string): number {
+  const end = text.lastIndexOf("/") + 1;
+
+  return end + keepFrom(text.slice(end));
 }
 ---
 

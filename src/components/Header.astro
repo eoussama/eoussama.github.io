@@ -42,7 +42,7 @@ const themes = [
         <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
         <path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
       </svg>
-      <kbd class="kbd full" dir="ltr"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></kbd>
+      <kbd class="kbd full" dir="ltr" aria-hidden="true"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></kbd>
     </button>
 
     <div class="menu-wrap ver-wrap">
@@ -67,7 +67,7 @@ const themes = [
 
     <div class="menu-wrap">
       <button type="button" class="pill-btn" data-menu="menu-langs" aria-expanded="false" aria-controls="menu-langs" aria-label={`${t.language}: ${info.name}`}>
-        <span class="full">{info.name}</span><span class="short">{info.short}</span>
+        <span class="full">{info.name}</span><span class="short" aria-hidden="true">{info.short}</span>
         <svg class="chev" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
       </button>
       <nav class="menu" id="menu-langs" data-open="false" aria-label={t.language}>
