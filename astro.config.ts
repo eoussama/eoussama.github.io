@@ -41,6 +41,8 @@ export default defineConfig({
     shikiConfig: {
       // Catppuccin, adjusted to AA contrast; the page picks a mode with CSS.
       themes: CODE_THEMES,
+      // Shiki has no Pawn grammar; Pawn is close enough to C to read right as C.
+      langAlias: { pawn: "c" },
       defaultColor: false,
       wrap: true,
     },

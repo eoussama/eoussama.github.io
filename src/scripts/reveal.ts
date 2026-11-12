@@ -81,7 +81,7 @@ function reveal() {
   const rtl = root.dir === "rtl";
 
   // 1. The visible text, block by block.
-  const skip = (el: Element | null) => !el || !!el.closest("svg, script, style, .sr, .note, .small, .sig, .bar .tools, .slot, .ck, .dr, .kbd, .chip, code.no-rv");
+  const skip = (el: Element | null) => !el || !!el.closest("svg, script, style, .sr, .note, .small, .sig, .bar .tools, .slot, .ck, .dr, .kbd, .chip, pre, code.no-rv");
   const BLOCK = "h1, h2, h3, p, li, dt, dd, figcaption, blockquote, .crumb, .nf-path";
   const blocks = new Map<Element, Text[]>();
   const walker = document.createTreeWalker(col, NodeFilter.SHOW_TEXT, { acceptNode: node => (node.nodeValue?.trim() && !skip(node.parentElement)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
@@ -91,10 +91,16 @@ function reveal() {
     nodes.push(walker.currentNode as Text);
   }
 
+  // Only text within the first few screens rises: a long post has thousands of words
+  // further down, each its own animated box, enough to stall the page; read there, it
+  // is simply text.
+  const reach = innerHeight * 3;
+  const near = (el: Element) => el.getBoundingClientRect().top + scrollY < reach;
+
   nodes.forEach((node) => {
     const el = node.parentElement!;
 
-    if (!el.getClientRects().length) {
+    if (!el.getClientRects().length || !near(el)) {
       return;
     }
 
@@ -185,6 +191,14 @@ function reveal() {
   if (tools) {
     units.unshift({ block: tools, words: [], atoms: [tools], fadeOnly: true });
   }
+
+  // A block of code arrives whole, in its place in the page's order: word by word, a
+  // long post's code would be thousands of pieces.
+  [...col.querySelectorAll<HTMLElement>("pre")].filter(near).forEach((pre) => {
+    const at = units.findIndex(u => pre.compareDocumentPosition(u.block) & Node.DOCUMENT_POSITION_FOLLOWING);
+
+    units.splice(at < 0 ? units.length : at, 0, { block: pre, words: [], atoms: [pre] });
+  });
 
   // A row of chips arrives chip by chip, each whole, in its place in the page's order.
   col.querySelectorAll<HTMLElement>(".chips").forEach((row) => {
@@ -401,6 +415,11 @@ function reveal() {
     }
   };
 
+  // Each block's units, found at once: a long post has thousands of blocks.
+  const byBlock = new Map<Element, Unit[]>();
+
+  units.forEach(unit => byBlock.set(unit.block, [...(byBlock.get(unit.block) ?? []), unit]));
+
   const io = new IntersectionObserver((entries) => {
     let any = false;
 
@@ -409,8 +428,8 @@ function reveal() {
         return;
       }
 
-      units.forEach((unit) => {
-        if (unit.block === entry.target && !unit.seen) {
+      (byBlock.get(entry.target) ?? []).forEach((unit) => {
+        if (!unit.seen) {
           unit.seen = true;
           any = true;
         }
