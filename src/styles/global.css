@@ -182,7 +182,7 @@ p {
   position: relative;
   width: min(1060px, 100% - 48px);
   margin: 0 auto;
-  padding: 18px 0 62px;
+  padding: 0 0 62px;
 }
 
 .row {
@@ -190,7 +190,7 @@ p {
   grid-template-columns: 150px 600px;
   column-gap: 40px;
   margin-top: 46px;
-  scroll-margin-top: 24px;
+  scroll-margin-top: 96px;
 }
 
 .row.first {
@@ -207,7 +207,7 @@ p {
   color: var(--mut);
   font: italic 400 18px/30px var(--text);
   text-align: start;
-  scroll-margin-top: 24px;
+  scroll-margin-top: 96px;
 }
 
 /* Whoami sits on the name's first line as the other labels sit on theirs: both are
@@ -575,11 +575,25 @@ a:is(:hover, :focus-visible) > .lk-ic,
 /* ---------- Header bar ---------- */
 
 .bar {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 5;
   display: flex;
   align-items: center;
   min-height: 52px;
+  padding-top: 18px;
+}
+
+/* Stuck to the top, the bar keeps its own strip of page under it, as wide as the
+   window, and the page fades out just below it rather than at a hard edge. */
+.bar::before {
+  content: "";
+  position: absolute;
+  inset: 0 -50vw -14px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--bg) calc(100% - 14px), transparent);
+  transition: background var(--fast) linear;
 }
 
 .slot {
@@ -644,6 +658,7 @@ a:is(:hover, :focus-visible) > .lk-ic,
   font: 400 15px/16px var(--text);
   letter-spacing: 0.02em;
   transform: translateY(2.3px);
+  transition: transform var(--move) var(--glide);
 }
 
 .chev {
@@ -661,10 +676,6 @@ a:is(:hover, :focus-visible) > .lk-ic,
 .search-btn {
   gap: 7px;
   padding: 0 14px 0 13px;
-  color: var(--mut);
-}
-
-.search-btn:hover {
   color: var(--ink);
 }
 
@@ -987,6 +998,12 @@ a:is(:hover, :focus-visible) > .lk-ic,
     padding-right: 7px;
     border-color: transparent;
     color: var(--mut);
+  }
+
+  /* The nudge that centres the text in a pill's border; with no border to sit in, the
+     words line up with the logo and the page's name instead. */
+  .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) :is(.pill-btn > span, .kbd) {
+    transform: translateY(0.8px);
   }
 
   .bar:not(:hover):not(:has(:focus-visible)):not([data-busy="true"]) .chev {
