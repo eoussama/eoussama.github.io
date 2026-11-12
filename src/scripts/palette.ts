@@ -24,6 +24,13 @@ if (dialog) {
 
   const visible = () => items.filter(item => !item.hidden);
 
+  /*
+   * Searched without accents, hamzas or case, so "francais" finds Français and
+   * "انجليزية" finds الإنجليزية.
+   */
+  const fold = (text: string) => text.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
+  const keywords = new Map(items.map(item => [item, fold(item.dataset.kw ?? "")]));
+
   /**
    * Marks one item as the one Enter runs, and keeps it in view.
    *
@@ -50,10 +57,10 @@ if (dialog) {
 
   /** Shows only the items that match what is typed, and their group headings. */
   const filter = () => {
-    const query = input.value.trim().toLowerCase();
+    const query = fold(input.value.trim());
 
     items.forEach((item) => {
-      item.hidden = !!query && !(item.dataset.kw ?? "").includes(query);
+      item.hidden = !!query && !keywords.get(item)!.includes(query);
     });
     groups.forEach((group) => {
       group.hidden = !group.querySelector(".ck-item:not([hidden])");

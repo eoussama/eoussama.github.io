@@ -2,7 +2,7 @@
 import type { Lang } from "~/i18n/langs";
 
 import { PROFILE } from "~/data/profile";
-import { LANGS } from "~/i18n/langs";
+import { LANG_NAMES, LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import { formatDate } from "~/lib/dates";
 import { getPosts, postPath } from "~/lib/posts";
@@ -85,7 +85,7 @@ const groups: { label: string; items: Item[] }[] = [
       dir: l.dir,
       langLink: l.code,
       href: localized(l.code, path),
-      keywords: `language translate ${l.code}`,
+      keywords: `language translate ${l.code} ${LANG_NAMES[l.code]}`,
     })),
   },
   {

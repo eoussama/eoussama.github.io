@@ -14,6 +14,20 @@ export const LANGS = [
 
 export type Lang = (typeof LANGS)[number]["code"];
 
+/**
+ * What each language is called in every language of the site, and how people search
+ * for it, so the command menu finds Japanese by "Japonais", "اليابانية" or "日本語".
+ */
+export const LANG_NAMES: Record<Lang, string> = {
+  ar: "Arabic Arabe Árabe Arabo アラビア語 العربية عربي",
+  ary: "Darija Moroccan Arabic arabe marocain árabe marroquí arabo marocchino ダリジャ モロッコ・アラビア語 モロッコアラビア語 الدارجة المغربية العربية المغربية الدارجة",
+  en: "English Anglais Inglés Inglese 英語 الإنجليزية الإنكليزية النكليزية",
+  fr: "French Français Francés Francese フランス語 الفرنسية الفرنساوية",
+  es: "Spanish Espagnol Español Spagnolo スペイン語 الإسبانية السبليونية الصبليونية",
+  it: "Italian Italien Italiano イタリア語 الإيطالية الطاليانية",
+  ja: "Japanese Japonais Japonés Giapponese 日本語 にほんご 和文 اليابانية الجابونية",
+};
+
 export const DEFAULT_LANG: Lang = "en";
 
 /** The order the greeting cycles through, starting from the page's own language. */
