@@ -5,4 +5,7 @@ export const PROFILE = {
   linkedin: { url: "https://www.linkedin.com/in/eoussama", label: "linkedin.com/in/eoussama" },
   /** Inside the site, under /p/ like every page but the home page. */
   resume: "p/resume.pdf",
+  /** Ways to support the work, as in the repository's FUNDING.yml. */
+  sponsors: "https://github.com/sponsors/eoussama",
+  paypal: "https://paypal.me/OussamaEssamadi",
 } as const;
