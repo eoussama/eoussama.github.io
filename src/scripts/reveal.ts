@@ -151,7 +151,9 @@ function reveal() {
           return;
         }
 
-        const pieces = !rtl && cjk.test(part) ? Array.from(part) : [part];
+        // Japanese rises character by character, except a word already boxed on its
+        // own (the home intro's), which rises whole so its box keeps its width.
+        const pieces = !rtl && cjk.test(part) && !node.parentElement?.closest(".iw") ? Array.from(part) : [part];
 
         pieces.forEach((piece) => {
           const word = wordEl(piece);

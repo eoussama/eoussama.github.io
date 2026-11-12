@@ -259,28 +259,134 @@ document.querySelectorAll<HTMLAnchorElement>("[data-lang-link]").forEach((link) 
   link.addEventListener("click", () => remember("local", "lang", link.dataset.langLink ?? "en"));
 });
 
-/* ---------- Greeting: "Hi!" in the next language each time it is selected ---------- */
+/*
+ * ---------- Greeting: "Hi!" in the next language while the page is idle ----------
+ *
+ * It moves on by itself only once the visitor has left the page alone for a moment
+ * (no pointer, scroll, touch or key), every few seconds after that. It holds while the
+ * intro is under the cursor, while something else has their attention (a menu, a
+ * list, the page out of sight), and with reduced motion. Selecting it moves on at once,
+ * and the next change waits its full turn after that.
+ */
 
 const hello = document.querySelector<HTMLButtonElement>("[data-hellos]");
+/** How long the page must be left alone before the greeting moves on. */
+const IDLE = 8000;
+/** How long each greeting stays at least. */
+const EVERY = 5000;
 
 if (hello) {
   const hellos = JSON.parse(hello.dataset.hellos ?? "[]") as Hello[];
   const hint = hello.dataset.hint ?? "";
+  const intro = hello.closest<HTMLElement>(".row") ?? hello;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const para = hello.parentElement!;
   let index = 0;
+  let hovered = false;
+  let active = performance.now();
+  let changed = performance.now();
 
-  hello.addEventListener("click", () => {
+  /** The intro's words, each in its own box (see Home.astro). */
+  const words = [...para.querySelectorAll<HTMLElement>(".iw")];
+
+  /**
+   * Notes where the intro's words are before the greeting changes, and returns what
+   * slides them from there to where they land: along their line if they stay on it,
+   * fading in with a little drift if they wrap to another.
+   *
+   * @returns What plays the slide, once the greeting has changed
+   */
+  const settle = (): (() => void) => {
+    if (reduce || root.dataset.rv === "pre" || !Element.prototype.animate) {
+      return () => {};
+    }
+
+    const before = words.map(box => box.getBoundingClientRect());
+
+    return () => {
+      words.forEach((box, i) => {
+        const from = before[i]!;
+        const to = box.getBoundingClientRect();
+        const dx = from.left - to.left;
+        const dy = from.top - to.top;
+
+        box.getAnimations().forEach(animation => animation.cancel());
+
+        if (Math.abs(dy) > 2) {
+          // Once the words around have mostly made way, so none crosses another.
+          box.animate([{ opacity: 0, transform: `translateX(${Math.sign(dx) * 10}px)` }, { opacity: 1, transform: "none" }], { duration: 340, delay: 300, easing: "cubic-bezier(.2,.75,.15,1)", fill: "backwards" });
+        }
+        else if (Math.abs(dx) > 0.5) {
+          box.animate([{ transform: `translateX(${dx}px)` }, { transform: "none" }], { duration: 480, easing: "cubic-bezier(.55,0,.15,1)" });
+        }
+      });
+    };
+  };
+
+  /** Shows the greeting in the next language. */
+  const next = () => {
     index = (index + 1) % hellos.length;
 
-    const next = hellos[index];
+    const greeting = hellos[index];
 
-    if (!next) {
+    if (!greeting) {
       return;
     }
 
-    hello.textContent = next.text;
-    hello.lang = next.lang;
-    hello.dir = next.dir;
-    hello.setAttribute("aria-label", `${next.text} ${hint}`);
+    const glide = settle();
+
+    hello.textContent = greeting.text;
+    hello.lang = greeting.lang;
+    hello.dir = greeting.dir;
+    hello.setAttribute("aria-label", `${greeting.text} ${hint}`);
     hello.dataset.g = index % 2 ? "a" : "b";
+    glide();
+  };
+
+  // The intro is still coming in: its words rising, the name unfolding.
+  const entering = () => root.dataset.rv === "pre"
+    || intro.getAnimations({ subtree: true }).some(animation => animation.playState === "running" && !(animation.effect as KeyframeEffect | null)?.target?.matches?.(".iw"));
+
+  const busy = () => hovered
+    || document.hidden
+    || entering()
+    || !!root.dataset.open
+    || !!document.querySelector("dialog[open], .menu[data-open='true']")
+    || !!intro.querySelector(":focus-visible");
+
+  /**
+   * Moves on if the page has been left alone long enough and the greeting has had its
+   * turn.
+   */
+  const tick = () => {
+    const now = performance.now();
+
+    if (now - active >= IDLE && now - changed >= EVERY && !busy()) {
+      next();
+      changed = now;
+    }
+  };
+
+  const touch = () => {
+    active = performance.now();
+  };
+
+  ["pointermove", "pointerdown", "wheel", "scroll", "keydown", "touchstart"].forEach((type) => {
+    window.addEventListener(type, touch, { passive: true, capture: true });
   });
+
+  hello.addEventListener("click", () => {
+    next();
+    changed = performance.now();
+  });
+  intro.addEventListener("pointerenter", () => {
+    hovered = true;
+  });
+  intro.addEventListener("pointerleave", () => {
+    hovered = false;
+  });
+
+  if (!reduce) {
+    window.setInterval(tick, 250);
+  }
 }

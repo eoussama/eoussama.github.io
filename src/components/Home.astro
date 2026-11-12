@@ -32,6 +32,16 @@ const hellos = [...HELLO_ORDER.slice(start), ...HELLO_ORDER.slice(0, start)].map
 });
 const first = hellos[0]!;
 
+/*
+ * The intro, word by word, each in a box of its own. The words glide when the greeting
+ * beside them changes size, and are boxed from the start so the lines never re-wrap:
+ * boxes break a hair differently from plain text. Japanese, without spaces, is cut
+ * into its words.
+ */
+const introWords = /\s/.test(t.intro.trim())
+  ? t.intro.split(/(\s+)/).filter(Boolean)
+  : Array.from(new Intl.Segmenter(lang, { granularity: "word" }).segment(t.intro), part => part.segment);
+
 const projects = await getProjects();
 const featured = projects.filter(p => p.featured).slice(0, 4);
 
@@ -43,7 +53,7 @@ const posts = await getPosts(lang);
     <h2 class="lab hello-lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
     <div>
       <h1><span class="site-name">{t.name}</span></h1>
-      <p><button type="button" class="link hello" lang={first.lang} dir={first.dir} aria-label={`${first.text} ${t.hiAria}`} data-hint={t.hiAria} data-hellos={JSON.stringify(hellos)}>{first.text}</button>{t.intro}</p>
+      <p class="intro"><button type="button" class="link hello" lang={first.lang} dir={first.dir} aria-label={`${first.text} ${t.hiAria}`} data-hint={t.hiAria} data-hellos={JSON.stringify(hellos)}>{first.text}</button>{introWords.map(part => /^\s+$/.test(part) ? part : <span class="iw">{part}</span>)}</p>
     </div>
   </section>
 

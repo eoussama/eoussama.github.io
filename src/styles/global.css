@@ -1067,6 +1067,47 @@ a:is(:hover, :focus-visible) > .lk-ic {
 
 /* ---------- Greeting ---------- */
 
+/*
+ * The intro opens on a greeting set large, as an old novel's chapter opens on a drop
+ * cap: out in the bullets' column, two lines tall, its capitals' tops level with the
+ * first line's and its baseline on the second's, with the text wrapping beside it.
+ * Its size comes from the paragraph's own, so it follows every breakpoint.
+ */
+@property --intro-fs {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --intro-lh {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+.row.first {
+  --outdent: 26px;
+}
+
+/* The name stands out in the same column as the greeting under it. */
+.row.first:has(.intro) h1 {
+  margin-inline-start: calc(-1 * var(--outdent));
+}
+
+/*
+ * Newsreader's capitals stand 0.705em tall, under an ascent of 0.74em. So a greeting
+ * whose capitals span from the first line's cap line to the second line's baseline is
+ * the line height over 0.705, plus the text's size, on a line two of the text's
+ * tall. It drops by the difference between where their capitals start, and gives
+ * back what it needs below so that only two lines of text wrap beside it.
+ */
+.intro {
+  --intro-fs: 1em;
+  --intro-lh: 1lh;
+  --drop: calc(var(--intro-lh) / 0.705 + var(--intro-fs));
+  --drop-top: calc((var(--intro-lh) - var(--intro-fs)) / 2 + 0.035 * var(--intro-fs) - (var(--intro-lh) - var(--drop) / 2) - 0.035 * var(--drop));
+}
+
 .hello {
   display: inline-block;
   padding: 0;
@@ -1074,12 +1115,49 @@ a:is(:hover, :focus-visible) > .lk-ic {
   cursor: pointer;
 }
 
+/* The intro's words, once cut apart to glide when the greeting changes size. */
+.intro .iw {
+  display: inline-block;
+}
+
+.intro .hello {
+  float: left;
+  margin: var(--drop-top) 0.16em calc(-1 * var(--drop-top) - 2px) calc(-1 * var(--outdent));
+  font-size: var(--drop);
+  font-weight: 500;
+  line-height: calc(2 * var(--intro-lh));
+  letter-spacing: -0.01em;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+
+/*
+ * The side it hangs on is the page's: a greeting in another script, set in its own
+ * direction, still sits at the start of the page's lines.
+ */
+:root[dir="rtl"] .intro .hello {
+  float: right;
+  margin-right: calc(-1 * var(--outdent));
+  margin-left: 0.16em;
+}
+
+.intro .hello:lang(ar),
+.intro .hello:lang(ary) {
+  letter-spacing: 0;
+}
+
+/* Japanese punctuation is set full width; here it closes up to the greeting. */
+.intro .hello:lang(ja) {
+  font-feature-settings: "palt";
+  letter-spacing: 0;
+}
+
 .hello[data-g="a"] {
-  animation: hello-a 140ms var(--ease);
+  animation: hello-a 320ms var(--ease);
 }
 
 .hello[data-g="b"] {
-  animation: hello-b 140ms var(--ease);
+  animation: hello-b 320ms var(--ease);
 }
 
 @keyframes hello-a {
@@ -1218,6 +1296,10 @@ a:is(:hover, :focus-visible) > .lk-ic {
   .col:has(.home) {
     font-size: 18px;
     line-height: 27px;
+  }
+
+  .col:has(.home) .row {
+    margin-top: clamp(16px, 6vh - 22px, 46px);
   }
 
   .col:has(.home) .lab {
@@ -3076,6 +3158,10 @@ a.anchor .rv-i,
 
   .list {
     padding-inline-start: 22px;
+  }
+
+  .row.first {
+    --outdent: 4px;
   }
 
   .tools {
