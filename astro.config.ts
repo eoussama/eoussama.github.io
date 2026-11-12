@@ -4,7 +4,7 @@ import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
 
 import { CODE_THEMES } from "./src/lib/code-themes";
-import externalLinks from "./src/lib/external-links";
+import proseLinks from "./src/lib/prose-links";
 
 
 
@@ -39,8 +39,8 @@ export default defineConfig({
   integrations: [
     // Every page but the 404s, which are not meant to be found.
     sitemap({ filter: page => !/\/404\/?$/.test(page) }),
-    // Links out of a post get the arrow and the new tab the site's own links have.
-    externalLinks(site),
+    // Links out of a post get the site's arrow and new tab; its headings link to themselves.
+    proseLinks(site),
   ],
   markdown: {
     shikiConfig: {

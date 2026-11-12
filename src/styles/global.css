@@ -190,7 +190,7 @@ p {
   grid-template-columns: 150px 600px;
   column-gap: 40px;
   margin-top: 46px;
-  scroll-margin-top: 96px;
+  scroll-margin-top: 24px;
 }
 
 .row.first {
@@ -207,7 +207,7 @@ p {
   color: var(--mut);
   font: italic 400 18px/30px var(--text);
   text-align: start;
-  scroll-margin-top: 96px;
+  scroll-margin-top: 24px;
 }
 
 /* Whoami sits on the name's first line as the other labels sit on theirs: both are
@@ -2118,6 +2118,15 @@ a.ck-item:hover {
 
 html {
   scrollbar-gutter: stable;
+  /* Whatever a link jumps to lands below the header, which stays at the top. */
+  scroll-padding-top: 96px;
+}
+
+@media (max-width: 700px) {
+  /* On a phone a page's header takes two lines: the controls, then the way home. */
+  html:has(.crumb) {
+    scroll-padding-top: 140px;
+  }
 }
 
 :root[data-open] {
@@ -3013,6 +3022,20 @@ html {
   text-decoration-color: var(--ink);
   background-size: 100% 1.2em;
   background-position: 0 55%;
+}
+
+/* A heading is a link to itself, as a margin heading is: no underline, a "#" on hover,
+   beside its first line however many it wraps to. */
+.prose a.anchor {
+  text-decoration: none;
+  background-image: none;
+}
+
+.prose a.anchor::before {
+  inset-inline-start: -0.8em;
+  top: 0;
+  margin-top: 0;
+  line-height: inherit;
 }
 
 /* Tables scroll sideways on a narrow screen rather than squeezing their columns. */

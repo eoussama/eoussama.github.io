@@ -3,13 +3,17 @@ import type { AstroIntegration } from "astro";
 
 
 /**
- * Links in a post that leave the site read as the site's own do (see Ext.astro): they
- * open in a new tab, end in the arrow that nudges out on hover, keep their last word
- * on one line with it, and tell screen readers they open a new tab. Posts are written
- * in English, so the hint is too.
+ * Links in posts, made to read as the site's own:
+ *
+ * - A link that leaves the site does what Ext.astro's do: it opens in a new tab, ends
+ *   in the arrow that nudges out on hover, keeps its last word on one line with it,
+ *   and tells screen readers it opens a new tab.
+ * - A heading is a link to itself, as the margin headings are, showing a "#" on hover.
+ *
+ * Posts are written in English, so the words for screen readers are too.
  *
  * Astro renders Markdown with Sätteri, whose plugins visit the tree's elements by tag;
- * this one is added to it as an integration, so it needs no package of its own.
+ * these are added to it as an integration, so they need no package of their own.
  */
 
 type Text = { type: "text"; value: string };
@@ -17,6 +21,7 @@ type Element = { type: "element"; tagName: string; properties: Record<string, un
 type Node = Text | Element | { type: string };
 
 const HINT = " (opens in a new tab)";
+const ANCHOR = ", link to this section";
 
 /**
  * Builds an element.
@@ -85,13 +90,95 @@ function decorated(children: readonly Node[]): Node[] {
 }
 
 /**
- * The integration that adds the plugin to Astro's Markdown processor.
+ * A node's text, as a reader sees it.
+ *
+ * @param node - The node
+ * @returns Its text
+ */
+function text(node: Node): string {
+  if (node.type === "text") {
+    return (node as Text).value;
+  }
+
+  return "children" in node ? (node as Element).children.map(text).join("") : "";
+}
+
+/**
+ * Whether a node holds a link, which a heading's own link cannot wrap.
+ *
+ * @param node - The node
+ * @returns True when a link is inside
+ */
+function hasLink(node: Node): boolean {
+  return node.type === "element" && ((node as Element).tagName === "a" || (node as Element).children.some(hasLink));
+}
+
+/**
+ * Turns a heading's words into its address, as GitHub does and as Astro would have:
+ * lowercased, punctuation dropped, spaces turned to hyphens, and a number added when
+ * the same words came before.
+ *
+ * @param words - The heading's text
+ * @param taken - The addresses already given in this document
+ * @returns The address
+ */
+function slug(words: string, taken: Map<string, number>): string {
+  const base = words.toLowerCase().replace(/[^\p{L}\p{M}\p{N}\p{Pc} -]/gu, "").replace(/ /g, "-");
+  let id = base;
+  let n = taken.get(base) ?? 0;
+
+  while (taken.has(id)) {
+    n += 1;
+    id = `${base}-${n}`;
+  }
+
+  taken.set(base, n);
+  taken.set(id, 0);
+
+  return id;
+}
+
+/**
+ * Makes each heading a link to itself. The addresses are given here, before Astro's
+ * own step would give them, so the link and the heading agree; Astro keeps an address
+ * that is already there.
+ *
+ * @returns A fresh plugin for one document
+ */
+function headingLinks() {
+  const taken = new Map<string, number>();
+
+  return {
+    name: "heading-links",
+    element: {
+      filter: ["h2", "h3", "h4", "h5", "h6"],
+      visit(node: Readonly<Element>): Element | void {
+        const words = text(node).trim();
+
+        if (!words || node.children.some(hasLink)) {
+          return;
+        }
+
+        const id = typeof node.properties?.id === "string" ? node.properties.id : slug(words, taken);
+
+        return {
+          ...node,
+          properties: { ...node.properties, id },
+          children: [h("a", { className: ["anchor"], href: `#${id}`, ariaLabel: words + ANCHOR }, [...node.children])],
+        };
+      },
+    },
+  };
+}
+
+/**
+ * The integration that adds the plugins to Astro's Markdown processor.
  *
  * @param site - The site's own address, such as https://ouss.es
  * @returns The integration
  */
-export default function externalLinks(site: string): AstroIntegration {
-  const plugin = {
+export default function proseLinks(site: string): AstroIntegration {
+  const external = {
     name: "external-links",
     element: {
       filter: ["a"],
@@ -112,16 +199,16 @@ export default function externalLinks(site: string): AstroIntegration {
   };
 
   return {
-    name: "external-links",
+    name: "prose-links",
     hooks: {
       "astro:config:setup": ({ config }) => {
         const processor = config.markdown.processor as { name: string; options: { hastPlugins: unknown[] } } | undefined;
 
         if (processor?.name !== "satteri") {
-          throw new Error("external-links: Markdown is no longer rendered by Sätteri; port the plugin.");
+          throw new Error("prose-links: Markdown is no longer rendered by Sätteri; port the plugin.");
         }
 
-        processor.options.hastPlugins.push(plugin);
+        processor.options.hastPlugins.push(external, headingLinks);
       },
     },
   };
