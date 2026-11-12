@@ -26,7 +26,7 @@ jobs:
       - name: Set up Node (for versions built with npm)
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 26
 
       - name: Build site with all versions
         run: bash scripts/build-site.sh
