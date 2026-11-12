@@ -12,6 +12,8 @@ Today I'm going to show you, in brief, how to make a very simple and accurate /c
 
 **NOTE:** _I'm not going to disable the player's controllability when cuffed, It will just tie his the target's hands so he won't fire a gun_
 
+## Requirements
+
 before you do anything, make sure you have sscanf2 and ZCMD available in your script folder,
 
 if you don't have there, you can download them from here,
@@ -20,6 +22,8 @@ if you don't have there, you can download them from here,
 >
 > ZCMD : [http://www.solidfiles.com/d/d20f/](http://www.solidfiles.com/d/d20f/)
 
+## Setting up
+
 first of all, underneath **#include &lt;a_samp>** include the zcmd and sscanf2 includes, so it would look like this
 
 ```pawn
@@ -27,6 +31,8 @@ first of all, underneath **#include &lt;a_samp>** include the zcmd and sscanf2 i
 #include <zcmd>
 #include <sscanf2>
 ```
+
+### The cuffed flag
 
 After that, add a boolean to help you define whether the target is cuffed or not, name it whatever you see fit, for the sake of this tutorial Imma do it like the following
 
@@ -48,6 +54,8 @@ public OnPlayerConnect(playerid)
 
 that should do,
 
+### Classes
+
 Before we start working on Commands, make sure that you already have a class system containing different classes, for example, "LSPD and Robbers/Gangsters..." and this is mandatory considering the fact that logically only cops can perform this action(cuff/uncuff)
 
 so once you make your class system, (for this tutorial I'm using // LSPD referring to cops // and // GANG referring to outlawed persons), which means, I would have two new variables defined on my script
@@ -56,6 +64,8 @@ so once you make your class system, (for this tutorial I'm using // LSPD referri
 #define LSPD 0
 #define GANG 1
 ```
+
+## The /cuff command
 
 Next start making the commands,
 
@@ -68,6 +78,8 @@ so in the first line, declare the cuff command
 }</span></code></pre>
 
 This creates the command, but it has no functionality yet,
+
+### Only cops can cuff
 
 so after the player enters the command, the server would check if that player is in LSPD class, then execute the command, but if he's not in LSPD class, the server would display an error, It would look like the following
 
@@ -88,6 +100,8 @@ so after the player enters the command, the server would check if that player is
 
 Ok, now we gave the permission for only LSPD member to use that command,
 
+### Choosing the target
+
 next, let's define the target id(the person whom we're going to cuff) and make it as if the player doesn't enter the params(if he only typed /cuff without typing any ID), the server would give him an Error
 
 <pre class="hand"><code>CMD:cuff(playerid, params[])
@@ -107,6 +121,8 @@ next, let's define the target id(the person whom we're going to cuff) and make i
 }</code></pre>
 
 The **"u"** stands for the target's ID parameter,
+
+### Is the target online?
 
 next, let's and see if that player is online or not,
 
@@ -135,6 +151,8 @@ next, let's and see if that player is online or not,
       }
       return 1;
 }</code></pre>
+
+### Keeping it within reach
 
 Ok here is a problem, if we don't add any other conditions, and just executed the command, the target would be cuffed whatever the distance between the player and the target is, so let's limit the use of this in a specific distance,
 
@@ -176,6 +194,8 @@ Ok here is a problem, if we don't add any other conditions, and just executed th
 }</code></pre>
 
 So the last part was all about the distance between the two players, so I created 3 floats _"x, y, z"_ then I assigned them to the target's position, after that I used them to specify the position of the limit distance range between the player and the target,
+
+### Cops can't be cuffed
 
 and now, we need to check if the target belongs to the LSPD class himself too, so he won't be cuffed, (it makes sense actually :D)
 
@@ -228,6 +248,8 @@ and now, we need to check if the target belongs to the LSPD class himself too, s
 So what we've done so far is, making it impossible to cuff an LSPD member, so the "**gTeam[playerid] != LSPD**"
 
 checks if the target is NOT a LSPD member, then if it's true, the command will execute, but if it's false(which's declared on **gTeam[playerid] == LSPD**) the command would give an error message,
+
+### Already cuffed?
 
 and now, the last step before executing the command, is to check if the target is already cuffed or not,
 
@@ -287,6 +309,8 @@ and now, the last step before executing the command, is to check if the target i
 }</code></pre>
 
 and here we have made use of that boolean which we've created at the beginning, so we made it as if the target is cuffed already, the command would fail and give an error message, but in case the target isn't cuffed, the command would execute just fine,
+
+### Cuffing the target
 
 and now, let's add some functionality to the command,
 
@@ -358,6 +382,8 @@ and now, let's add some functionality to the command,
 so basically, we have set the target's animation to **SPECIAL_ACTION_CUFFED** which makes him unable to shoot with a gun, and to make it more realistic we attached a cuffs object to his hands,
 
 I want you to make attention to this, I stated on the command lines, this "**IsCuffed = true;**" that part looked very casual, but it holds a very important value for the command to work properly, so as in the beginning I set the the boolean's value to false whenever someone connects to the server, and when this command is used on him, the boolean would be turned to true, this part is very mandatory for the uncuff command as well,
+
+## The /uncuff command
 
 So, to make the uncuff command, It's pretty much the same, just do everything exactly as the cuff command, but you have to change some parts, exactly like the following
 

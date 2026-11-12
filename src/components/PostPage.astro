@@ -4,6 +4,7 @@ import type { Lang } from "~/i18n/langs";
 import { render } from "astro:content";
 
 import LinkIcon from "~/components/LinkIcon.astro";
+import Minimap from "~/components/Minimap.astro";
 import { langInfo } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
@@ -29,7 +30,9 @@ const posts = await getPosts(lang);
 const index = posts.findIndex(p => p.slug === slug);
 const post = posts[index]!;
 const next = posts.length > 1 ? posts[(index + 1) % posts.length]! : null;
-const { Content } = await render(post.entry);
+const { Content, headings } = await render(post.entry);
+// The map shows the post's sections and their parts, when there are enough to need one.
+const outline = headings.filter(heading => heading.depth >= 2 && heading.depth <= 4);
 const { title, summary, date } = post.entry.data;
 
 // A post not written in this language shows in English, marked as such.
@@ -38,6 +41,7 @@ const own = { lang: post.lang, dir: langInfo(post.lang).dir };
 
 <Base lang={lang} path={postPath(post)} title={`${title} · ${t.name}`} description={summary} kind="article">
   <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
+  {outline.length >= 3 && <Minimap slot="aside" lang={lang} own={post.lang} headings={outline} />}
 
   <article class="post" style={`--vt-name: vt-name-blog-${slug}`}>
     <section class="row first">
@@ -62,7 +66,7 @@ const own = { lang: post.lang, dir: langInfo(post.lang).dir };
       <section class="row">
         <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
         <p class="val">
-          <a class="next" href={localized(lang, postPath(next))}><i class="dot z-cross"></i><span lang={next.lang}><span class="hl">{next.entry.data.title}</span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href="?list=posts" data-drawer="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a>
+          <a class="next" href={localized(lang, postPath(next))}><i class="dot z-cross"></i><span lang={next.lang}><span class="hl" dir={langInfo(next.lang).dir}>{next.entry.data.title}</span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href="?list=posts" data-drawer="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a>
         </p>
       </section>
     )}

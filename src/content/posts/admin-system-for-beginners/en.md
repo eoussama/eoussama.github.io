@@ -22,6 +22,8 @@ YSI\y_ini : [https://sampforum.blast.hk/showthread.php?tid=570957](https://sampf
 
 ## Tutorial
 
+### Including the libraries
+
 So first of all, you must include the new installed files, they should go beneath the a_samp include,
 
 ```pawn
@@ -30,6 +32,8 @@ So first of all, you must include the new installed files, they should go beneat
 #include <sscanf2>
 #include <YSI\y_ini>
 ```
+
+### Where the levels are saved
 
 now, if we are going to do this, let's make it perfect, we want to make the admin status auto acquired by admins when logging-in, thus we must save the data somewhere, so let's define the path of the data saving,
 
@@ -57,6 +61,8 @@ so as you can see, we created a string named "str" and set it's size to 36, and 
 after that, we stored the player's name in the variable "name", then comes the "format", which replaces the file's name with the player's name, so that we will final have a .ini file with the player's name,
 
 let's move on.
+
+### The admin data
 
 Now we need to declare new variables, so let's got ahead and use the enum function
 
@@ -99,6 +105,8 @@ enum E_ADMIN_DATA {
 }
 new PlayerInfo[MAX_PLAYER_NAME][E_ADMIN_DATA];
 ```
+
+### Loading a level on connect
 
 before you do anything, go to "scriptfiles" and create a new folder, thennamed it "Admins"
 
@@ -157,6 +165,8 @@ public LoadPlayerData_AdminData(playerid, name[], value[]) {
 
 that callback above stands for making the admin level data stored in form of an integer, that's why we had in the biggining INI_**Int**
 
+### The /setlevel command
+
 OK, now we made the necessary part, let's do the setlevel command next,
 
 this is going to work for both level 4 admins and rcon admins, therefore the code should look like this,
@@ -205,6 +215,8 @@ CMD:setlevel(playerid, params[]) {
 
 **level :** this will hold the value of the admin level you want to stick to someone,
 
+### Checking the parameters
+
 next step, we are goin to tell the server what to do in case a player uses the command with null parameters, and where comes sscanf's role, so type this in your code
 
 ```pawn
@@ -240,6 +252,8 @@ CMD:setlevel(playerid, params[]) {
 ```
 
 what we've done so far, is sending a client message to the user "USAGE:..etc" in case he didn't add the command params,
+
+### Checking the target and the level
 
 so next, we need to check if the targetid(the promoted/demoted guy) is connected or has a valid ID,
 
@@ -302,6 +316,8 @@ CMD:setlevel(playerid, params[])
     return 1;
 }
 ```
+
+### Setting and saving the level
 
 and now let's sent the players admin level,
 

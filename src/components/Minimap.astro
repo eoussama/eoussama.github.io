@@ -1,0 +1,38 @@
+---
+import type { MarkdownHeading } from "astro";
+
+import type { Lang } from "~/i18n/langs";
+
+import { langInfo } from "~/i18n/langs";
+import { ui } from "~/i18n/ui";
+
+
+
+/**
+ * A post's map: a dash at the page's edge for each of its headings, longer for the
+ * bigger ones. The dash for the section being read stands out, those already read
+ * turn lavender. Pointed at, or reached from the keyboard, the dashes give way to
+ * the headings' names, each a link to its section. scripts/minimap.ts follows
+ * the reading and makes the jumps.
+ */
+interface Props {
+  lang: Lang;
+  /** The language the post is written in, which its headings are in too. */
+  own: Lang;
+  headings: MarkdownHeading[];
+}
+
+const { lang, own, headings } = Astro.props;
+const t = ui(lang);
+const dir = langInfo(own).dir;
+---
+
+<nav class="mm" aria-label={t.toc} style={`--n: ${headings.length}`} data-minimap>
+  <ol class="mm-list">
+    {headings.map((heading, i) => (
+      <li class="mm-item" style={`--depth: ${heading.depth - 2}; --i: ${i}`} data-state="ahead">
+        <a class="mm-link" href={`#${heading.slug}`}><span class="mm-text" lang={own} dir={dir}>{heading.text}</span><i class="mm-line"></i></a>
+      </li>
+    ))}
+  </ol>
+</nav>

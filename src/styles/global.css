@@ -231,6 +231,12 @@ h1 {
   color: var(--mut);
 }
 
+/* When a post was written, beside its name: set like the margin notes, a quiet aside. */
+.when {
+  font-size: 17px;
+  font-style: italic;
+}
+
 /* A project's organization, before its name: there, but quieter. A long name breaks
    after the slash, never inside the organization's own name. */
 .pn-org {
@@ -585,15 +591,16 @@ a:is(:hover, :focus-visible) > .lk-ic,
 }
 
 /* Stuck to the top, the bar keeps its own strip of page under it, as wide as the
-   window, and the page fades out just below it rather than at a hard edge. */
+   window, and the page fades out just below it rather than at a hard edge. The strip
+   reaches the window's sides as a border image's outset, which is only painted: as a
+   box it would widen the page, and a right-to-left page would open scrolled aside. */
 .bar::before {
   content: "";
   position: absolute;
-  inset: 0 -50vw -14px;
+  inset: 0 0 -14px;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(to bottom, var(--bg) calc(100% - 14px), transparent);
-  transition: background var(--fast) linear;
+  border-image: linear-gradient(to bottom, var(--bg) calc(100% - 14px), transparent) fill 0 / 0 / 0 100vmax;
 }
 
 .slot {
@@ -1164,6 +1171,287 @@ a:is(:hover, :focus-visible) > .lk-ic,
   }
 }
 
+/* ---------- A post's map ---------- */
+
+/*
+ * A dash for each heading at the column's edge, under the header's controls, longer
+ * for the bigger headings: lavender once read, ink and longer for the section being
+ * read. Pointed at or reached from the keyboard, the dashes spread apart and fade
+ * where they are, and the headings' names fade in, sliding over from the dashes into
+ * their place, straight on the page with nothing around them. Closing, each name rolls
+ * back into its dash, which shrinks back from under it. It closes a moment after the pointer leaves, so passing over it does not
+ * snap it shut. Once the page has loaded, the dashes come in one after another.
+ */
+.mm {
+  /* How long it waits before opening or closing, and how wide a name's row is open. */
+  --mm-wait: 140ms;
+  --mm-row: 240px;
+
+  position: fixed;
+  inset-inline-end: calc(max(24px, (100% - 1060px) / 2) - 12px);
+  top: 50%;
+  z-index: 5;
+  display: none;
+  width: 46px;
+  padding-block: 10px;
+  padding-inline: 10px 12px;
+  transform: translateY(-50%);
+  transition:
+    width var(--move) var(--glide) var(--mm-wait),
+    padding var(--move) var(--glide) var(--mm-wait),
+    opacity var(--fade) linear;
+}
+
+/* Only where the column leaves room beside the text for the names. */
+@media (min-width: 1101px) {
+  .mm {
+    display: block;
+  }
+}
+
+.mm:is(:hover, :has(:focus-visible)) {
+  --mm-wait: 40ms;
+
+  width: 270px;
+  padding-inline-start: 18px;
+  /* Opening, it takes its full width at once, under the unfolding note, so the names
+     have the room to slide across; closing, it narrows with them. */
+  transition:
+    width 0s linear var(--mm-wait),
+    padding var(--move) var(--glide) var(--mm-wait),
+    opacity var(--fade) linear;
+}
+
+/* When the names run longer than the window allows, the list scrolls, and fades out
+   at whichever end has more past it, as the drawer's list does. */
+@property --mm-fade-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --mm-fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+.mm-list {
+  max-height: calc(100dvh - 320px);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  list-style: none;
+  -webkit-mask-image: linear-gradient(transparent, #000 var(--mm-fade-top), #000 calc(100% - var(--mm-fade-end)), transparent);
+  mask-image: linear-gradient(transparent, #000 var(--mm-fade-top), #000 calc(100% - var(--mm-fade-end)), transparent);
+  transition:
+    --mm-fade-top var(--fade) linear,
+    --mm-fade-end var(--fade) linear;
+}
+
+.mm-list[data-scrolled] {
+  --mm-fade-top: 36px;
+}
+
+.mm-list[data-more] {
+  --mm-fade-end: 48px;
+}
+
+
+
+/* Closed, the dashes share the height there is, up to 10px apart; open, a line each. */
+.mm-item {
+  height: clamp(4px, (100dvh - 340px) / var(--n), 10px);
+  transition: height var(--move) var(--glide) var(--mm-wait);
+}
+
+.mm:is(:hover, :has(:focus-visible)) .mm-item {
+  height: 26px;
+}
+
+.mm-link {
+  position: relative;
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  background: none;
+  color: var(--mut);
+  text-decoration: none;
+}
+
+/*
+ * The name, pinned to the dashes' side of its row and as wide as it is when open.
+ * Closed, it waits out of sight by its dash. Opening, it fades in and slides from
+ * there into its place; closing, it rolls back into the dash from its start, and only
+ * once it is gone goes back to wait by the dash.
+ */
+.mm-text {
+  position: absolute;
+  /* The page's side, not the name's: an English name on an Arabic page still waits
+     on the left, by its dash. */
+  right: 0;
+  top: calc(50% - 13px);
+  max-width: var(--mm-row);
+  overflow: hidden;
+  padding-inline-start: calc(var(--depth) * 12px);
+  font: 400 15px/26px var(--text);
+  white-space: nowrap;
+  text-align: start;
+  text-overflow: ellipsis;
+  opacity: 0;
+  clip-path: inset(0 0 0 100%);
+  transition:
+    opacity var(--fade) linear var(--mm-wait),
+    clip-path var(--move) var(--glide) var(--mm-wait),
+    translate 0s linear calc(var(--mm-wait) + var(--move)),
+    color var(--fast) linear;
+}
+
+:root[dir="rtl"] .mm-text {
+  right: auto;
+  left: 0;
+  clip-path: inset(0 100% 0 0);
+}
+
+.mm:is(:hover, :has(:focus-visible)) .mm-text {
+  opacity: 1;
+  clip-path: inset(0);
+  translate: calc(100% - var(--mm-row)) 0;
+  transition:
+    opacity var(--fade) linear var(--mm-wait),
+    clip-path 0s linear var(--mm-wait),
+    translate var(--move) var(--glide) var(--mm-wait),
+    color var(--fast) linear;
+}
+
+:root[dir="rtl"] .mm:is(:hover, :has(:focus-visible)) .mm-text {
+  translate: calc(var(--mm-row) - 100%) 0;
+}
+
+/* Headings in the other direction from the page's (an English post on an Arabic page)
+   read in their own: they already start on the dashes' side, so they stay there, one
+   clean edge, the smaller ones stepping in from it. */
+:root[dir="rtl"] .mm-text[dir="ltr"] {
+  padding: 0 0 0 calc(var(--depth) * 12px);
+  text-align: left;
+}
+
+:root[dir="ltr"] .mm-text[dir="rtl"] {
+  padding: 0 calc(var(--depth) * 12px) 0 0;
+  text-align: right;
+}
+
+:root[dir="rtl"] .mm:is(:hover, :has(:focus-visible)) .mm-text[dir="ltr"],
+:root[dir="ltr"] .mm:is(:hover, :has(:focus-visible)) .mm-text[dir="rtl"] {
+  translate: none;
+}
+
+.mm-line {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(50% - 1px);
+  width: calc(20px - var(--depth) * 6px);
+  height: 2px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--mut) 45%, transparent);
+  transform-origin: right;
+  transition:
+    width var(--move) var(--glide) var(--mm-wait),
+    inset var(--move) var(--glide) var(--mm-wait),
+    top var(--move) var(--glide) var(--mm-wait),
+    opacity var(--fade) linear var(--mm-wait),
+    scale var(--fast) var(--ease),
+    background-color var(--fast) linear;
+}
+
+:root[dir="rtl"] .mm-line {
+  transform-origin: left;
+}
+
+.mm-item[data-state="read"] .mm-line {
+  background: var(--acc);
+}
+
+.mm-item[data-state="now"] .mm-line {
+  background: var(--ink);
+  scale: 1.4 1;
+}
+
+/* Open: the dash fades where it is, then, out of sight, lies down under its name's
+   place, like a line it was written on, so that closing it shrinks back from there. */
+.mm:is(:hover, :has(:focus-visible)) .mm-line {
+  top: calc(50% + 7px);
+  width: calc(100% - var(--depth) * 12px);
+  opacity: 0;
+  scale: none;
+  transition:
+    opacity 160ms linear var(--mm-wait),
+    width 0s linear calc(var(--mm-wait) + 160ms),
+    inset 0s linear calc(var(--mm-wait) + 160ms),
+    top 0s linear calc(var(--mm-wait) + 160ms),
+    scale 0s linear calc(var(--mm-wait) + 160ms),
+    background-color var(--fast) linear;
+}
+
+:root[dir="rtl"] .mm:is(:hover, :has(:focus-visible)) .mm-text[dir="ltr"] + .mm-line,
+:root[dir="ltr"] .mm:is(:hover, :has(:focus-visible)) .mm-text[dir="rtl"] + .mm-line {
+  inset-inline-end: calc(var(--depth) * 12px);
+}
+
+.mm-item[data-state="now"] .mm-text,
+.mm-link:is(:hover, :focus-visible) .mm-text {
+  color: var(--ink);
+}
+
+/* Once the page has loaded (scripts/minimap.ts says when), the dashes pop in one
+   after another: each grows out of the page's edge from nothing, a little past its
+   size, and springs back into place. */
+:root.js .mm:not(.is-in) .mm-item {
+  opacity: 0;
+}
+
+.mm.is-in .mm-item {
+  transform-origin: right center;
+  animation:
+    mm-pop 680ms
+      linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1)
+      backwards,
+    mm-show 140ms linear backwards;
+  animation-delay: calc(var(--i) * 28ms);
+}
+
+:root[dir="rtl"] .mm.is-in .mm-item {
+  transform-origin: left center;
+}
+
+@keyframes mm-pop {
+  from {
+    scale: 0;
+  }
+}
+
+@keyframes mm-show {
+  from {
+    opacity: 0;
+  }
+}
+
+/* It comes in with the page's first words, and keeps out of the way of an open list. */
+:root[data-rv="pre"] .mm,
+:root[data-open] .mm {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media print {
+  .mm {
+    display: none !important;
+  }
+}
+
 /* ---------- The eclipse logo settling in, on the first visit ---------- */
 
 .lg-disc,
@@ -1549,6 +1837,7 @@ a:is(:hover, :focus-visible) > .lk-ic,
   width: 240px;
   margin: 0;
   color: var(--mut);
+  text-align: match-parent;
   font: italic 400 17px/26px var(--text);
   opacity: 0;
   transform: translateX(-8px);
@@ -2697,6 +2986,9 @@ html {
   color: var(--mut);
   font-size: 17px;
   line-height: 25px;
+  /* Written in another direction (an English post on an Arabic page), it reads in its
+     own but lines up with the page's, under its name. */
+  text-align: match-parent;
 }
 
 :root[data-open] .dr-list > li {
@@ -3634,6 +3926,7 @@ a.anchor .rv-i,
   .ck-sheet,
   .ck-box::after,
   .ck::backdrop,
+  .mm-item,
   .logo *,
   .sig mask path {
     animation: none !important;

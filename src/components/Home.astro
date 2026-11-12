@@ -77,8 +77,8 @@ const posts = await getPosts(lang);
       <ul class="list">
         {posts.slice(0, 2).map(post => (
           <li>
-            <i class="dot z-cross"></i><a class="link" href={localized(lang, postPath(post))} lang={post.lang}>{post.entry.data.title}<LinkIcon kind="page" /></a> <span class="mut">{formatDate(post.entry.data.date, lang)}</span>
-            {post.entry.data.note && <p class="note" lang={post.lang}>{post.entry.data.note}</p>}
+            <i class="dot z-cross"></i><a class="link" href={localized(lang, postPath(post))} lang={post.lang}><span dir={langInfo(post.lang).dir}>{post.entry.data.title}</span><LinkIcon kind="page" /></a> <span class="mut when">{formatDate(post.entry.data.date, lang)}</span>
+            {post.entry.data.note && <p class="note" lang={post.lang} dir={langInfo(post.lang).dir}>{post.entry.data.note}</p>}
           </li>
         ))}
         <li><i class="dot z-cross"></i><a class="link" href="?list=posts" data-drawer="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a></li>
