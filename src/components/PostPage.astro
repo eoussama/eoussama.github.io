@@ -57,13 +57,13 @@ const own = { lang: post.lang, dir: langInfo(post.lang).dir };
       <p class="val"><time datetime={date.toISOString().slice(0, 10)}>{formatDate(date, lang)}</time>{t.minRead(post.minutes)}</p>
     </section>
 
-    <section class="row rise" style="--d: 55ms">
+    <section class="row tight rise" style="--d: 55ms">
       <h2 class="lab" id="post"><a class="anchor" href="#post" aria-label={t.post + t.anchor}>{t.post}</a></h2>
       <div class="val prose" {...own}><Content /></div>
     </section>
 
     {next && (
-      <section class="row">
+      <section class="row tight">
         <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
         <p class="val">
           <a class="next" href={localized(lang, postPath(next))}><i class="dot z-cross"></i><span lang={next.lang}><span class="hl" dir={langInfo(next.lang).dir}>{next.entry.data.title}</span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href="?list=posts" data-drawer="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a>

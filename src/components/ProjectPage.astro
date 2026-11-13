@@ -165,7 +165,7 @@ function cut(text: string): number {
       </section>
     )}
 
-    <section class="row">
+    <section class={role || chips.length || project.repos.length || site || project.links.length || Content ? "row tight" : "row"}>
       <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
       <p class="val">
         <a class="next" href={localized(lang, projectPath(next))}><i class="dot z-star"></i><span><span class="hl"><ProjectName owner={next.owner} name={next.name} /></span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href="?list=projects" data-drawer="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a>
