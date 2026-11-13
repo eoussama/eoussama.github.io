@@ -3677,6 +3677,12 @@ button.chip {
   font-style: italic;
 }
 
+/* The way on, last on a post or project page: set a size down, as the date and the
+   role are, an aside after the page rather than part of it. */
+.row:has(> #next) .val {
+  font-size: 17px;
+}
+
 /* ---------- A post's page ---------- */
 
 .post h1 {
