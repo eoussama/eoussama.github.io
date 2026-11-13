@@ -14,7 +14,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check",
+    "check": "pnpm audit && pnpm lint && astro check && astro build",
     "lint": "dx lint",
     "fix": "dx fix",
     "snapshot": "node tools/github-snapshot.ts"
