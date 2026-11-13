@@ -42,12 +42,12 @@ function split(text: string): Word[] {
 const codes = LANGS.filter(l => l.code !== DEFAULT_LANG).map(l => l.code);
 ---
 
-<Base lang={lang} path={lang === DEFAULT_LANG ? "" : "404/"} title={`${t.nfTitle} · ${t.name}`} description={t.nfLead} noindex>
+<Base lang={lang} path="404/" title={`${t.nfTitle} · ${t.name}`} description={t.nfLead} noindex>
   {lang === DEFAULT_LANG && (
     <script is:inline slot="head" define:vars={{ codes }}>
       // One 404 page answers for every missing address. An address in another
-      // language, or a visitor who picked one, gets that language's version, which
-      // still shows the address asked for.
+      // language, a visitor who picked one, or a browser set to one, gets that
+      // language's version, which still shows the address asked for.
       const path = location.pathname;
       let want = /^\/p\/([a-z]+)\//.exec(path)?.[1];
 
@@ -55,6 +55,16 @@ const codes = LANGS.filter(l => l.code !== DEFAULT_LANG).map(l => l.code);
         want ??= localStorage.getItem("lang");
       }
       catch {}
+
+      for (const tag of want ? [] : navigator.languages || [navigator.language || ""]) {
+        const full = String(tag).toLowerCase();
+
+        want = codes.find(c => c === full) || codes.find(c => c === full.split("-")[0]);
+
+        if (want) {
+          break;
+        }
+      }
 
       if (codes.includes(want)) {
         location.replace(`/p/${want}/404/?from=${encodeURIComponent(path)}`);

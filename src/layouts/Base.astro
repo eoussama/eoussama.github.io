@@ -76,7 +76,7 @@ const speculation = JSON.stringify({
       label, whether to play the entrance again, and, on English pages, a first
       visit that follows the browser's language.
     -->
-    <script is:inline define:vars={{ lang, alternates, codes }}>
+    <script is:inline define:vars={{ lang, alternates, codes, redirect: !noindex }}>
       const d = document.documentElement;
 
       function read(store, key) {
@@ -129,7 +129,8 @@ const speculation = JSON.stringify({
         d.dataset.rv = "pre";
       }
 
-      if (lang === "en") {
+      // The 404 sends visitors on itself, keeping the address they asked for.
+      if (lang === "en" && redirect) {
         let want = read(localStorage, "lang");
 
         for (const tag of want ? [] : navigator.languages || [navigator.language || ""]) {
