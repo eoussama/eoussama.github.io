@@ -588,6 +588,10 @@ a:is(:hover, :focus-visible) > .lk-ic,
   align-items: center;
   min-height: 52px;
   padding-top: 18px;
+  /* The strip below already paints this, edge to edge. Set on the bar itself too, it
+     is what Safari on iOS reads to fill the status bar above a stuck header; without
+     it Safari lets the page scroll up under the clock. */
+  background-color: var(--bg);
 }
 
 /* Stuck to the top, the bar keeps its own strip of page under it, as wide as the
