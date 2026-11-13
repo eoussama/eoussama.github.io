@@ -2,10 +2,11 @@
 /**
  * The small icon at the end of a link within the site, shown on hover like the copy
  * icon: a drawer for the links that open a list, a chevron for those that open a page,
- * two arrows for the drawer's switch to the other list, an at sign for an email.
+ * two arrows for the drawer's switch to the other list, an at sign for an email, and an
+ * arrow down for a file to download.
  */
 interface Props {
-  kind: "list" | "page" | "switch" | "mail";
+  kind: "list" | "page" | "switch" | "mail" | "download";
 }
 
 const { kind } = Astro.props;
@@ -22,4 +23,7 @@ const { kind } = Astro.props;
 )}
 {kind === "page" && (
   <svg class="lk-ic lk-page" width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M4 2.3l3.2 3.2L4 8.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+)}
+{kind === "download" && (
+  <svg class="lk-ic lk-download" width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M5.5 1.6v5.4M3.1 4.7l2.4 2.4 2.4-2.4M2 9.4h7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 )}

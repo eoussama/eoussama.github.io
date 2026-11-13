@@ -2148,7 +2148,29 @@ a:is(:hover, :focus-visible) > .lk-ic,
   }
 }
 
-@media (min-width: 701px) and (max-height: 780px) {
+/* Japanese runs longer: it takes the first step down on taller screens as well. */
+@media (min-width: 701px) and (min-height: 961px) and (max-height: 1100px) {
+  :root[data-lang="ja"] .col:has(.home) {
+    font-size: 18px;
+    line-height: 27px;
+  }
+
+  :root[data-lang="ja"] .col:has(.home) .row {
+    margin-top: clamp(16px, 6vh - 22px, 46px);
+  }
+
+  :root[data-lang="ja"] .col:has(.home) .lab {
+    font-size: 17px;
+    line-height: 27px;
+  }
+
+  :root[data-lang="ja"] .col:has(.home) .intro {
+    font-size: 21px;
+    line-height: 30px;
+  }
+}
+
+@media (min-width: 701px) and (max-height: 960px) {
   .col:has(.home) {
     font-size: 18px;
     line-height: 27px;
@@ -2169,7 +2191,7 @@ a:is(:hover, :focus-visible) > .lk-ic,
   }
 }
 
-@media (min-width: 701px) and (max-height: 660px) {
+@media (min-width: 701px) and (max-height: 860px) {
   .col:has(.home) {
     font-size: 17px;
     line-height: 24px;
@@ -2191,6 +2213,37 @@ a:is(:hover, :focus-visible) > .lk-ic,
   .col:has(.home) .intro {
     font-size: 19px;
     line-height: 27px;
+  }
+}
+
+@media (min-width: 701px) and (max-height: 720px) {
+  .col:has(.home) .row {
+    margin-top: 10px;
+  }
+
+  .col:has(.home) .row.first {
+    margin-top: 6px;
+  }
+
+  .col:has(.home) h1 {
+    margin-bottom: 6px;
+    font-size: 36px;
+  }
+
+  .home .list > li {
+    margin-bottom: 0;
+  }
+}
+
+@media (min-width: 701px) and (max-height: 620px) {
+  .col:has(.home) .intro {
+    font-size: 18px;
+    line-height: 25px;
+  }
+
+  .col:has(.home) .lab,
+  .col:has(.home) .list {
+    line-height: 23px;
   }
 }
 
