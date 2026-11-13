@@ -219,10 +219,11 @@ function reveal() {
     units.splice(at < 0 ? units.length : at, 0, { block: pre, words: [], atoms: [pre] });
   });
 
-  // A row of chips arrives chip by chip, each whole, in its place in the page's order.
+  // A row of chips arrives chip by chip, each whole, in its place in the page's order;
+  // those folded away are left out, or the ones after them would wait on them.
   col.querySelectorAll<HTMLElement>(".chips").forEach((row) => {
     const at = units.findIndex(u => row.compareDocumentPosition(u.block) & Node.DOCUMENT_POSITION_FOLLOWING);
-    const unit: Unit = { block: row, words: [], atoms: [...row.querySelectorAll<HTMLElement>(".chip")], stagger: 25 };
+    const unit: Unit = { block: row, words: [], atoms: [...row.querySelectorAll<HTMLElement>(".chip")].filter(chip => chip.getClientRects().length), stagger: 25 };
 
     units.splice(at < 0 ? units.length : at, 0, unit);
   });

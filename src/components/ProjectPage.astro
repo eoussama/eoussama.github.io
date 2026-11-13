@@ -44,6 +44,12 @@ const chips = [
   ...project.languages.map(value => ({ group: "language", value })),
   ...project.tools.map(value => ({ group: "tool", value })),
 ];
+
+// A long stack arrives whole, then folds to its first few and "+N" a moment later:
+// pointing at the row, or a tap on the "+N", lays out the rest. Tabbing into the row
+// opens it too.
+const FOLD = 3;
+const folded = chips.length > FOLD + 1;
 const site = project.live?.replace(/^https?:\/\//, "").replace(/\/$/, "");
 // A contribution's stars are the upstream project's, not a measure of the work.
 const starsOf = (stats: { stars: number } | null) => (project.kind !== "contribution" && stats ? stats.stars : 0);
@@ -120,10 +126,13 @@ function cut(text: string): number {
     {chips.length > 0 && (
       <section class={role ? "row tight rise" : "row rise"} style="--d: 45ms">
         <h2 class="lab" id="built-with"><a class="anchor" href="#built-with" aria-label={t.built + t.anchor}>{t.built}</a></h2>
-        <ul class="val chips">
+        <ul class="val chips" data-fold={folded ? "" : undefined} data-open={folded ? "first" : undefined}>
           {chips.map(({ group, value }, i) => (
             <li style={`--i: ${i}`}><a class="chip" href={`?list=projects&${new URLSearchParams({ [group]: value })}`} data-drawer="work" data-filter dir="ltr">{value}</a></li>
           ))}
+          {folded && (
+            <li class="chips-more" style={`--i: ${FOLD}`}><button type="button" class="chip" aria-label={t.showAll(chips.length)} title={t.showAll(chips.length)} tabindex="-1" data-chips-more>+{chips.length - FOLD}</button></li>
+          )}
         </ul>
       </section>
     )}

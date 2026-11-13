@@ -3492,20 +3492,89 @@ html {
   align-items: center;
   height: 26px;
   padding: 0 10px;
-  border: 1px solid var(--line);
+  /* Quiet, as the dates and the role above them: the stack is detail, not a headline. */
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
   border-radius: 999px;
-  color: var(--ink);
+  color: var(--mut);
   font-size: 15px;
   text-decoration: none;
   transition:
     background-color var(--fast) linear,
-    border-color var(--fast) linear;
+    border-color var(--fast) linear,
+    color var(--fast) linear;
 }
 
 .chip:hover,
 .chip:focus-visible {
   border-color: transparent;
   background: var(--soft);
+  color: var(--ink);
+}
+
+/*
+ * A long stack, folded: its first three, then "+N". It arrives whole (data-open is
+ * "first"), and scripts/chips.ts folds it a moment later; after that it opens when the
+ * row is pointed at or tabbed into, and for good when "+N" is tapped: the rest fade in
+ * one after another as the row grows to take them, and fade out as it closes again.
+ * Without scripts, the whole stack shows.
+ */
+button.chip {
+  font: inherit;
+  font-size: 15px;
+  background: none;
+  cursor: pointer;
+}
+
+:root:not(.js) .chips-more,
+.chips[data-open] .chips-more {
+  display: none;
+}
+
+:root.js .chips[data-fold]:not([data-open]) > li:nth-child(n + 4):not(.chips-more) {
+  display: none;
+}
+
+/* Only with a pointer and room to spare does it arrive whole: on a phone, a small
+   window or a touch screen it starts folded, from the first paint. */
+@media (hover: none), (max-width: 700px) {
+  :root.js .chips[data-open="first"] > li:nth-child(n + 4):not(.chips-more) {
+    display: none;
+  }
+
+  :root.js .chips[data-open="first"] .chips-more {
+    display: list-item;
+  }
+}
+
+.chips[data-open=""]:not([data-closing]) > li:nth-child(n + 5) {
+  animation: chip-in 200ms var(--ease) backwards;
+  animation-delay: calc((var(--i) - 4) * 12ms);
+}
+
+/* The first of the rest takes the place "+N" leaves, at once: a fade there would read
+   as a gap before anything comes. */
+
+.chips[data-closing] > li:nth-child(n + 4) {
+  animation: chip-out 120ms linear forwards;
+}
+
+/* Folded again, "+N" comes back in as the others went. */
+.chips[data-shut] .chips-more {
+  animation: chip-in 200ms var(--ease) backwards;
+}
+
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    translate: 0 3px;
+  }
+}
+
+@keyframes chip-out {
+  to {
+    opacity: 0;
+    translate: 0 3px;
+  }
 }
 
 .prose p {
@@ -4337,7 +4406,8 @@ a.anchor .rv-i,
   .mm-item,
   .logo *,
   .sig mask path,
-  .sig-wet {
+  .sig-wet,
+  .chips > li {
     animation: none !important;
   }
 
