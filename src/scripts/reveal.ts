@@ -366,7 +366,7 @@ function reveal() {
         end = Math.max(end, (Number.parseFloat(path.style.animationDelay) || 0) + (Number.parseFloat(path.style.animationDuration) || 0));
       });
       // The wet sheen follows the nib, so it starts as late as the ink does.
-      unit.sig.querySelectorAll<SVGPathElement>(".sig-wet").forEach((path) => {
+      unit.sig.querySelectorAll<SVGElement>(".sig-wet").forEach((path) => {
         path.style.animationDelay = `${(Number.parseFloat(path.style.animationDelay) || 0) + delay / 1000}s`;
       });
       unit.sig.classList.add("is-drawing");
@@ -508,7 +508,7 @@ function reveal() {
           path.style.animationDuration = ".01s";
         });
         // Written all at once, there is no fresh ink to shine.
-        unit.sig.querySelectorAll<SVGPathElement>(".sig-wet").forEach((path) => {
+        unit.sig.querySelectorAll<SVGElement>(".sig-wet").forEach((path) => {
           path.style.animation = "none";
         });
         unit.sig.classList.add("is-drawing");
