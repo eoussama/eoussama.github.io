@@ -11,4 +11,11 @@ export default dx({
   rules: {
     "no-console": "off",
   },
+}, {
+  // A code sample in a post shows a file as it is written, not as this site lays out
+  // its own code: no house rule spacing what readers see.
+  files: ["**/*.md/**"],
+  rules: {
+    "import/newline-after-import": "off",
+  },
 });
