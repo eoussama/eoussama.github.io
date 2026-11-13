@@ -177,6 +177,8 @@ const speculation = JSON.stringify({
     {lang === "ja" && <link rel="stylesheet" href={jp500} />}
   </head>
   <body>
+    <!-- Behind everything, always painted, for the paper to blend with: see .ground in global.css. -->
+    <div class="ground" aria-hidden="true"></div>
     <a class="skip" href="#main">{t.skip}</a>
     <div class="page">
       <div class="col">

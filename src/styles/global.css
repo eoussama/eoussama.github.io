@@ -85,6 +85,21 @@ body {
     color var(--fast) linear;
 }
 
+/*
+ * The page's colour, fixed behind everything in the body. In the dark the paper below
+ * blends with what lies under it; scrolling fast on iOS, Safari can reach a stretch of
+ * the page it has not drawn yet, and the paper, with nothing to blend with, flashes
+ * over the whole window, pale. This is always there, so it never has nothing.
+ */
+.ground {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--bg);
+  transition: background-color var(--fast) linear;
+}
+
 /* A seamless sheet of paper over everything, in both themes. */
 body::before,
 body::after {
