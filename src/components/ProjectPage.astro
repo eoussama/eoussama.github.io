@@ -5,9 +5,12 @@ import { getCollection, render } from "astro:content";
 
 import Ext from "~/components/Ext.astro";
 import LinkIcon from "~/components/LinkIcon.astro";
+import Minimap from "~/components/Minimap.astro";
 import ProjectName from "~/components/ProjectName.astro";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
+import { formatDate, formatSpan } from "~/lib/dates";
+import { readingTime } from "~/lib/posts";
 import { fullName, getProjects, pick, projectPath } from "~/lib/projects";
 import { keepFrom } from "~/lib/tail";
 import { localized } from "~/lib/url";
@@ -34,8 +37,16 @@ const next = projects[(index + 1) % projects.length]!;
 // Most projects have no story; reading the collection, rather than asking for an entry, finds that out quietly.
 const stories = await getCollection("stories", entry => entry.id.startsWith(`${id}/`));
 const story = stories.find(entry => entry.id === `${id}/${lang}`) ?? stories.find(entry => entry.id === `${id}/en`);
-const { Content } = story ? await render(story) : { Content: null };
+const { Content, headings } = story ? await render(story) : { Content: null, headings: [] };
+// The language the story is written in, English where it has not been translated.
+const storyLang = (story?.id.split("/")[1] ?? "en") as Lang;
+// As on a post, the map shows the story's sections when there are enough to need one.
+const outline = headings.filter(heading => heading.depth >= 2 && heading.depth <= 4);
+const minutes = story ? readingTime(story.body) : 0;
 
+// A project is written in English, as posts are in theirs: on another language's page
+// its text says so, for screen readers and the fonts.
+const en = lang === "en" ? {} : { lang: "en", dir: "ltr" };
 const owned = project.repo?.startsWith("https://github.com/eoussama/") ?? false;
 const role = project.role ? pick(project.role, lang) : (owned ? t.roleAuthor : "");
 // What it is built with: its languages, then its frameworks and libraries. Each opens
@@ -104,27 +115,48 @@ function cut(text: string): number {
 }
 ---
 
-<Base lang={lang} path={projectPath(project)} title={`${fullName(project)} · ${t.name}`} description={pick(project.blurb, lang)}>
+<Base lang={lang} path={projectPath(project)} title={`${fullName(project)} · ${t.name}`} description={pick(project.blurb, lang)} label={fullName(project)}>
   <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
+  {outline.length >= 3 && <Minimap slot="aside" lang={lang} own={storyLang} headings={outline} />}
 
   <article class="project" style={`--vt-name: vt-name-projects-${id}`}>
     <section class="row first">
       <h2 class="lab" id="work"><a class="anchor" href="#work" aria-label={t.work + t.anchor}>{t.work}</a></h2>
       <div class="hero">
         <h1><span class="title"><ProjectName owner={project.owner} name={project.name} /></span></h1>
-        <p class="lead rise">{pick(project.long ?? project.blurb, lang)}</p>
+        <p class="lead rise" {...en}>{pick(project.long ?? project.blurb, lang)}</p>
       </div>
     </section>
 
     {role && (
       <section class="row rise" style="--d: 30ms">
         <h2 class="lab" id="role"><a class="anchor" href="#role" aria-label={t.role + t.anchor}>{t.role}</a></h2>
-        <p class="val mut when">{role}</p>
+        <p class="val mut when" {...(project.role ? en : {})}>{role}</p>
+      </section>
+    )}
+
+    {(project.started || project.active) && (
+      <section class={role ? "row tight rise" : "row rise"} style="--d: 35ms">
+        <h2 class="lab" id="timeline"><a class="anchor" href="#timeline" aria-label={t.timeline + t.anchor}>{t.timeline}</a></h2>
+        <p class="val mut when">{
+          project.started && project.active
+            ? formatSpan(project.started, project.active, lang)
+            : project.started
+              ? t.since(formatDate(new Date(project.started), lang))
+              : t.until(formatDate(new Date(project.active!), lang))
+        }</p>
+      </section>
+    )}
+
+    {Content && (
+      <section class={role || project.started || project.active ? "row tight rise" : "row rise"} style="--d: 41ms">
+        <h2 class="lab" id="reading-time"><a class="anchor" href="#reading-time" aria-label={t.readingTime + t.anchor}>{t.readingTime}</a></h2>
+        <p class="val mut when">{t.readTime(minutes)}</p>
       </section>
     )}
 
     {chips.length > 0 && (
-      <section class={role ? "row tight rise" : "row rise"} style="--d: 45ms">
+      <section class={role || project.started || project.active || Content ? "row tight rise" : "row rise"} style="--d: 45ms">
         <h2 class="lab" id="built-with"><a class="anchor" href="#built-with" aria-label={t.built + t.anchor}>{t.built}</a></h2>
         <ul class="val chips" data-fold={folded ? "" : undefined} data-open={folded ? "first" : undefined}>
           {chips.map(({ group, value }, i) => (
@@ -138,7 +170,7 @@ function cut(text: string): number {
     )}
 
     {project.repos.length > 0 && (
-      <section class={role || chips.length ? "row tight rise" : "row rise"} style="--d: 60ms">
+      <section class={role || project.started || project.active || Content || chips.length ? "row tight rise" : "row rise"} style="--d: 60ms">
         <h2 class="lab" id="source"><a class="anchor" href="#source" aria-label={t.source + t.anchor}>{t.source}</a></h2>
         <ul class="val links">
           {project.repos.map(({ url, stats }) => (
@@ -168,16 +200,16 @@ function cut(text: string): number {
     )}
 
     {Content && (
-      <section class={role || chips.length || project.repos.length || site || project.links.length ? "row tight rise" : "row rise"} style="--d: 75ms">
+      <section class="row tight rise" style="--d: 75ms">
         <h2 class="lab" id="notes"><a class="anchor" href="#notes" aria-label={t.notes + t.anchor}>{t.notes}</a></h2>
-        <div class="val prose"><Content /></div>
+        <div class="val prose" {...en}><Content /></div>
       </section>
     )}
 
-    <section class={role || chips.length || project.repos.length || site || project.links.length || Content ? "row tight" : "row"}>
+    <section class={role || project.started || project.active || chips.length || project.repos.length || site || project.links.length || Content ? "row tight" : "row"}>
       <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
       <p class="val">
-        <a class="next" href={localized(lang, projectPath(next))}><i class="dot z-star"></i><span><span class="hl"><ProjectName owner={next.owner} name={next.name} /></span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href="?list=projects" data-drawer="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a>
+        <a class="next" href={localized(lang, projectPath(next))}><span><span class="hl"><ProjectName owner={next.owner} name={next.name} /></span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href="?list=projects" data-drawer="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a><span class="or">{t.or}</span><a class="link" href={localized(lang)}>{t.cHome}<LinkIcon kind="page" /></a>
       </p>
     </section>
   </article>

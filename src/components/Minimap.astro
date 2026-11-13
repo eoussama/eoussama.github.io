@@ -28,12 +28,15 @@ interface Props {
 const { lang, own, headings } = Astro.props;
 const t = ui(lang);
 const dir = langInfo(own).dir;
+// Indented from the biggest heading there is: a project's story opens its sections at
+// "###", a post at "##".
+const top = Math.min(...headings.map(heading => heading.depth));
 ---
 
 <nav class="mm" id="mm" aria-label={t.toc} style={`--n: ${headings.length}`} data-minimap>
   <ol class="mm-list">
     {headings.map((heading, i) => (
-      <li class="mm-item" style={`--depth: ${heading.depth - 2}; --i: ${i}`} data-state="ahead">
+      <li class="mm-item" style={`--depth: ${heading.depth - top}; --i: ${i}`} data-state="ahead">
         <a class="mm-link" href={`#${heading.slug}`}><span class="mm-text" lang={own} dir={dir}>{heading.text}</span><i class="mm-line"></i></a>
       </li>
     ))}

@@ -3669,11 +3669,10 @@ button.chip {
   }
 }
 
-/* Next: the next project's bullet and name, or the whole list. */
+/* Next: the next project's or post's name, the whole list, or the home page. */
 .next {
   display: inline-flex;
   align-items: baseline;
-  gap: 12px;
   text-decoration: none;
   background-image: none;
 }
@@ -3692,16 +3691,6 @@ button.chip {
 .next:hover > span,
 .next:focus-visible > span {
   text-decoration-color: var(--ink);
-}
-
-.next .dot {
-  position: static;
-  flex: none;
-  transform: translateY(2px);
-}
-
-.next:hover .dot {
-  transform: translateY(2px) rotate(22.5deg);
 }
 
 .or {

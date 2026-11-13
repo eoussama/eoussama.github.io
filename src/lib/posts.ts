@@ -20,13 +20,13 @@ export type Post = {
 const JAPANESE = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/gu;
 
 /**
- * About how long a post takes to read: 200 words a minute, or 400 characters for
+ * About how long a text takes to read (a post, a project's story): 200 words a minute, or 400 characters for
  * Japanese.
  *
  * @param body - The post's Markdown
  * @returns Minutes, at least one
  */
-function readingTime(body = ""): number {
+export function readingTime(body = ""): number {
   const cjk = body.match(JAPANESE)?.length ?? 0;
   const words = body.replace(JAPANESE, " ").split(/\s+/).filter(Boolean).length;
 
