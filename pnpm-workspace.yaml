@@ -1,0 +1,8 @@
+minimumReleaseAgeExcludePrune: true
+trustPolicy: no-downgrade
+shellEmulator: true
+# Patched versions of two packages that come in only through the lint toolchain
+# (@eoussama/dx → eslint), for advisories GHSA-g3hv-75wg-m249 and GHSA-238p-pmpm-9mq7.
+overrides:
+  katex@>=0.11.0 <0.18.2: ^0.18.2
+  minimatch@>=7.0.0 <11.0.1: ^11.0.1

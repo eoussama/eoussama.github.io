@@ -25,7 +25,7 @@
     "@eoussama/core": "^0.1.2",
     "@fontsource/noto-naskh-arabic": "^5.3.0",
     "@fontsource/noto-serif-jp": "^5.3.1",
-    "astro": "^7.4.8"
+    "astro": "^7.4.11"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
