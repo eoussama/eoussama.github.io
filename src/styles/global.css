@@ -252,6 +252,11 @@ h1 {
   font-style: italic;
 }
 
+/* Beside a post's name, a date moves to the next line whole rather than split. */
+.list .when {
+  white-space: nowrap;
+}
+
 /* A project's organization, before its name: there, but quieter. A long name breaks
    after the slash, never inside the organization's own name. */
 .pn-org {
@@ -1884,9 +1889,14 @@ a:is(:hover, :focus-visible) > .lk-ic,
  * tall. It drops by the difference between where their capitals start, and gives
  * back what it needs below so that only two lines of text wrap beside it.
  */
+/* Set as a project's lead, a step above the page's other text, which reads as a
+   project's notes do. The greeting is drawn from these, so it follows. */
 .intro {
   --intro-fs: 1em;
   --intro-lh: 1lh;
+
+  font-size: 23px;
+  line-height: 33px;
   --drop: calc(var(--intro-lh) / 0.705 + var(--intro-fs));
   --drop-top: calc((var(--intro-lh) - var(--intro-fs)) / 2 + 0.035 * var(--intro-fs) - (var(--intro-lh) - var(--drop) / 2) - 0.035 * var(--drop));
 }
@@ -2131,6 +2141,11 @@ a:is(:hover, :focus-visible) > .lk-ic,
     font-size: 17px;
     line-height: 27px;
   }
+
+  .col:has(.home) .intro {
+    font-size: 21px;
+    line-height: 30px;
+  }
 }
 
 @media (min-width: 701px) and (max-height: 660px) {
@@ -2151,14 +2166,24 @@ a:is(:hover, :focus-visible) > .lk-ic,
   .col:has(.home) .row {
     margin-top: 16px;
   }
+
+  .col:has(.home) .intro {
+    font-size: 19px;
+    line-height: 27px;
+  }
 }
 
 @media (max-width: 700px) {
   .col:has(.home) {
     padding-top: 20px;
     padding-bottom: 24px;
-    font-size: 18px;
-    line-height: 27px;
+    font-size: 20px;
+    line-height: 30px;
+  }
+
+  .col:has(.home) .intro {
+    font-size: 21px;
+    line-height: 30px;
   }
 
   .col:has(.home) .row {
