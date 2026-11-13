@@ -54,7 +54,7 @@ const own = { lang: post.lang, dir: langInfo(post.lang).dir };
 
     <section class="row rise" style="--d: 30ms">
       <h2 class="lab" id="published"><a class="anchor" href="#published" aria-label={t.published + t.anchor}>{t.published}</a></h2>
-      <p class="val"><time datetime={date.toISOString().slice(0, 10)}>{formatDate(date, lang)}</time>{t.minRead(post.minutes)}</p>
+      <p class="val mut when"><time datetime={date.toISOString().slice(0, 10)}>{formatDate(date, lang)}</time>{t.minRead(post.minutes)}</p>
     </section>
 
     <section class="row tight rise" style="--d: 55ms">
