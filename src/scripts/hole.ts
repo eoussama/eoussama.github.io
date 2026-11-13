@@ -6,8 +6,8 @@ import fragment from "./hole.frag?raw";
  * The 404 page's black hole. The hole and its torn rim are drawn by a shader on their
  * own canvas; dust, scraps of paper and the letters of the missing address swirl in
  * on a second canvas over the page; and the page's own letters and the header lean
- * toward it. The cursor stirs its light; a click tears a few scraps off and sends a
- * ripple through the page. It opens as a pinprick that strains, then tears wide with a
+ * toward it. The cursor stirs its light, and leans the view into the hole as tilting
+ * a phone does; a click tears a few scraps off and sends a ripple through the page. It opens as a pinprick that strains, then tears wide with a
  * gulp. With reduced motion everything holds still, already open.
  */
 
@@ -27,6 +27,8 @@ const TEAR = 0.6;
 const WIDE = 1;
 /** How big the pinprick gets before it tears, as a share of the hole. */
 const PIN = 0.07;
+/** How far the device tilts, in degrees, to lean the view into the hole all the way. */
+const TILT = 18;
 
 /**
  * How far open the hole is, a while after the page shows: nothing, then a pinprick
@@ -149,7 +151,7 @@ function start() {
 
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const GLX = holeGL(hole.querySelector("canvas"));
-  const H = { last: performance.now(), open: 0, torn: false, T: 0, flow: 0, life: 0, pull: 1, prox: 0, pulse: 0, pv: 0, calm: 0, m: [0, 0], cd: [1, 0], mx: null as number | null, my: null as number | null, stir: [] as Stir[], waves: [] as Wave[], q: Math.min(2, devicePixelRatio || 1), slow: 0, n: 0, stirT: 0, sl: null as number[] | null, scan: 0, chars: null as Leaner[] | null, map: null as Map<HTMLElement, Leaner> | null, bar: null as HTMLElement | null };
+  const H = { last: performance.now(), open: 0, torn: false, T: 0, flow: 0, life: 0, pull: 1, prox: 0, pulse: 0, pv: 0, calm: 0, m: [0, 0], cd: [1, 0], mx: null as number | null, my: null as number | null, stir: [] as Stir[], waves: [] as Wave[], q: Math.min(2, devicePixelRatio || 1), slow: 0, n: 0, stirT: 0, sl: null as number[] | null, tilt: null as [number, number] | null, scan: 0, chars: null as Leaner[] | null, map: null as Map<HTMLElement, Leaner> | null, bar: null as HTMLElement | null };
   let seed = 7;
   const rnd = () => {
     seed = (seed * 16807) % 2147483647;
@@ -255,6 +257,50 @@ function start() {
     }
   });
 
+  /*
+   * Without a pointer over the page, tilting the device peeks into the hole as the
+   * pointer would: the view leans the way the device does. Tilt is taken from how it is
+   * being held (the first reading, slowly following the hand), so a phone held as
+   * usual looks straight in, and turned on its side, the screen's own left and right
+   * still lead.
+   */
+  let level: [number, number] | null = null;
+  const onTilt = (e: DeviceOrientationEvent) => {
+    if (e.beta === null || e.gamma === null) {
+      return;
+    }
+
+    const angle = screen.orientation?.angle ?? 0;
+    const [x, y] = angle === 90 ? [e.beta, -e.gamma] : angle === 270 ? [-e.beta, e.gamma] : angle === 180 ? [-e.gamma, -e.beta] : [e.gamma, e.beta];
+    const clamp = (v: number) => Math.max(-1, Math.min(1, v));
+
+    if (!level) {
+      level = [x, y];
+    }
+
+    level[0] += (x - level[0]) * 0.004;
+    level[1] += (y - level[1]) * 0.004;
+    H.tilt = [clamp((x - level[0]) / TILT), clamp((y - level[1]) / TILT)];
+  };
+  const motion = window.DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> } | undefined;
+
+  // Listening from the start: most browsers send the tilt as it is. Those that ask
+  // first (iOS) send nothing until the visitor agrees, which they are asked on a tap:
+  // a finished one, as iOS will not prompt on a finger only coming down, and again on
+  // the next if it would not prompt yet. Asking a browser that does not need to
+  // answers at once.
+  if (!reduce && motion) {
+    addEventListener("deviceorientation", onTilt);
+
+    if (typeof motion.requestPermission === "function") {
+      const ask = () => {
+        motion.requestPermission!().then(() => document.removeEventListener("click", ask), () => {});
+      };
+
+      document.addEventListener("click", ask);
+    }
+  }
+
   // A click tears a few scraps off where it lands, and the hole gulps.
   document.addEventListener("pointerdown", (e) => {
     if (reduce) {
@@ -341,6 +387,22 @@ function start() {
       if (d > 0.05) {
         H.cd[0]! += (dx / d - H.cd[0]!) * ease(6);
         H.cd[1]! += (dy / d - H.cd[1]!) * ease(6);
+      }
+    }
+    else if (H.tilt && !reduce) {
+      // No pointer: the device's tilt leans the view instead, as far as a pointer at the
+      // page's edge would, and the further it tips, the nearer the hole feels, as a
+      // pointer closing in on it: it pulls harder and its rim lights on that side.
+      [tx, ty] = H.tilt;
+
+      const d = Math.hypot(tx, ty);
+      const x = Math.min(1, d * 1.25);
+
+      prox = x * x * (3 - 2 * x);
+
+      if (d > 0.05) {
+        H.cd[0]! += (tx / d - H.cd[0]!) * ease(6);
+        H.cd[1]! += (ty / d - H.cd[1]!) * ease(6);
       }
     }
 
