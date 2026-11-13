@@ -190,12 +190,16 @@ const speculation = JSON.stringify({
     <a class="skip" href="#main">{t.skip}</a>
     <div class="page">
       <div class="col">
+        {/* Printed, the page is a letter: the name at its head, the signature at its
+            foot. Neither shows on screen. */}
+        <div class="lh-head" aria-hidden="true"><p class="lh-name">{t.name}</p></div>
         <Header lang={lang} path={path}>
           <slot name="crumb" slot="crumb" />
         </Header>
         <main id="main">
           <slot />
         </main>
+        <div class="lh-foot" aria-hidden="true"><img class="lh-sig" src={url("signature.svg")} width="250" height="105" alt="" decoding="async" fetchpriority="low" /></div>
       </div>
     </div>
     {/* What Safari on iOS reads to colour the status bar: see .sky in global.css. After

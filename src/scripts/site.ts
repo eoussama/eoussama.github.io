@@ -461,3 +461,15 @@ if (hello) {
     window.setInterval(tick, 250);
   }
 }
+
+// Printed, the page is a letter (Base.astro): the browser's header, which prints the
+// page's title, reads the site's address instead.
+let titled = document.title;
+
+addEventListener("beforeprint", () => {
+  titled = document.title;
+  document.title = "ouss.es";
+});
+addEventListener("afterprint", () => {
+  document.title = titled;
+});

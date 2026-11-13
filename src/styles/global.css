@@ -4465,6 +4465,178 @@ a.anchor .rv-i,
   }
 }
 
+/* ---------- Print: a page as a letter ---------- */
+
+/*
+ * Printed, a page becomes a letter: the name heads it and the signature closes it, on
+ * plain white in the light palette whatever the screen shows; the browser's own header
+ * reads ouss.es (scripts/site.ts).
+ * The controls, the lists and notes that open over the page, and the paper's grain
+ * are left on screen; a folded stack prints whole.
+ */
+.lh-head,
+.lh-foot {
+  display: none;
+}
+
+@media print {
+  @page {
+    margin: 18mm 16mm;
+  }
+
+  /* Still: Safari lays a page out afresh to print it and restarts its animations,
+     printing their first frame, where a greeting just changed is still invisible. */
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  :root,
+  :root[data-mode="dark"] {
+    color-scheme: light;
+    --bg: #fff;
+    --ink: #1e2230;
+    --mut: #5c6272;
+    --acc: #b5a9f0;
+    --soft: #e4dff8;
+    --line: rgba(30, 34, 48, 0.16);
+    --lg-acc: #5b4bc4;
+  }
+
+  html,
+  body {
+    background: #fff;
+  }
+
+  body::before,
+  body::after,
+  .ground,
+  .sky,
+  .bar,
+  .skip,
+  .dr,
+  .dr-scrim,
+  .ck,
+  .consent,
+  .foot,
+  .chips-more {
+    display: none !important;
+  }
+
+  .chips > li:not(.chips-more) {
+    display: list-item !important;
+  }
+
+  /* Whatever the first-load reveal has yet to bring in (lines further down, not yet
+     scrolled to) prints in place: scripts/reveal.ts finishes it as printing starts, and
+     this holds should a browser not say it is printing. */
+  .rv-i {
+    transform: none !important;
+  }
+
+  .rv-w {
+    clip-path: none !important;
+  }
+
+  :is(.dot, .arrow, .nf-dot, .chip, .small, pre, code) {
+    opacity: 1 !important;
+    translate: none !important;
+  }
+
+  /* The bullets are drawn as backgrounds, which browsers leave off paper unless asked
+     (Chrome's "Background graphics", off by default); so are code's highlights. */
+  :is(.dot, .nf-dot, pre, code) {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .col {
+    width: auto;
+    padding: 0;
+  }
+
+  /* On a narrow sheet (a phone's print) the greeting, the name and the bullets hang a few
+     pixels out of the column, and the page clips what is out: kept in from each edge. */
+  @media (max-width: 700px) {
+    .col {
+      padding: 0 6px;
+    }
+  }
+
+  /* The way on to the next page leads nowhere on paper. */
+  .row:has(> #next) {
+    display: none;
+  }
+
+  .lh-head {
+    display: block;
+    margin: 0 0 52px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .lh-name {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  /* The signature follows the last section, a gap below it, and prefers to stay with it
+     rather than fall alone on a page. The gap and the signature are in the layout's own
+     units, not millimetres: a phone prints a scaled layout, where millimetres would be
+     far too large. */
+  .lh-foot {
+    display: block;
+    margin-top: 64px;
+    break-before: avoid;
+    break-inside: avoid;
+  }
+
+  .lh-sig {
+    display: block;
+    width: min(210px, 55%);
+    height: auto;
+  }
+
+  .row:not(:has(.prose)),
+  .prose pre,
+  .prose table,
+  .prose figure {
+    break-inside: avoid;
+  }
+
+  .prose h2,
+  .prose h3 {
+    break-after: avoid;
+  }
+
+  @media (max-width: 700px) {
+    /* Its sections are tall in this layout: a list's items stay whole, the section
+       around them may split, or the first one leaves a page nearly empty. */
+    .row:not(:has(.prose)) {
+      break-inside: auto;
+    }
+
+    .list > li {
+      break-inside: avoid;
+    }
+
+    /* A smaller gap and signature, so it fits under the last section more often; and
+       a margin, which a page break drops, so one that does not fit starts at a page's
+       top rather than part way down it. */
+    .lh-foot {
+      margin-top: 36px;
+    }
+
+    .lh-sig {
+      width: min(170px, 45%);
+    }
+  }
+}
+
 /* ---------- Reduced motion: everything still or instant ---------- */
 
 @media (prefers-reduced-motion: reduce) {

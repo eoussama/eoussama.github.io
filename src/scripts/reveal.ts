@@ -516,6 +516,7 @@ function reveal() {
     });
     removeEventListener("pointerdown", settle, true);
     removeEventListener("keydown", settle, true);
+    removeEventListener("beforeprint", settle);
     done();
 
     let restored = false;
@@ -537,6 +538,8 @@ function reveal() {
 
   addEventListener("pointerdown", settle, true);
   addEventListener("keydown", settle, true);
+  // Printed before the page was read down, the lines not yet risen would print blank.
+  addEventListener("beforeprint", settle);
 }
 
 if (root.dataset.rv === "pre") {
