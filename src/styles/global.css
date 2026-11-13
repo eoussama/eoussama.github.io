@@ -4279,9 +4279,11 @@ a.anchor .rv-i,
     padding: 0 10px 0 8px;
   }
 
+  /* Down to its glass, it keeps its rim, a circle beside the other controls' pills. */
   .search-btn {
-    padding: 0 9px;
-    border-color: transparent;
+    justify-content: center;
+    width: 44px;
+    padding: 0;
   }
 
   .th {
@@ -4421,6 +4423,26 @@ a.anchor .rv-i,
 
   .short {
     display: inline;
+  }
+}
+
+/* On the narrowest phones (an iPhone SE, 375px) the controls give up a few pixels
+   between them, so they still fit on the logo's line in every language. */
+@media (max-width: 380px) {
+  .pill-btn {
+    padding: 0 7px 0 9px;
+  }
+
+  [dir="rtl"] .pill-btn {
+    padding: 0 9px 0 7px;
+  }
+
+  .search-btn {
+    padding: 0;
+  }
+
+  .th {
+    width: 27px;
   }
 }
 
