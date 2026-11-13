@@ -186,7 +186,12 @@ function reveal() {
     // before every word, with the first; a link's arrow with the words it ends.
     const before = (word: HTMLElement, atom: HTMLElement) => !!(word.compareDocumentPosition(atom) & Node.DOCUMENT_POSITION_FOLLOWING);
 
-    block.querySelectorAll<HTMLElement>(".dot, .arrow, .nf-dot, code").forEach((atom) => {
+    // A link's own icon too, where it shows without a hover (touch screens): it waits
+    // for its link's words. Hidden until hovered, it is left alone, or it would flash.
+    const marks = [...block.querySelectorAll<HTMLElement>(".dot, .arrow, .nf-dot, code, .lk-ic, .copy-ic")]
+      .filter(atom => !atom.matches(".lk-ic, .copy-ic") || getComputedStyle(atom).opacity !== "0");
+
+    marks.forEach((atom) => {
       const unit = own.findLast(u => u.words[0] && before(u.words[0], atom)) ?? own[0]!;
       const words = unit.words.filter(word => before(word, atom)).length;
 
@@ -231,6 +236,8 @@ function reveal() {
       word.style.transform = HIDDEN;
     });
     unit.atoms.forEach((atom) => {
+      // At once: a link's icon fades its opacity, and would linger on the first frames.
+      atom.style.transition = "none";
       atom.style.opacity = "0";
     });
 
@@ -338,6 +345,7 @@ function reveal() {
       const at = delay + k * (unit.stagger ?? 0) + Math.min((unit.wait?.get(atom) ?? 0) * WSTEP, 220);
 
       atom.style.opacity = "";
+      atom.style.transition = "";
 
       if (unit.fadeOnly) {
         play(atom, [{ opacity: 0 }, { opacity: 1 }], { delay: at, duration: 600, easing: "linear", fill: "backwards" });
@@ -490,6 +498,7 @@ function reveal() {
       });
       unit.atoms.forEach((atom) => {
         atom.style.opacity = "";
+        atom.style.transition = "";
       });
 
       if (unit.sig && !unit.played) {
