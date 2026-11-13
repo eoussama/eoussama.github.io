@@ -2398,6 +2398,11 @@ a:is(:hover, :focus-visible) > .lk-ic,
   .foot .sig svg {
     width: 150px;
   }
+
+  /* Under the list, the signature keeps to the far side, as a letter is signed. */
+  .foot {
+    margin-inline-start: auto;
+  }
 }
 
 /* ---------- Side notes: a short note in the right margin, on wide screens ---------- */
