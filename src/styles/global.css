@@ -1714,12 +1714,23 @@ a:is(:hover, :focus-visible) > .lk-ic,
   text-align: center;
 }
 
-/* Wide screens: in the right margin, where the side notes show, level with the list. */
+/* Wide screens: in the right margin, where the side notes show, level with the list:
+   both end at their last line's baseline, so the copyright sits on the list's last
+   line, whatever the script. */
 @media (min-width: 1101px) {
   .foot {
     position: absolute;
     inset-inline-start: calc(100% + 56px);
     bottom: 0;
+  }
+
+  .where .list,
+  .foot .small {
+    text-box: trim-end cap alphabetic;
+  }
+
+  .where .list > li:last-child {
+    margin-bottom: 0;
   }
 }
 
@@ -3641,10 +3652,6 @@ a.anchor .rv-i,
   transform: none;
 }
 
-:root[data-lang="ja"] .nf-h1 {
-  font-size: 40px;
-}
-
 /* ---------- The analytics question ---------- */
 
 /*
@@ -3732,15 +3739,6 @@ a.anchor .rv-i,
   font-style: normal;
 }
 
-:root:is([data-lang="ar"], [data-lang="ary"]) body {
-  font-size: 21px;
-  line-height: 36px;
-}
-
-:root:is([data-lang="ar"], [data-lang="ary"]) h1 {
-  line-height: 1.35;
-}
-
 /* Spacing letters apart breaks the joins of Arabic script. */
 :root:is([data-lang="ar"], [data-lang="ary"]) :is(h1, h2, .dr-title, .lab, .pill-btn > span, .kbd) {
   letter-spacing: 0;
@@ -3750,36 +3748,6 @@ a.anchor .rv-i,
 :root[data-lang="ja"] body {
   line-break: strict;
   word-break: auto-phrase;
-}
-
-:root:is([data-lang="ar"], [data-lang="ary"]) .lab {
-  font-size: 18px;
-  line-height: 36px;
-}
-
-:root[data-lang="ja"] body {
-  font-size: 18px;
-  line-height: 34px;
-}
-
-:root[data-lang="ja"] .lead {
-  font-size: 20px;
-  line-height: 34px;
-}
-
-:root[data-lang="ja"] .note {
-  font-size: 15px;
-  line-height: 26px;
-}
-
-:root:is([data-lang="ar"], [data-lang="ary"]) .note {
-  line-height: 30px;
-}
-
-:root[data-lang="ja"] .lab {
-  font-size: 16px;
-  line-height: 34px;
-  letter-spacing: 0.06em;
 }
 
 /* ---------- Narrower screens ---------- */
