@@ -14,6 +14,9 @@ import { ui } from "~/i18n/ui";
  * turn lavender. Pointed at, or reached from the keyboard, the dashes give way to
  * the headings' names, each a link to its section. scripts/minimap.ts follows
  * the reading and makes the jumps.
+ *
+ * Where the column leaves no room beside the text, the map waits behind a round button
+ * in the corner, over the one back to the top, and opens as a card above it.
  */
 interface Props {
   lang: Lang;
@@ -27,7 +30,7 @@ const t = ui(lang);
 const dir = langInfo(own).dir;
 ---
 
-<nav class="mm" aria-label={t.toc} style={`--n: ${headings.length}`} data-minimap>
+<nav class="mm" id="mm" aria-label={t.toc} style={`--n: ${headings.length}`} data-minimap>
   <ol class="mm-list">
     {headings.map((heading, i) => (
       <li class="mm-item" style={`--depth: ${heading.depth - 2}; --i: ${i}`} data-state="ahead">
@@ -36,3 +39,6 @@ const dir = langInfo(own).dir;
     ))}
   </ol>
 </nav>
+<button type="button" class="mm-btn" aria-label={t.toc} title={t.toc} aria-controls="mm" aria-expanded="false">
+  <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4h11M7.5 8h6M5 12h8.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+</button>

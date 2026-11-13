@@ -74,7 +74,9 @@ if (nav) {
       }
     });
 
-    if (nav.matches(".mm:hover, .mm:has(:focus-visible)")) {
+    // At the page's edge, open, the list follows the reading; the card is left where
+    // the reader has scrolled it.
+    if (!nav.dataset.sheet && nav.matches(".mm:hover, .mm:has(:focus-visible)")) {
       reveal(at, true);
     }
   };
@@ -108,17 +110,107 @@ if (nav) {
       if (event.detail === 0) {
         target.querySelector<HTMLElement>("a")?.focus({ preventScroll: true });
       }
+
+      shut(false);
     });
   });
+
+  /*
+   * Where the window is too narrow for the map at the page's edge, it waits behind a
+   * button in the corner and opens as a card above it.
+   */
+  const button = document.querySelector<HTMLButtonElement>(".mm-btn");
+  const narrow = matchMedia("(max-width: 1100px)");
+
+  /**
+   * Opens the card, the section being read in sight; from the keyboard, focus goes to
+   * that section's row.
+   *
+   * @param keyboard - Whether it was opened from the keyboard
+   */
+  function open(keyboard: boolean) {
+    nav.dataset.sheet = "open";
+    button?.setAttribute("aria-expanded", "true");
+    reveal(current, false);
+
+    if (keyboard) {
+      (links[current] ?? links[0])?.focus();
+    }
+  }
+
+  /**
+   * Closes the card, if it is open.
+   *
+   * @param back - Whether focus goes back to the button
+   */
+  function shut(back: boolean) {
+    if (nav.dataset.sheet !== "open") {
+      return;
+    }
+
+    nav.dataset.sheet = "closed";
+    button?.setAttribute("aria-expanded", "false");
+
+    if (back) {
+      button?.focus();
+    }
+  }
+
+  /**
+   * Sets the map out for the window's width: at the page's edge, or behind the button.
+   */
+  const fit = () => {
+    if (narrow.matches) {
+      nav.dataset.sheet ??= "closed";
+    }
+    else {
+      shut(false);
+      delete nav.dataset.sheet;
+    }
+  };
+
+  if (button) {
+    button.addEventListener("click", (event) => {
+      if (nav.dataset.sheet === "open") {
+        shut(false);
+      }
+      else {
+        open(event.detail === 0);
+      }
+    });
+
+    // A tap anywhere else closes it, as does Escape.
+    document.addEventListener("pointerdown", (event) => {
+      const at = event.target as Node;
+
+      if (!nav.contains(at) && !button.contains(at)) {
+        shut(false);
+      }
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && nav.dataset.sheet === "open") {
+        shut(nav.contains(document.activeElement) || document.activeElement === button);
+      }
+    });
+
+    narrow.addEventListener("change", fit);
+    fit();
+  }
 
   let follow = 0;
 
   /**
    * Opening, keeps the section being read where it is while the rows spread out,
    * frame by frame, rather than scrolling the list to it once they have, which would
-   * carry every name down and then pull it back up.
+   * carry every name down and then pull it back up. Only at the page's edge: the card
+   * opens at its full size, and a finger landing in it to scroll would otherwise be
+   * pulled back, frame after frame, to the section being read.
    */
   const anchor = () => {
+    if (nav.dataset.sheet) {
+      return;
+    }
+
     const until = performance.now() + 900;
 
     cancelAnimationFrame(follow);

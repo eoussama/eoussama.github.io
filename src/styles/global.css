@@ -1320,7 +1320,7 @@ a:is(:hover, :focus-visible) > .lk-ic,
   }
 }
 
-.mm:is(:hover, :has(:focus-visible)) {
+.mm:not([data-sheet]):is(:hover, :has(:focus-visible)) {
   --mm-wait: 40ms;
 
   width: 270px;
@@ -1379,11 +1379,11 @@ a:is(:hover, :focus-visible) > .lk-ic,
   transition: height var(--move) var(--glide) var(--mm-wait);
 }
 
-.mm:is(:hover, :has(:focus-visible)) .mm-item {
+.mm:not([data-sheet]):is(:hover, :has(:focus-visible)) .mm-item {
   height: 26px;
 }
 
-.mm:is(:hover, :has(:focus-visible)) .mm-link {
+.mm:not([data-sheet]):is(:hover, :has(:focus-visible)) .mm-link {
   pointer-events: auto;
 }
 
@@ -1434,7 +1434,7 @@ a:is(:hover, :focus-visible) > .lk-ic,
   clip-path: inset(0 100% 0 0);
 }
 
-.mm:is(:hover, :has(:focus-visible)) .mm-text {
+.mm:not([data-sheet]):is(:hover, :has(:focus-visible)) .mm-text {
   opacity: 1;
   clip-path: inset(0);
   translate: calc(100% - var(--mm-row)) 0;
@@ -1445,7 +1445,7 @@ a:is(:hover, :focus-visible) > .lk-ic,
     color var(--fast) linear;
 }
 
-:root[dir="rtl"] .mm:is(:hover, :has(:focus-visible)) .mm-text {
+:root[dir="rtl"] .mm:not([data-sheet]):is(:hover, :has(:focus-visible)) .mm-text {
   translate: calc(var(--mm-row) - 100%) 0;
 }
 
@@ -1462,8 +1462,8 @@ a:is(:hover, :focus-visible) > .lk-ic,
   text-align: right;
 }
 
-:root[dir="rtl"] .mm:is(:hover, :has(:focus-visible)) .mm-text[dir="ltr"],
-:root[dir="ltr"] .mm:is(:hover, :has(:focus-visible)) .mm-text[dir="rtl"] {
+:root[dir="rtl"] .mm:not([data-sheet]):is(:hover, :has(:focus-visible)) .mm-text[dir="ltr"],
+:root[dir="ltr"] .mm:not([data-sheet]):is(:hover, :has(:focus-visible)) .mm-text[dir="rtl"] {
   translate: none;
 }
 
@@ -1500,7 +1500,7 @@ a:is(:hover, :focus-visible) > .lk-ic,
 
 /* Open: the dash fades where it is, then, out of sight, lies down under its name's
    place, like a line it was written on, so that closing it shrinks back from there. */
-.mm:is(:hover, :has(:focus-visible)) .mm-line {
+.mm:not([data-sheet]):is(:hover, :has(:focus-visible)) .mm-line {
   top: calc(50% + 7px);
   width: calc(100% - var(--depth) * 12px);
   opacity: 0;
@@ -1514,8 +1514,8 @@ a:is(:hover, :focus-visible) > .lk-ic,
     background-color var(--fast) linear;
 }
 
-:root[dir="rtl"] .mm:is(:hover, :has(:focus-visible)) .mm-text[dir="ltr"] + .mm-line,
-:root[dir="ltr"] .mm:is(:hover, :has(:focus-visible)) .mm-text[dir="rtl"] + .mm-line {
+:root[dir="rtl"] .mm:not([data-sheet]):is(:hover, :has(:focus-visible)) .mm-text[dir="ltr"] + .mm-line,
+:root[dir="ltr"] .mm:not([data-sheet]):is(:hover, :has(:focus-visible)) .mm-text[dir="rtl"] + .mm-line {
   inset-inline-end: calc(var(--depth) * 12px);
 }
 
@@ -1557,15 +1557,179 @@ a:is(:hover, :focus-visible) > .lk-ic,
   }
 }
 
-/* It comes in with the page's first words, and keeps out of the way of an open list. */
-:root[data-rv="pre"] .mm,
-:root[data-open] .mm {
+/* ---------- A post's map, where there is no room beside the text ---------- */
+
+/*
+ * A round button in the corner, like the one back to the top, its three dashes the
+ * map's own. It sits in that button's place, and steps up over it once that one
+ * shows. Pressed, the map opens above it as a card, a row for each heading: the names
+ * on the left, the dashes on the right as at the page's edge, the section being read
+ * in ink, those already read in lavender. A heading picked, a tap elsewhere or Escape
+ * closes it. scripts/minimap.ts sets data-sheet on the map while the window is narrow.
+ */
+.mm-btn {
+  position: fixed;
+  inset-inline-end: max(24px, calc((100% - 1060px) / 2));
+  bottom: 28px;
+  z-index: 5;
+  display: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    translate var(--move) var(--glide),
+    transform var(--fast) var(--ease),
+    opacity var(--fade) linear,
+    visibility 0s,
+    background-color var(--fast) linear;
+}
+
+@media (max-width: 1100px) {
+  :root.js .mm-btn {
+    display: grid;
+  }
+}
+
+@media (max-width: 700px) {
+  .mm-btn {
+    inset-inline-end: 16px;
+    bottom: 16px;
+  }
+}
+
+:root:has(.to-top[data-shown="true"]) .mm-btn {
+  translate: 0 -54px;
+}
+
+.mm-btn:hover,
+.mm-btn[aria-expanded="true"] {
+  background: var(--soft);
+}
+
+.mm-btn:active {
+  transform: scale(0.94);
+}
+
+.mm-btn > svg {
+  display: block;
+}
+
+.mm[data-sheet] {
+  display: block;
+  inset-inline-end: max(24px, calc((100% - 1060px) / 2));
+  top: auto;
+  bottom: 82px;
+  width: min(320px, calc(100vw - 48px));
+  padding: 6px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px) scale(0.97);
+  transform-origin: 100% 100%;
+  pointer-events: none;
+  transition:
+    opacity 110ms linear,
+    transform var(--fast) var(--ease),
+    visibility 0s linear 150ms,
+    translate var(--move) var(--glide);
+}
+
+@media (max-width: 700px) {
+  .mm[data-sheet] {
+    inset-inline-end: 16px;
+    bottom: 70px;
+    width: min(320px, calc(100vw - 32px));
+  }
+}
+
+:root[dir="rtl"] .mm[data-sheet] {
+  transform-origin: 0 100%;
+}
+
+:root:has(.to-top[data-shown="true"]) .mm[data-sheet] {
+  translate: 0 -54px;
+}
+
+.mm[data-sheet="open"] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+  transition:
+    opacity 110ms linear,
+    transform var(--fast) var(--ease),
+    visibility 0s,
+    translate var(--move) var(--glide);
+}
+
+.mm[data-sheet] .mm-list {
+  max-height: min(60dvh, 440px);
+}
+
+.mm[data-sheet] .mm-item {
+  height: auto;
+}
+
+.mm[data-sheet] .mm-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 40px;
+  padding: 0 12px;
+  pointer-events: auto;
+  border-radius: 10px;
+  transition: background-color var(--fast) linear;
+}
+
+.mm[data-sheet] .mm-link:is(:hover, :focus-visible) {
+  background: var(--soft);
+}
+
+.mm[data-sheet] .mm-link .mm-text {
+  position: static;
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+  padding-block: 7px;
+  padding-inline: calc(var(--depth) * 12px) 0;
+  font-size: 16px;
+  line-height: 1.35;
+  white-space: normal;
+  text-align: start;
+  opacity: 1;
+  clip-path: none;
+  translate: none;
+  transition: color var(--fast) linear;
+}
+
+.mm[data-sheet] .mm-line {
+  position: static;
+  flex: none;
+  opacity: 1;
+  transition:
+    scale var(--fast) var(--ease),
+    background-color var(--fast) linear;
+}
+
+/* Both come in with the page's first words, and keep out of the way of an open list. */
+:root[data-rv="pre"] :is(.mm, .mm-btn),
+:root[data-open] :is(.mm, .mm-btn) {
   opacity: 0;
   visibility: hidden;
 }
 
 @media print {
-  .mm {
+  .mm,
+  .mm-btn {
     display: none !important;
   }
 }
