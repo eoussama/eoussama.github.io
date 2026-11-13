@@ -3935,6 +3935,94 @@ button.chip {
   .page-cv .row:has(> #pdf) {
     display: none;
   }
+
+  /* Printed, the CV is the PDF it offers to download: set tighter than on screen, as
+     a CV is, on pages with narrower margins than a letter's, with each post's heading
+     kept with what follows it. */
+  @page cv {
+    margin: 14mm 15mm;
+  }
+
+  :root:has(.page-cv) .col {
+    page: cv;
+  }
+
+  :root:has(.page-cv) .lh-head {
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+  }
+
+  :root:has(.page-cv) .lh-name {
+    font-size: 24px;
+  }
+
+  :root:has(.page-cv) .lh-foot {
+    margin-top: 28px;
+  }
+
+  :root:has(.page-cv) .lh-sig {
+    width: min(150px, 40%);
+  }
+
+  .page-cv {
+    font-size: 12.5px;
+    line-height: 18px;
+  }
+
+  .page-cv .row {
+    grid-template-columns: 104px 1fr;
+    column-gap: 22px;
+    margin-top: 14px;
+  }
+
+  .page-cv .row.first {
+    margin-top: 0;
+  }
+
+  .page-cv .lab {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .page-cv .lead {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .page-cv :is(.val, .prose, .prose li) {
+    font-size: 12.5px;
+    line-height: 18px;
+  }
+
+  .page-cv .cv-contact {
+    font-size: 12px;
+  }
+
+  .page-cv .prose :is(p, ul) {
+    margin-bottom: 6px;
+  }
+
+  .page-cv .prose li {
+    margin-bottom: 1px;
+  }
+
+  .page-cv .prose h3 {
+    margin: 10px 0 0;
+    font-size: 13.5px;
+    line-height: 18px;
+    break-after: avoid;
+  }
+
+  .page-cv .prose h3 + p {
+    margin-bottom: 4px;
+    font-size: 12px;
+    line-height: 17px;
+    break-after: avoid;
+  }
+
+  .page-cv .prose > :first-child {
+    margin-top: 0;
+  }
 }
 
 /* ---------- Long-form text: posts and project stories ---------- */

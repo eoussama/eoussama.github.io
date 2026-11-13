@@ -36,6 +36,8 @@ type Item = {
   icon?: "z-star" | "z-cross" | "z-dia";
   href?: string;
   external?: boolean;
+  /** The file name to save it under: a link to a file to download, not to open. */
+  download?: string;
   action?: "theme" | "copy" | "hello" | "consent" | "keys";
   value?: string;
   lang?: Lang;
@@ -113,7 +115,7 @@ const groups: { label: string; items: Item[] }[] = [
     items: [
       { label: t.cGh, hint: "↗", href: PROFILE.github.url, external: true, keywords: "code eoussama github" },
       { label: t.cLi, hint: "↗", href: PROFILE.linkedin.url, external: true, keywords: "work history eoussama linkedin" },
-      { label: t.cCv, hint: "PDF ↗", href: url(PROFILE.resume), external: true, keywords: "resume cv pdf" },
+      { label: t.cCv, hint: "PDF", href: url(PROFILE.resume), download: "Oussama-Essamadi-CV.pdf", keywords: "resume cv pdf download" },
       { label: t.cMail, action: "copy", keywords: "contact write mail email" },
       { label: t.cSponsor, hint: "↗", href: PROFILE.sponsors, external: true, keywords: "support sponsor donate github sponsors" },
       { label: t.cTip, hint: "↗", href: PROFILE.paypal, external: true, keywords: "support tip donate paypal coffee" },
@@ -164,7 +166,7 @@ let n = 0;
                 );
 
                 return item.href
-                  ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} data-kw={keywords}>{inner}</a>
+                  ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} download={item.download} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} data-kw={keywords}>{inner}</a>
                   : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} data-kw={keywords}>{inner}</button>;
               })}
             </div>
