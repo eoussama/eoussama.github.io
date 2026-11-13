@@ -1924,6 +1924,14 @@ a:is(:hover, :focus-visible) > .lk-ic,
   text-underline-offset: 5px;
 }
 
+/* A greeting too long to drop beside the text (Eid's, scripts/site.ts) is set a size
+   down to fit, on one line, its top still on the first line's. */
+.intro .hello[data-fit] {
+  --drop-top: calc((var(--intro-lh) - var(--intro-fs)) / 2 + 0.035 * var(--intro-fs) - (var(--intro-lh) - var(--drop) / 2) - 0.035 * var(--drop));
+
+  white-space: nowrap;
+}
+
 /*
  * The side it hangs on is the page's: a greeting in another script, set in its own
  * direction, still sits at the start of the page's lines.
