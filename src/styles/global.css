@@ -1768,15 +1768,20 @@ a:is(:hover, :focus-visible) > .lk-ic,
   display: block;
 }
 
-.sig svg > g path {
-  stroke: currentColor;
-  stroke-width: 1.1;
-}
-
+/* Each piece waits well inside its dash gap until it starts, so nothing shows early. */
 .sig mask path {
   stroke-dasharray: 1 2;
-  stroke-dashoffset: 1.2;
-  animation: sig-draw forwards;
+  stroke-dashoffset: 1.5;
+  animation: sig-draw both;
+}
+
+/* Fresh ink is glossy and dark for a moment after the nib passes, then settles. */
+.sig-wet {
+  opacity: 0;
+}
+
+:root.js .sig.is-drawing .sig-wet {
+  animation: sig-wet 1s cubic-bezier(0.3, 0, 0.7, 1) both;
 }
 
 /* With scripts on, it waits for the first-load reveal to draw it, last of all. */
@@ -1794,9 +1799,35 @@ a:is(:hover, :focus-visible) > .lk-ic,
   stroke-dashoffset: 0;
 }
 
+:root:is(.js:not([data-rv]), .sig-drawn) .sig-wet {
+  animation: none;
+}
+
 @keyframes sig-draw {
-  to {
+  0% {
+    stroke-dashoffset: 1.5;
+  }
+
+  0.01% {
+    stroke-dashoffset: 1;
+  }
+
+  100% {
     stroke-dashoffset: 0;
+  }
+}
+
+@keyframes sig-wet {
+  0% {
+    opacity: 0.55;
+  }
+
+  45% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 0;
   }
 }
 
@@ -4095,7 +4126,8 @@ a.anchor .rv-i,
   .ck::backdrop,
   .mm-item,
   .logo *,
-  .sig mask path {
+  .sig mask path,
+  .sig-wet {
     animation: none !important;
   }
 
