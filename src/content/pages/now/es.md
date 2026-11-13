@@ -7,7 +7,7 @@ updated: 2026-11-13
 
 ## Construyendo
 
-[ASIS](../projects/asis/), una plataforma de investigación para el IRES, el instituto de estudios estratégicos de Marruecos: sus analistas buscan en sus fuentes en árabe, francés e inglés y redactan informes en los que cada frase remite a la página de la que salió, con todos los modelos funcionando en las máquinas del propio instituto.
+[ASIS](../projects/asis/), una plataforma de investigación para el IRES, el instituto de estudios estratégicos de Marruecos. Ayuda a sus analistas a buscar en sus fuentes en árabe, francés e inglés, y a redactar informes en los que cada frase puede seguirse hasta su origen.
 
 ## Estudiando
 
@@ -15,7 +15,7 @@ Un doctorado, a la par que el trabajo. Mi tesis trata sobre la orquestación ada
 
 ## Aprendiendo
 
-Italiano, ya por encima del B1.
+Estoy aprendiendo italiano y ya he superado el nivel B1; sigo avanzando hacia la soltura.
 
 ## Publicando
 

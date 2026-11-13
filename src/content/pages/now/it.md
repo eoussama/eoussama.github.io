@@ -7,7 +7,7 @@ updated: 2026-11-13
 
 ## Costruisco
 
-[ASIS](../projects/asis/), una piattaforma di ricerca per l’IRES, l’istituto di studi strategici del Marocco: i suoi analisti cercano nelle loro fonti in arabo, francese e inglese e scrivono note in cui ogni frase rimanda alla pagina da cui viene, con tutti i modelli che girano sulle macchine dell’istituto.
+[ASIS](../projects/asis/), una piattaforma di ricerca per l’IRES, l’istituto di studi strategici del Marocco. Aiuta i suoi analisti a cercare nelle fonti in arabo, francese e inglese, e a scrivere note in cui ogni frase si può ricondurre alla sua origine.
 
 ## Studio
 
@@ -15,7 +15,7 @@ Un dottorato, accanto al lavoro. La mia tesi riguarda l’orchestrazione adattiv
 
 ## Imparo
 
-L’italiano, ormai oltre il B1.
+Sto imparando l’italiano e ho ormai superato il livello B1; continuo il cammino verso la scioltezza.
 
 ## Pubblico
 

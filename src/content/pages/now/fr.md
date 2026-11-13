@@ -7,7 +7,7 @@ updated: 2026-11-13
 
 ## Je construis
 
-[ASIS](../projects/asis/), une plateforme de recherche pour l’IRES, l’Institut royal des études stratégiques du Maroc : ses analystes cherchent dans leurs sources en arabe, en français et en anglais, et rédigent des notes dont chaque phrase renvoie à la page d’où elle vient, avec tous les modèles qui tournent sur les machines de l’institut.
+[ASIS](../projects/asis/), une plateforme de recherche pour l’IRES, l’Institut royal des études stratégiques du Maroc. Elle aide ses analystes à chercher dans leurs sources en arabe, en français et en anglais, et à rédiger des notes dont chaque phrase peut être suivie jusqu’à sa source.
 
 ## J’étudie
 
@@ -15,7 +15,7 @@ Un doctorat, en parallèle de mon travail. Ma thèse porte sur l’orchestration
 
 ## J’apprends
 
-L’italien, au-delà du B1 désormais.
+J’apprends l’italien et j’ai désormais dépassé le niveau B1 ; je continue mon chemin vers l’aisance.
 
 ## Je livre
 
