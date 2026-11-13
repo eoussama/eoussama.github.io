@@ -2,8 +2,11 @@
 import type { Lang } from "~/i18n/langs";
 import type { PageId } from "~/lib/pages";
 
+import { render } from "astro:content";
+
 import Ext from "~/components/Ext.astro";
 import LinkIcon from "~/components/LinkIcon.astro";
+import Minimap from "~/components/Minimap.astro";
 import { PROFILE } from "~/data/profile";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
@@ -28,6 +31,8 @@ const t = ui(lang);
 const page = await getPage(id, lang);
 const { label, title, lead, description, updated } = page.entry.data;
 const rows = sections(page.entry.rendered?.html ?? "");
+// The CV is long enough to need a map: its sections, with each post and degree under its own.
+const headings = id === "cv" ? (await render(page.entry)).headings.filter(heading => heading.depth >= 2 && heading.depth <= 3) : [];
 // Not yet written in this language: the English text says so, for screen readers and fonts.
 const textLang = page.lang === lang ? undefined : page.lang;
 const textDir = textLang ? "ltr" : undefined;
@@ -35,6 +40,7 @@ const textDir = textLang ? "ltr" : undefined;
 
 <Base lang={lang} path={`${id}/`} title={`${title === t.name ? label : title} · ${t.name}`} description={description} label={label}>
   <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
+  {headings.length >= 3 && <Minimap slot="aside" lang={lang} own={page.lang} headings={headings} />}
 
   <article class={`page-${id}`}>
     <section class="row first">
