@@ -37,12 +37,13 @@ const themes = [
   <slot name="crumb" />
 
   <div class="tools">
-    <button type="button" class="pill-btn search-btn" data-palette-open aria-label={t.palOpen} aria-keyshortcuts="Meta+K Control+K" title={t.palTitle}>
+    <button type="button" class="pill-btn search-btn" data-palette-open aria-keyshortcuts="Meta+K Control+K" title={t.palTitle}>
       <svg class="search-ico" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
         <circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
         <path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
       </svg>
-      <kbd class="kbd full" dir="ltr" aria-hidden="true"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></kbd>
+      <span class="sr">{t.palOpen}</span>
+      <kbd class="kbd full" dir="ltr"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></kbd>
     </button>
 
     <div class="menu-wrap ver-wrap">
