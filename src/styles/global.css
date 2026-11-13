@@ -3494,6 +3494,13 @@ html {
   font-size: 16px;
 }
 
+/* Set left to right itself, its start is its left: on a right-to-left page the gap
+   goes on its right, toward the link it follows. */
+:root[dir="rtl"] .stars {
+  margin-right: 10px;
+  margin-left: 0;
+}
+
 /* Links: one address a line, as the source and site above them read. */
 .links {
   padding: 0;
