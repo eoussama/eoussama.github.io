@@ -68,14 +68,15 @@ const speculation = JSON.stringify({
 <!doctype html>
 <html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light">
   <head>
+    <!-- Hello. There's a shorter way to find me: npx ouss -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#faf7f2" />
-    <!--
+    {/*
       Before the first paint: the saved theme (no flash), the keyboard shortcut's
       label, whether to play the entrance again, and, on English pages, a first
       visit that follows the browser's language.
-    -->
+    */}
     <script is:inline define:vars={{ lang, alternates, codes, redirect: !noindex }}>
       const d = document.documentElement;
 
@@ -148,6 +149,12 @@ const speculation = JSON.stringify({
         }
       }
     </script>
+    {/* For whoever opens the browser's console: the shorter way to find me. Its lavender
+        is one that reads on a light console and a dark one alike (about 4:1 on both). */}
+    <script is:inline define:vars={{ hello: t.consoleHello }}>
+      // eslint-disable-next-line no-console -- the console is where it belongs.
+      console.log(`%c${hello}`, "font: 600 15px/1.6 Georgia, serif; color: #7c6cf0");
+    </script>
     <script is:inline type="speculationrules" set:html={speculation} />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -178,7 +185,7 @@ const speculation = JSON.stringify({
     {lang === "ja" && <link rel="stylesheet" href={jp500} />}
   </head>
   <body>
-    <!-- Behind everything, always painted, for the paper to blend with: see .ground in global.css. -->
+    {/* Behind everything, always painted, for the paper to blend with: see .ground in global.css. */}
     <div class="ground" aria-hidden="true"></div>
     <a class="skip" href="#main">{t.skip}</a>
     <div class="page">
@@ -191,12 +198,12 @@ const speculation = JSON.stringify({
         </main>
       </div>
     </div>
-    <!-- What Safari on iOS reads to colour the status bar: see .sky in global.css. After
-         the page, so it lies over the header's empty top edge. -->
+    {/* What Safari on iOS reads to colour the status bar: see .sky in global.css. After
+         the page, so it lies over the header's empty top edge. */}
     <div class="sky" aria-hidden="true"></div>
-    <!-- Beside the page rather than in it, so it stays put while the drawer moves the page aside. -->
+    {/* Beside the page rather than in it, so it stays put while the drawer moves the page aside. */}
     <slot name="aside" />
-    <!-- Far down a page, a way back up, ringed by how much of the page has been read: scripts/top.ts. -->
+    {/* Far down a page, a way back up, ringed by how much of the page has been read: scripts/top.ts. */}
     <button type="button" class="to-top" aria-label={t.toTop} title={t.toTop} data-shown="false" tabindex="-1" hidden>
       <svg class="to-top-ring" width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="21" pathLength="1"></circle><circle class="to-top-read" cx="22" cy="22" r="21" pathLength="1"></circle></svg>
       <svg class="to-top-arrow" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3.5M3.5 8 8 3.5 12.5 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
@@ -205,12 +212,12 @@ const speculation = JSON.stringify({
     <Palette lang={lang} path={path} hello={hello} consent={!!gaId} />
     <Shortcuts lang={lang} />
     {gaId && <Consent lang={lang} id={gaId} />}
-    <!--
+    {/*
       Back from a project or post, its name returns to its place in the list: the
       list names it for the view transition as it is shown. This has to
       be in place before the first paint, so it runs here rather than in a bundled
       script.
-    -->
+    */}
     <script is:inline>
       // A page opened with its drawer showing: the page behind it is out of reach.
       if (document.documentElement.dataset.open) {
