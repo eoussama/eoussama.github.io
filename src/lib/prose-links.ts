@@ -175,6 +175,21 @@ function headingLinks() {
 }
 
 /**
+ * Lets the keyboard reach a table: on a narrow screen a wide one scrolls sideways
+ * within its box, and a box that scrolls has to take focus to be scrolled without a
+ * pointer, as the code blocks already do.
+ */
+const scrollableTables = {
+  name: "scrollable-tables",
+  element: {
+    filter: ["table"],
+    visit(node: Readonly<Element>): Element {
+      return { ...node, properties: { ...node.properties, tabIndex: 0 } };
+    },
+  },
+};
+
+/**
  * The integration that adds the plugins to Astro's Markdown processor.
  *
  * @param site - The site's own address, such as https://ouss.es
@@ -211,7 +226,7 @@ export default function proseLinks(site: string): AstroIntegration {
           throw new Error("prose-links: Markdown is no longer rendered by Sätteri; port the plugin.");
         }
 
-        processor.options.hastPlugins.push(external, headingLinks);
+        processor.options.hastPlugins.push(external, headingLinks, scrollableTables);
       },
     },
   };
