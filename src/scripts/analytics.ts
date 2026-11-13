@@ -125,7 +125,7 @@ function show(focus = false) {
  *
  * @returns Once the page has settled
  */
-function settled(): Promise<void> {
+async function settled(): Promise<void> {
   const root = document.documentElement;
   const loaded = document.readyState === "complete"
     ? Promise.resolve()
@@ -153,7 +153,8 @@ function settled(): Promise<void> {
     }, 9000);
   });
 
-  return Promise.all([loaded, entrance]).then(() => new Promise(resolve => window.setTimeout(resolve, 900)));
+  await Promise.all([loaded, entrance]);
+  await new Promise(resolve => window.setTimeout(resolve, 900));
 }
 
 /** Asks again, from the command menu. */
