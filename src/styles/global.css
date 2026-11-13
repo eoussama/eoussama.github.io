@@ -4410,6 +4410,19 @@ a.anchor .rv-i,
 }
 
 /* Spacing letters apart breaks the joins of Arabic script. */
+/*
+ * Arabic script dips below the line far more than Latin, and an underline that skips
+ * what crosses it breaks into dashes. In Arabic and Darija it runs unbroken, set a
+ * little lower so it clears most of the letters.
+ */
+:root:is([data-lang="ar"], [data-lang="ary"]) {
+  text-decoration-skip-ink: none;
+}
+
+:root:is([data-lang="ar"], [data-lang="ary"]) :is(a, .link, .cp-t, .next > span) {
+  text-underline-offset: 6px;
+}
+
 :root:is([data-lang="ar"], [data-lang="ary"]) :is(h1, h2, .dr-title, .lab, .pill-btn > span, .kbd) {
   letter-spacing: 0;
 }
