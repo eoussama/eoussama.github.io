@@ -3630,9 +3630,13 @@ html {
 }
 
 /* Underlines travel with their words, not under the empty windows. A link left out of
-   the entrance (far down a long post) keeps its own. */
-:root[data-rv="run"] :is(a, .link, .ext):has(.rv-i) {
-  text-decoration-color: transparent;
+   the entrance (far down a long post) keeps its own. That goes for any box that draws
+   its own underline, too ("Copy my email", the next project's name): its spaces are
+   not lifted into windows, so they would show as stray dashes before the words rise.
+   The line is taken away rather than made transparent: a link's colour transition
+   would otherwise fade those dashes out over the first frames instead of dropping them. */
+:root[data-rv="run"] :is(a, .link, .ext, .cp-t, .next > span):has(.rv-i) {
+  text-decoration-line: none;
 }
 
 :is(a, .link) .rv-i {
