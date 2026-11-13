@@ -282,6 +282,17 @@ const EID: Record<string, string> = {
   ary: "عواشر مبروكة!",
 };
 
+/** The greeting each language gives in the morning, the afternoon and the evening. */
+const DAY: Record<string, [string, string, string]> = {
+  en: ["Good morning!", "Good afternoon!", "Good evening!"],
+  fr: ["Bonjour !", "Bonjour !", "Bonsoir !"],
+  es: ["¡Buenos días!", "¡Buenas tardes!", "¡Buenas noches!"],
+  it: ["Buongiorno!", "Buongiorno!", "Buonasera!"],
+  ja: ["おはよう！", "こんにちは！", "こんばんは！"],
+  ar: ["صباح الخير!", "مساء الخير!", "مساء الخير!"],
+  ary: ["صباح الخير!", "مسا الخير!", "مسا الخير!"],
+};
+
 /**
  * Whether today is Eid: the first three days of Shawwal (al-Fitr) or the four from
  * the tenth of Dhu al-Hijjah (al-Adha), by the browser's Umm al-Qura calendar. A
@@ -301,14 +312,33 @@ function isEid(): boolean {
 
   return (month === 10 && day <= 3) || (month === 12 && day >= 10 && day <= 13);
 }
+
+/**
+ * The greeting the page opens on, in its own language: Eid's on the days of Eid,
+ * otherwise the one for the visitor's time of day (morning from five, afternoon from
+ * noon, evening from six).
+ *
+ * @param lang - The page's language
+ * @returns The greeting, or nothing for a language without one
+ */
+function opening(lang: string): string | undefined {
+  if (isEid()) {
+    return EID[lang];
+  }
+
+  const hour = new Date().getHours();
+
+  return DAY[lang]?.[hour >= 5 && hour < 12 ? 0 : hour >= 12 && hour < 18 ? 1 : 2];
+}
+
 /** How long the page must be left alone before the greeting moves on. */
 const IDLE = 8000;
 /** How long each greeting stays at least. */
 const EVERY = 5000;
 
 if (hello) {
-  const eid = isEid();
-  const hellos = (JSON.parse(hello.dataset.hellos ?? "[]") as Hello[]).map(greeting => (eid && EID[greeting.lang] ? { ...greeting, text: EID[greeting.lang]! } : greeting));
+  const hellos = JSON.parse(hello.dataset.hellos ?? "[]") as Hello[];
+  const special = hellos[0] && opening(hellos[0].lang);
   const hint = hello.dataset.hint ?? "";
 
   const intro = hello.closest<HTMLElement>(".row") ?? hello;
@@ -323,12 +353,12 @@ if (hello) {
   const words = [...para.querySelectorAll<HTMLElement>(".iw")];
 
   /**
-   * Eid's greetings are longer than a word: one too wide to drop beside the text (a
-   * share of the line on a wide screen, the whole of it on a phone) is set a size down
-   * to fit, on one line.
+   * The opening greetings are longer than a word: one too wide to drop beside the text
+   * (a share of the line on a wide screen, the whole of it on a phone) is set a size
+   * down to fit, on one line.
    */
   const fit = () => {
-    if (!eid) {
+    if (!special) {
       return;
     }
 
@@ -350,10 +380,13 @@ if (hello) {
     }
   };
 
-  // On Eid the page opens on that day's greeting, before its words rise.
-  if (eid && hellos[0]) {
-    hello.textContent = hellos[0].text;
-    hello.setAttribute("aria-label", `${hellos[0].text} ${hint}`);
+  // The page opens on the day's greeting, before its words rise. It shows only once:
+  // moving on starts the round of plain hellos at the page's own, which never brings it
+  // back.
+  if (special) {
+    index = -1;
+    hello.textContent = special;
+    hello.setAttribute("aria-label", `${special} ${hint}`);
     fit();
     document.fonts.ready.then(fit, () => {});
     addEventListener("resize", fit, { passive: true });
