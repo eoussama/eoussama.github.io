@@ -4141,6 +4141,12 @@ a.anchor .rv-i,
     margin-bottom: 8px;
   }
 
+  /* Under its label, a post that opens on a heading starts as close as one that opens
+     on a paragraph: the heading's margin is for the sections it divides, not the top. */
+  .row > .prose > :first-child {
+    margin-top: 0;
+  }
+
   h1 {
     font-size: 38px;
   }
