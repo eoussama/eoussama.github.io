@@ -552,3 +552,5 @@ if (root.dataset.rv === "pre") {
   document.fonts.ready.then(start, start);
   setTimeout(start, 500);
 }
+
+export {};

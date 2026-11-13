@@ -180,3 +180,5 @@ document.querySelectorAll<HTMLElement>(".chips[data-fold]").forEach((list) => {
     seen.observe(list);
   }
 });
+
+export {};

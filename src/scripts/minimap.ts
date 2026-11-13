@@ -91,6 +91,47 @@ if (nav) {
     update();
   };
 
+  /*
+   * Where the window is too narrow for the map at the page's edge, it waits behind a
+   * button in the corner and opens as a card above it.
+   */
+  const button = document.querySelector<HTMLButtonElement>(".mm-btn");
+  const narrow = matchMedia("(max-width: 1100px)");
+
+  /**
+   * Opens the card, the section being read in sight; from the keyboard, focus goes to
+   * that section's row.
+   *
+   * @param keyboard - Whether it was opened from the keyboard
+   */
+  const open = (keyboard: boolean) => {
+    nav.dataset.sheet = "open";
+    button?.setAttribute("aria-expanded", "true");
+    reveal(current, false);
+
+    if (keyboard) {
+      (links[current] ?? links[0])?.focus();
+    }
+  };
+
+  /**
+   * Closes the card, if it is open.
+   *
+   * @param back - Whether focus goes back to the button
+   */
+  const shut = (back: boolean) => {
+    if (nav.dataset.sheet !== "open") {
+      return;
+    }
+
+    nav.dataset.sheet = "closed";
+    button?.setAttribute("aria-expanded", "false");
+
+    if (back) {
+      button?.focus();
+    }
+  };
+
   links.forEach((link, i) => {
     link.addEventListener("click", (event) => {
       const target = targets[i];
@@ -114,47 +155,6 @@ if (nav) {
       shut(false);
     });
   });
-
-  /*
-   * Where the window is too narrow for the map at the page's edge, it waits behind a
-   * button in the corner and opens as a card above it.
-   */
-  const button = document.querySelector<HTMLButtonElement>(".mm-btn");
-  const narrow = matchMedia("(max-width: 1100px)");
-
-  /**
-   * Opens the card, the section being read in sight; from the keyboard, focus goes to
-   * that section's row.
-   *
-   * @param keyboard - Whether it was opened from the keyboard
-   */
-  function open(keyboard: boolean) {
-    nav.dataset.sheet = "open";
-    button?.setAttribute("aria-expanded", "true");
-    reveal(current, false);
-
-    if (keyboard) {
-      (links[current] ?? links[0])?.focus();
-    }
-  }
-
-  /**
-   * Closes the card, if it is open.
-   *
-   * @param back - Whether focus goes back to the button
-   */
-  function shut(back: boolean) {
-    if (nav.dataset.sheet !== "open") {
-      return;
-    }
-
-    nav.dataset.sheet = "closed";
-    button?.setAttribute("aria-expanded", "false");
-
-    if (back) {
-      button?.focus();
-    }
-  }
 
   /**
    * Sets the map out for the window's width: at the page's edge, or behind the button.
