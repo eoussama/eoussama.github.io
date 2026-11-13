@@ -33,9 +33,11 @@ interface Props {
   noindex?: boolean;
   /** How the page shows when shared: a site page, or an article (a post). */
   kind?: "website" | "article";
+  /** What the way back names this page from the next one: its name, or the title. */
+  label?: string;
 }
 
-const { lang, path = "", title, description, hello = false, noindex = false, kind = "website" } = Astro.props;
+const { lang, path = "", title, description, hello = false, noindex = false, kind = "website", label } = Astro.props;
 /** Google Analytics' measurement ID; without one, nothing is asked and nothing loads. */
 const gaId = import.meta.env.PUBLIC_GA_ID ?? "";
 const LOCALES: Record<Lang, string> = { ar: "ar_MA", ary: "ar_MA", en: "en_GB", fr: "fr_FR", es: "es_ES", it: "it_IT", ja: "ja_JP" };
@@ -66,7 +68,7 @@ const speculation = JSON.stringify({
 ---
 
 <!doctype html>
-<html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light">
+<html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light" data-label={noindex ? undefined : (label ?? title)}>
   <head>
     <!-- Hello. There's a shorter way to find me: npx ouss -->
     <meta charset="utf-8" />
@@ -196,6 +198,75 @@ const speculation = JSON.stringify({
         <Header lang={lang} path={path}>
           <slot name="crumb" slot="crumb" />
         </Header>
+        {/* The way back names the page you came from, not always the home page. Each page
+            of the site visited in this tab is pushed on a trail; arriving at one already
+            on it (back, or a link up) pops what came after. The crumb then leads to the
+            page before this one, back through the history when that is where it is, so
+            the page returns where it was left. Inline, so it is right before the first
+            paint. A missing page (no label) is never on the trail. */}
+        <script is:inline define:vars={{ lang, base: import.meta.env.BASE_URL, codes }}>
+          (() => {
+            const root = document.documentElement;
+            const label = root.dataset.label;
+
+            if (!label) {
+              return;
+            }
+
+            // A page whatever its language: /p/fr/projects/x/ and /p/projects/x/ are one.
+            const other = codes.filter(code => code !== "en").join("|");
+            const keyOf = path => path.replace(new RegExp(`/p/(?:${other})/`), "/p/").replace(/\/p\/$/, "/");
+            const hrefOf = (key) => {
+              if (lang === "en") {
+                return key;
+              }
+
+              return key === base ? `${base}p/${lang}/` : key.replace(`${base}p/`, `${base}p/${lang}/`);
+            };
+
+            let trail = [];
+
+            try {
+              trail = JSON.parse(sessionStorage.getItem("trail") || "[]");
+            }
+            catch {}
+
+            const here = { key: keyOf(location.pathname), label };
+            const at = trail.findIndex(step => step.key === here.key);
+
+            trail = at >= 0 ? [...trail.slice(0, at), here] : [...trail, here].slice(-50);
+
+            try {
+              sessionStorage.setItem("trail", JSON.stringify(trail));
+            }
+            catch {}
+
+            const crumb = document.querySelector(".bar .crumb");
+            const back = trail.at(-2);
+
+            if (!crumb || !back) {
+              return;
+            }
+
+            // The home page keeps the crumb as it is: the site's name, which turns into
+            // the home page's own as the page changes. Any other is named by its label.
+            if (back.key !== base) {
+              crumb.textContent = back.label;
+              crumb.href = hrefOf(back.key);
+              crumb.style.viewTransitionName = "none";
+            }
+
+            crumb.addEventListener("click", (event) => {
+              const entries = globalThis.navigation?.entries?.() ?? [];
+              const before = entries[(globalThis.navigation?.currentEntry?.index ?? 0) - 1];
+
+              if (before?.url && keyOf(new URL(before.url).pathname) === back.key && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
+                event.preventDefault();
+                history.back();
+              }
+            });
+          })();
+        </script>
         <main id="main">
           <slot />
         </main>
