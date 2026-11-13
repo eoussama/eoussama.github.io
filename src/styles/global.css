@@ -3599,21 +3599,26 @@ button.chip {
   }
 }
 
-.chips[data-open=""]:not([data-closing]) > li:nth-child(n + 5) {
+/* These win over the page's own entrance (.rise, below), which would otherwise replay
+   its late, staggered rise each time the rest, or "+N", are shown again. */
+:root .chips[data-fold][data-open=""]:not([data-closing]) > li:nth-child(n + 5) {
   animation: chip-in 200ms var(--ease) backwards;
   animation-delay: calc((var(--i) - 4) * 12ms);
 }
 
 /* The first of the rest takes the place "+N" leaves, at once: a fade there would read
    as a gap before anything comes. */
+:root .chips[data-fold][data-open=""]:not([data-closing]) > li:nth-child(4) {
+  animation: none;
+}
 
-.chips[data-closing] > li:nth-child(n + 4) {
-  animation: chip-out 120ms linear forwards;
+:root .chips[data-fold][data-closing] > li:nth-child(n + 4) {
+  animation: chip-out 80ms linear forwards;
 }
 
 /* Folded again, "+N" comes back in as the others went. */
-.chips[data-shut] .chips-more {
-  animation: chip-in 200ms var(--ease) backwards;
+:root .chips[data-fold][data-shut] > li.chips-more {
+  animation: chip-in 140ms var(--ease) backwards;
 }
 
 @keyframes chip-in {

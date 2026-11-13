@@ -8,15 +8,17 @@
  *
  * Pointed at or tabbed into, the row opens: the rest of the chips fade in as the list
  * grows to take them, so what follows the row glides down rather than jumping. Left,
- * it closes the same way back, a moment later, so passing over it does not make it
- * flap. A tap on "+N" opens it for good, as a touch screen has no hover; a finger is
- * never taken for a pointer, or the row would open under it as it lands and the tap
- * meant for "+N" would land on the chip that slid into its place.
+ * it closes the same way back, as quickly. A tap on "+N" opens it for good, as a
+ * touch screen has no hover; a finger is never taken for a pointer, or the row would
+ * open under it as it lands and the tap meant for "+N" would land on the chip that
+ * slid into its place.
  */
 
 const EASE = "cubic-bezier(.2,0,0,1)";
 /** How long the whole stack stays out once it has arrived, in milliseconds. */
 const SHOW = 4000;
+/** How long the rest take to fade as it folds, before "+N" comes back (global.css). */
+const OUT = 80;
 
 document.querySelectorAll<HTMLElement>(".chips[data-fold]").forEach((list) => {
   const row = list.closest<HTMLElement>(".row");
@@ -104,17 +106,18 @@ document.querySelectorAll<HTMLElement>(".chips[data-fold]").forEach((list) => {
       list.removeAttribute("data-open");
       list.removeAttribute("data-closing");
       list.setAttribute("data-shut", "");
-    }, reduce() ? 0 : 120);
+    }, reduce() ? 0 : OUT);
     resize(from, to);
   };
 
+  // Left, it folds at once; focus moving within the row is let settle for a frame.
   const later = () => {
     clearTimeout(wait);
     wait = window.setTimeout(() => {
       if (!row.matches(":hover, :has(:focus-visible)")) {
         close();
       }
-    }, 60);
+    }, 0);
   };
 
   row.addEventListener("pointerenter", (event) => {
