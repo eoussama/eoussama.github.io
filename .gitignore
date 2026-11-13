@@ -7,6 +7,7 @@ _site/
 # Local settings, such as PUBLIC_GA_ID for trying analytics
 .env
 .env.*
+!.env.example
 
 # Editor swap/backup files
 *.swp
