@@ -3892,6 +3892,29 @@ button.chip {
   margin-top: 0;
 }
 
+/* How to reach me, on one line where it fits: a line that wraps ends on its dot, never
+   starts on one. */
+.cv-contact {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each item holds together, its hidden "opens in a new tab" too: the line may break
+   only in the space after a dot (the build leaves none between the items). */
+.cv-contact li {
+  display: inline;
+  white-space: nowrap;
+}
+
+.cv-contact li:not(:last-child)::after {
+  content: "· ";
+  margin-inline-start: 10px;
+  color: var(--mut);
+  white-space: normal;
+  word-spacing: 6px;
+}
+
 /* The CV: each post a heading a size down, its place and dates under it, muted as
    the dates are elsewhere. */
 .page-cv .prose h3 {
