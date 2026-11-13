@@ -11,12 +11,6 @@ tags:
   - Open:MP
 role:
   en: Contributor
-  ar: مساهم
-  ary: ساهمت فيه
-  fr: Contributeur
-  es: Colaborador
-  it: Collaboratore
-  ja: コントリビューター
 blurb:
   en: Changes to YSI, the standard library of Pawn.
   ar: تعديلات في YSI، المكتبة القياسية للغة Pawn.

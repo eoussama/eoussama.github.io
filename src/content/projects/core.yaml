@@ -11,12 +11,6 @@ links:
   - https://npmx.dev/package/@eoussama/core
 role:
   en: Author and maintainer
-  ar: المؤلف والمشرف على صيانته
-  ary: كتبتو وكنتهلا فيه
-  fr: Auteur et mainteneur
-  es: Autor y mantenedor
-  it: Autore e manutentore
-  ja: 作者・メンテナー
 blurb:
   en: Error handling, type guards and utilities for TypeScript.
   ar: معالجة الأخطاء وحرّاس الأنواع وأدوات مساعدة لـ TypeScript.
@@ -43,9 +37,3 @@ note:
   ja: オープンソース。TypeScript。自分のプロジェクトはすべてこれを土台にしています。
 long:
   en: TypeScript helpers for error handling and type guards, shared by every project I start.
-  ar: أدوات مساعدة بـ TypeScript لمعالجة الأخطاء وحرّاس الأنواع، تشترك فيها كل المشاريع التي أبدؤها.
-  ary: أدوات مساعدة ب TypeScript لتسيير الأخطاء وحرّاس الأنواع، مشتركين بين كاع المشاريع اللي كنبدا.
-  fr: Des utilitaires TypeScript pour la gestion des erreurs et les gardes de type, partagés par chaque projet que je lance.
-  es: Utilidades de TypeScript para el manejo de errores y las guardas de tipo, compartidas por cada proyecto que empiezo.
-  it: Utilità TypeScript per la gestione degli errori e i type guard, condivise da ogni progetto che inizio.
-  ja: エラー処理と型ガードのためのTypeScriptヘルパー。始めるすべてのプロジェクトで共有しています。

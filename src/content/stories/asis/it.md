@@ -1,1 +1,0 @@
-Recupero aumentato (RAG) su fonti versionate, con controllo degli accessi a ogni passo e i testi generati sempre sotto revisione umana. I modelli girano in locale, quindi nessun documento lascia l’istituzione.

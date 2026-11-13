@@ -19,12 +19,6 @@ tags:
   - Web
 role:
   en: Developer
-  ar: مطوّر
-  ary: المطوّر
-  fr: Développeur
-  es: Desarrollador
-  it: Sviluppatore
-  ja: 開発者
 blurb:
   en: A landing page for Cybertown, a cyberpunk NFT project.
   ar: صفحة تعريفية لـ Cybertown، مشروع NFT بطابع السايبربانك.
@@ -43,9 +37,3 @@ note:
   ja: 受託、オープンソース。React、augmented-uiとパララックス。
 long:
   en: "A synthwave landing page for the Cybertown NFT collection: the city in parallax, a preview of the collection, its roadmap and its team, framed in augmented-ui’s angled cyberpunk panels."
-  ar: "صفحة تعريفية بطابع السينثويف لمجموعة Cybertown من رموز NFT: المدينة بتأثير المنظور، ولمحة عن المجموعة، وخارطة طريقها وفريقها، داخل لوحات augmented-ui المائلة على طريقة السايبربانك."
-  ary: "صفحة تعريفية بستيل السينثويف للمجموعة ديال Cybertown ديال NFT: المدينة بالبارالاكس، ولمحة على المجموعة، والرود ماپ والفريق ديالها، وسط اللوحات المايلين ديال augmented-ui بستيل السايبربانك."
-  fr: "Une page d’accueil synthwave pour la collection NFT Cybertown : la ville en parallaxe, un aperçu de la collection, sa feuille de route et son équipe, dans les panneaux biseautés cyberpunk d’augmented-ui."
-  es: "Una landing synthwave para la colección NFT Cybertown: la ciudad en parallax, un adelanto de la colección, su hoja de ruta y su equipo, enmarcados en los paneles cyberpunk en ángulo de augmented-ui."
-  it: "Una landing page synthwave per la collezione NFT Cybertown: la città in parallasse, un’anteprima della collezione, la roadmap e il team, nei pannelli cyberpunk smussati di augmented-ui."
-  ja: NFTコレクションCybertownの、シンセウェーブ風ランディングページ。パララックスで動く街、コレクションのプレビュー、ロードマップ、チームを、augmented-uiの斜めに切ったサイバーパンクなパネルに収めています。

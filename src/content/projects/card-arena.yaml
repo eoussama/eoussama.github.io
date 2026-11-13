@@ -15,12 +15,6 @@ tags:
   - Web
 role:
   en: Developer
-  ar: مطوّر
-  ary: المطوّر
-  fr: Développeur
-  es: Desarrollador
-  it: Sviluppatore
-  ja: 開発者
 blurb:
   en: A card battle arena where players bet tokens on quick fights.
   ar: ساحة معارك بالبطاقات يراهن فيها اللاعبون برموز على مواجهات سريعة.
@@ -39,9 +33,3 @@ note:
   ja: 受託。React。
 long:
   en: "The front end of a crypto card game: draw a card with its offense, defense and energy, place a bet in a token, see the winning chance and the prize, then fight a random opponent’s card or skip to the next."
-  ar: "الواجهة الأمامية للعبة بطاقات بالعملات المشفّرة: اسحب بطاقة بقوة هجومها ودفاعها وطاقتها، وراهن بأحد الرموز، واطّلع على فرصة الفوز والجائزة، ثم واجه بطاقة خصم عشوائي أو انتقل إلى التالية."
-  ary: "الواجهة ديال لعبة ديال الكارطات بالكريبتو: جبد كارطة بالهجوم والدفاع والطاقة ديالها، راهن بشي توكن، شوف الفرصة ديال الربح والجائزة، ومن بعد حارب الكارطة ديال شي خصم عشوائي ولا دوز للي من بعد."
-  fr: "L’interface d’un jeu de cartes crypto : piochez une carte avec son attaque, sa défense et son énergie, misez un jeton, voyez la chance de gagner et le gain, puis affrontez la carte d’un adversaire au hasard ou passez à la suivante."
-  es: "El front end de un juego de cartas cripto: saca una carta con su ataque, defensa y energía, apuesta en un token, mira la probabilidad de ganar y el premio, y lucha contra la carta de un rival al azar o pasa a la siguiente."
-  it: "Il front end di un gioco di carte crypto: pesca una carta con attacco, difesa ed energia, punta un token, guarda la probabilità di vincita e il premio, poi sfida la carta di un avversario a caso o passa alla prossima."
-  ja: 暗号資産のカードゲームのフロントエンド。攻撃力、防御力、エネルギーを持つカードを引き、トークンを賭け、勝率と賞金を確認してから、ランダムな相手のカードと戦うか、次へスキップします。

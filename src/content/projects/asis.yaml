@@ -29,12 +29,6 @@ tags:
   - Web
 role:
   en: Project architect and developer
-  ar: مهندس المشروع ومطوّره
-  ary: مهندس المشروع والمطوّر ديالو
-  fr: Architecte et développeur du projet
-  es: Arquitecto y desarrollador del proyecto
-  it: Architetto e sviluppatore del progetto
-  ja: プロジェクトのアーキテクト・開発者
 blurb:
   en: "A strategic intelligence platform: sources in, cited briefs and alerts out."
   ar: "منصة للذكاء الاستراتيجي: تدخلها المصادر، وتخرج منها موجزات وتنبيهات تستشهد بمصادرها."
@@ -61,9 +55,3 @@ note:
   ja: IRESからの受託。NestJS、Next.js、Python、ローカルのAIモデル。
 long:
   en: ASIS, the Augmented Strategic Intelligence System, is built for the Institut Royal des Études Stratégiques (IRES) in Rabat. It gathers the institute’s own material and approved outside sources in one controlled place. It supports monitoring, horizon scanning and analysis, and every brief, alert or report it drafts cites the sources behind it. It works in Arabic, French and English.
-  ar: ASIS، أي نظام الذكاء الاستراتيجي المعزَّز، مبنيّ للمعهد الملكي للدراسات الاستراتيجية (IRES) في الرباط. يجمع مواد المعهد نفسه والمصادر الخارجية المعتمدة في مكان واحد خاضع للرقابة. يدعم الرصد واستشراف المستقبل والتحليل، وكل موجز أو تنبيه أو تقرير يصوغه يستشهد بالمصادر التي بُني عليها. يعمل بالعربية والفرنسية والإنجليزية.
-  ary: ASIS، يعني نظام الذكاء الاستراتيجي المعزَّز، مبني للمعهد الملكي للدراسات الاستراتيجية (IRES) ف الرباط. كيجمع الوثائق ديال المعهد والمصادر الخارجية المعتمدة ف بلاصة وحدة متحكَّم فيها. كيعاون ف الرصد واستشراف المستقبل والتحليل، وكل ملخص ولا تنبيه ولا تقرير كيكتبو كيذكر المصادر اللي تبنى عليها. خدام بالعربية والفرنسية والنكليزية.
-  fr: ASIS, l’Augmented Strategic Intelligence System, est conçu pour l’Institut Royal des Études Stratégiques (IRES) à Rabat. Il réunit les fonds de l’institut et des sources extérieures validées en un seul lieu contrôlé. Il sert la veille, la prospective et l’analyse, et chaque note, alerte ou rapport qu’il rédige cite les sources sur lesquelles il s’appuie. Il fonctionne en arabe, en français et en anglais.
-  es: ASIS, el Augmented Strategic Intelligence System, está hecho para el Institut Royal des Études Stratégiques (IRES) de Rabat. Reúne el material propio del instituto y fuentes externas aprobadas en un único lugar controlado. Sirve para el seguimiento, la prospectiva y el análisis, y cada informe, alerta o reporte que redacta cita las fuentes en que se basa. Funciona en árabe, francés e inglés.
-  it: ASIS, l’Augmented Strategic Intelligence System, è costruito per l’Institut Royal des Études Stratégiques (IRES) di Rabat. Riunisce il materiale dell’istituto e fonti esterne approvate in un unico luogo controllato. Supporta il monitoraggio, l’analisi prospettica e l’analisi, e ogni nota, allerta o rapporto che redige cita le fonti su cui si basa. Funziona in arabo, francese e inglese.
-  ja: ASIS（Augmented Strategic Intelligence System）は、ラバトの王立戦略研究所（IRES）のために作っているシステムです。研究所自身の資料と承認済みの外部情報源を、管理されたひとつの場所に集めます。モニタリング、ホライズン・スキャニング、分析を支え、作成するブリーフ、アラート、レポートにはすべて根拠となった出典が付きます。アラビア語、フランス語、英語に対応しています。

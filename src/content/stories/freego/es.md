@@ -1,1 +1,0 @@
-La versión 0.1 es una reescritura para la API v2 de FreeStuff. Cada webhook se comprueba con su firma Ed25519 y su marca de tiempo, y los reenvíos se reconocen, así que una entrega repetida nunca ejecuta un callback dos veces.

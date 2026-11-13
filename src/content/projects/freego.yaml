@@ -12,12 +12,6 @@ links:
   - https://pkg.go.dev/github.com/eoussama/freego
 role:
   en: Author and maintainer
-  ar: المؤلف والمشرف على صيانته
-  ary: كتبتو وكنتهلا فيه
-  fr: Auteur et mainteneur
-  es: Autor y mantenedor
-  it: Autore e manutentore
-  ja: 作者・メンテナー
 blurb:
   en: A Go client for the FreeStuff API, the data behind the free-games Discord bot.
   ar: عميل بلغة Go لواجهة FreeStuff البرمجية، مصدر بيانات بوت Discord للألعاب المجانية.
@@ -36,9 +30,3 @@ note:
   ja: オープンソース。Go、標準ライブラリのみ。
 long:
   en: "freego gives Go services the same announcements the FreeStuff bot uses to post free games: signed webhooks for new deals, and the REST API to list and look up products."
-  ar: "يمنح freego خدمات Go الإعلانات نفسها التي يستخدمها بوت FreeStuff لنشر الألعاب المجانية: خطافات ويب موقَّعة للعروض الجديدة، وواجهة REST لسرد المنتجات والبحث عنها."
-  ary: "freego كيعطي للخدمات المكتوبة ب Go نفس الإعلانات اللي كيستعمل البوت ديال FreeStuff باش ينشر الألعاب الفابور: webhooks موقّعين للعروض الجداد، وREST API باش تشوف المنتوجات وتقلّب عليهم."
-  fr: "freego donne aux services Go les mêmes annonces que le bot FreeStuff utilise pour publier les jeux gratuits : des webhooks signés pour les nouvelles offres, et l’API REST pour lister et consulter les produits."
-  es: "freego da a los servicios en Go los mismos avisos que usa el bot de FreeStuff para publicar juegos gratis: webhooks firmados para las nuevas ofertas y la API REST para listar y consultar productos."
-  it: "freego dà ai servizi Go gli stessi annunci che il bot di FreeStuff usa per pubblicare i giochi gratis: webhook firmati per le nuove offerte e l’API REST per elencare e cercare i prodotti."
-  ja: freegoは、FreeStuffボットが無料ゲームの投稿に使うのと同じ通知をGoのサービスに届けます。新しいセールの署名付きWebhookと、商品を一覧・検索するREST APIです。

@@ -11,12 +11,6 @@ tags:
   - Web
 role:
   en: Author
-  ar: المؤلف
-  ary: كتبتو
-  fr: Auteur
-  es: Autor
-  it: Autore
-  ja: 作者
 blurb:
   en: The official web page of Publi Pro Max.
   ar: الصفحة الرسمية لـ Publi Pro Max على الويب.
@@ -27,9 +21,3 @@ blurb:
   ja: Publi Pro Maxの公式ウェブページ。
 long:
   en: The official web page of Publi Pro Max, made in 2018.
-  ar: الصفحة الرسمية لـ Publi Pro Max على الويب، صُنعت عام 2018.
-  ary: الصفحة الرسمية ديال Publi Pro Max ف الويب، درتها ف 2018.
-  fr: La page web officielle de Publi Pro Max, réalisée en 2018.
-  es: La página web oficial de Publi Pro Max, hecha en 2018.
-  it: La pagina web ufficiale di Publi Pro Max, realizzata nel 2018.
-  ja: 2018年に作った、Publi Pro Maxの公式ウェブページ。

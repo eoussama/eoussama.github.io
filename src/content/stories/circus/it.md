@@ -1,1 +1,0 @@
-Iniziato a dicembre 2024 e costruito soprattutto nell’estate 2025, in stile neobrutalista con coriandoli sul logo. I permessi sono maschere di bit, quindi solo gli storici aggiungono alla linea del tempo e solo alcuni membri aggiungono giochi o partite. Le carte giocatore vengono dal mio FUT Card Generator.

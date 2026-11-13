@@ -17,12 +17,6 @@ tags:
   - Web
 role:
   en: Author
-  ar: المؤلف
-  ary: كتبتو
-  fr: Auteur
-  es: Autor
-  it: Autore
-  ja: 作者
 blurb:
   en: Plays several videos on one timeline, to react to reactions.
   ar: يشغّل عدة فيديوهات على خط زمني واحد، للتفاعل مع فيديوهات التفاعل.
@@ -41,9 +35,3 @@ note:
   ja: オープンソース。Vue。
 long:
   en: Playback Sync plays several videos together on one shared timeline, with one play, pause and rewind for all of them, each with its own volume, in layouts you can rearrange by dragging. I made it to watch BOLDCast’s One Piece videos alongside what they react to.
-  ar: يشغّل Playback Sync عدة فيديوهات معًا على خط زمني مشترك، بزر واحد للتشغيل والإيقاف والإرجاع لها جميعًا، ولكلٍّ منها مستوى صوته، في تخطيطات يمكن إعادة ترتيبها بالسحب. صنعته لأشاهد فيديوهات BOLDCast عن One Piece إلى جانب ما يتفاعلون معه.
-  ary: Playback Sync كيشغّل بزاف ديال الفيديوهات مجموعين ف خط زمني واحد، ببوطونة وحدة ديال التشغيل والتوقيف والرجوع لكلهم، وكل واحد بالصوت ديالو، ف ترتيبات تقدر تبدّلها بالجرّ. درتو باش نتفرج ف الفيديوهات ديال BOLDCast على One Piece حدا داكشي اللي كيتفاعلو معاه.
-  fr: Playback Sync lit plusieurs vidéos ensemble sur une timeline commune, avec une seule lecture, pause et retour arrière pour toutes, chacune avec son propre volume, dans des dispositions qu’on réarrange en glissant. Je l’ai fait pour regarder les vidéos One Piece de BOLDCast à côté de ce à quoi elles réagissent.
-  es: Playback Sync reproduce varios vídeos a la vez en una línea de tiempo compartida, con un solo play, pausa y retroceso para todos, cada uno con su propio volumen, en disposiciones que se reordenan arrastrando. Lo hice para ver los vídeos de One Piece de BOLDCast junto a lo que comentan.
-  it: Playback Sync riproduce più video insieme su un’unica timeline condivisa, con un solo play, pausa e riavvolgimento per tutti, ognuno con il suo volume, in layout che si riordinano trascinando. L’ho fatto per guardare i video di One Piece di BOLDCast accanto a ciò a cui reagiscono.
-  ja: Playback Syncは、複数の動画をひとつの共通タイムラインで一緒に再生します。再生・一時停止・巻き戻しは全部まとめて、音量は動画ごとに、レイアウトはドラッグで並べ替えられます。BOLDCastのOne Piece動画を、元の映像と並べて観るために作りました。

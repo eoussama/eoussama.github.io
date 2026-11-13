@@ -20,12 +20,6 @@ tags:
   - Web
 role:
   en: Developer
-  ar: مطوّر
-  ary: المطوّر
-  fr: Développeur
-  es: Desarrollador
-  it: Sviluppatore
-  ja: 開発者
 blurb:
   en: A landing page and an NFT marketplace for Crypto Katana, a play-to-earn game.
   ar: صفحة تعريفية وسوق NFT لـ Crypto Katana، لعبة «العب لتربح».
@@ -44,9 +38,3 @@ note:
   ja: 受託。Next.js、Chakra UI、web3.js。
 long:
   en: Crypto Katana is a play-to-earn game whose katanas are NFTs. I made its landing page and its marketplace, where each katana is put together from a blade, a handle, a hand guard and a scabbard of different rarities, and has attack, skill damage, durability and dexterity. The marketplace filters by any of them, and a collection page shows the katanas a wallet owns.
-  ar: Crypto Katana لعبة «العب لتربح» سيوف الكاتانا فيها رموز NFT. صنعت صفحتها التعريفية وسوقها، حيث تتكوّن كل كاتانا من نصل ومقبض وواقية يد وغمد بدرجات ندرة مختلفة، ولها قوة هجوم وضرر مهارة وتحمّل وبراعة. يصفّي السوق بأي منها، وتعرض صفحة المجموعة سيوف الكاتانا التي تملكها المحفظة.
-  ary: Crypto Katana لعبة play-to-earn والكاتانات فيها NFT. درت الصفحة التعريفية ديالها والسوق ديالها، فين كل كاتانا مركّبة من شفرة، ومقبض، وحامي ديال اليد، وغمد بدرجات ديال الندرة مختلفة، وعندها الهجوم، وضرر المهارة، والصبر، والمهارة. السوق كيفيلتري بأي واحد منهم، وصفحة المجموعة كتبيّن الكاتانات اللي عند شي بزطام.
-  fr: Crypto Katana est un jeu play-to-earn dont les katanas sont des NFT. J’ai fait sa page d’accueil et sa place de marché, où chaque katana se compose d’une lame, d’une poignée, d’une garde et d’un fourreau de différentes raretés, avec une attaque, des dégâts de compétence, une durabilité et une dextérité. La place de marché filtre selon chacun d’eux, et une page de collection montre les katanas que possède un portefeuille.
-  es: Crypto Katana es un juego play-to-earn cuyas katanas son NFT. Hice su landing y su marketplace, donde cada katana se compone de una hoja, un mango, una guarda y una vaina de distintas rarezas, y tiene ataque, daño de habilidad, durabilidad y destreza. El marketplace filtra por cualquiera de ellos, y una página de colección muestra las katanas de una cartera.
-  it: Crypto Katana è un gioco play-to-earn le cui katane sono NFT. Ho realizzato la landing page e il marketplace, dove ogni katana è composta da lama, impugnatura, guardia e fodero di rarità diverse, e ha attacco, danno abilità, durabilità e destrezza. Il marketplace filtra per ognuno di questi, e una pagina di collezione mostra le katane di un portafoglio.
-  ja: Crypto Katanaは、刀がNFTになっているPlay-to-Earnゲームです。そのランディングページとマーケットプレイスを作りました。刀はそれぞれレア度の異なる刀身、柄、鍔、鞘からなり、攻撃力、スキルダメージ、耐久性、器用さを持ちます。マーケットプレイスではそのどれでも絞り込め、コレクションのページにはウォレットが持つ刀が並びます。

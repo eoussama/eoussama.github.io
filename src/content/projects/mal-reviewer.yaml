@@ -14,12 +14,6 @@ tags:
   - Desktop
 role:
   en: Author
-  ar: المؤلف
-  ary: كتبتو
-  fr: Auteur
-  es: Autor
-  it: Autore
-  ja: 作者
 blurb:
   en: Write anime and manga reviews for MyAnimeList, offline.
   ar: اكتب مراجعات الأنمي والمانغا لـ MyAnimeList دون اتصال.
@@ -30,9 +24,3 @@ blurb:
   ja: MyAnimeListのアニメ・漫画レビューを、オフラインで書く。
 long:
   en: An unofficial desktop tool for drafting MyAnimeList reviews.
-  ar: أداة سطح مكتب غير رسمية لكتابة مسودات مراجعات MyAnimeList.
-  ary: أداة ديال الديسكتوب ماشي رسمية باش تكتب المسودات ديال المراجعات ديال MyAnimeList.
-  fr: Un outil de bureau non officiel pour préparer ses critiques MyAnimeList.
-  es: Una herramienta de escritorio no oficial para preparar reseñas de MyAnimeList.
-  it: Uno strumento desktop non ufficiale per preparare le recensioni di MyAnimeList.
-  ja: MyAnimeListのレビューを下書きするための、非公式のデスクトップツール。

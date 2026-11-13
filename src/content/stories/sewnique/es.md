@@ -1,1 +1,0 @@
-Empezó en 2021 como un prototipo en Angular. La nueva versión parte del taller y no de la base de datos: todo se guarda primero en el dispositivo, y cada taller local puede sincronizarse con una cuenta. Habla inglés, árabe (de derecha a izquierda), francés, español e italiano, y cada versión pasa pruebas de accesibilidad en modo claro y oscuro, en inglés y en árabe.

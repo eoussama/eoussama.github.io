@@ -16,12 +16,6 @@ tags:
   - Web
 role:
   en: Contributor
-  ar: مساهم
-  ary: ساهمت فيه
-  fr: Contributeur
-  es: Colaborador
-  it: Collaboratore
-  ja: コントリビューター
 blurb:
   en: Fixes to Umami, the privacy-focused web analytics.
   ar: إصلاحات في Umami، أداة تحليلات الويب التي تحترم الخصوصية.

@@ -23,12 +23,6 @@ tags:
   - Web
 role:
   en: Sole developer and designer
-  ar: المطوّر والمصمّم الوحيد
-  ary: صمّمتو وطوّرتو بوحدي
-  fr: Seul développeur et designer
-  es: Único desarrollador y diseñador
-  it: Unico sviluppatore e designer
-  ja: 開発・デザインをひとりで担当
 blurb:
   en: "An offline-first workshop app for solo tailors: clients, measurements, orders and payments."
   ar: "تطبيق ورشة للخيّاطين المستقلين يعمل دون اتصال أولًا: الزبائن والمقاسات والطلبات والمدفوعات."
@@ -55,9 +49,3 @@ note:
   ja: 非公開。ReactとCapacitor、5言語対応。
 long:
   en: Sewnique keeps a tailor’s clients, measurements, orders, fittings and payments in one place. It works without an account or a connection, on Android and as a web app, and syncs only when asked.
-  ar: يجمع Sewnique زبائن الخيّاط ومقاساتهم وطلباتهم ومواعيد القياس والمدفوعات في مكان واحد. يعمل دون حساب أو اتصال، على Android وتطبيقًا على الويب، ولا يزامن إلا عند الطلب.
-  ary: Sewnique كيجمع الكليان ديال الخيّاط، والقياسات، والكوموندات، والبروفات، والخلاص ف بلاصة وحدة. كيخدم بلا حساب وبلا كونيكسيون، ف Android وكتطبيق ف الويب، وما كيزامن غير ملي تطلب منو.
-  fr: Sewnique réunit les clients, mesures, commandes, essayages et paiements d’un tailleur au même endroit. Il fonctionne sans compte ni connexion, sur Android et en appli web, et ne se synchronise que sur demande.
-  es: Sewnique reúne en un solo lugar los clientes, medidas, pedidos, pruebas y pagos de un sastre. Funciona sin cuenta ni conexión, en Android y como app web, y solo sincroniza cuando se le pide.
-  it: Sewnique tiene in un solo posto clienti, misure, ordini, prove e pagamenti di un sarto. Funziona senza account né connessione, su Android e come app web, e si sincronizza solo quando glielo chiedi.
-  ja: Sewniqueは、仕立て屋の顧客、採寸、注文、仮縫い、支払いをひとつにまとめます。アカウントも通信も不要で、Androidとウェブアプリで動き、同期するのは頼まれたときだけです。

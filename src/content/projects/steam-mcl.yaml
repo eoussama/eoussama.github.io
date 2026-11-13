@@ -23,12 +23,6 @@ tags:
   - Web
 role:
   en: Author
-  ar: المؤلف
-  ary: كتبتو
-  fr: Auteur
-  es: Autor
-  it: Autore
-  ja: 作者
 blurb:
   en: Finds the DLCs, prequels and sequels missing from a Steam library.
   ar: يجد المحتوى الإضافي والأجزاء السابقة واللاحقة الناقصة من مكتبة Steam.
@@ -39,9 +33,3 @@ blurb:
   ja: Steamライブラリに足りないDLCや前作・続編を見つける。
 long:
   en: "Give steam-mcl a Steam profile and it lists what is missing around the games it owns: their DLCs, prequels and sequels."
-  ar: "أعطِ steam-mcl ملفًا شخصيًا على Steam فيسرد ما ينقص حول الألعاب التي يملكها: محتواها الإضافي وأجزاءها السابقة واللاحقة."
-  ary: "عطي ل steam-mcl شي بروفايل ديال Steam، ويعطيك شنو ناقص حدا الألعاب اللي عندو: الإضافات ديالهم، والأجزاء اللي قبل واللي من بعد."
-  fr: "Donnez un profil Steam à steam-mcl et il liste ce qui manque autour des jeux possédés : leurs DLC, préquelles et suites."
-  es: "Dale a steam-mcl un perfil de Steam y te lista lo que falta alrededor de los juegos que tiene: sus DLC, precuelas y secuelas."
-  it: "Dai a steam-mcl un profilo Steam e ti elenca cosa manca attorno ai giochi che possiede: DLC, prequel e sequel."
-  ja: Steamのプロフィールを渡すと、steam-mclは持っているゲームの周りで足りないもの、つまりDLC、前作、続編を一覧にします。

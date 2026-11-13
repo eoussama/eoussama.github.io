@@ -10,12 +10,6 @@ tools:
   - VS Code
 role:
   en: Contributor
-  ar: مساهم
-  ary: ساهمت فيه
-  fr: Contributeur
-  es: Colaborador
-  it: Collaboratore
-  ja: コントリビューター
 blurb:
   en: Changes to the Pawn tools for VS Code.
   ar: تعديلات في أدوات Pawn لـ VS Code.

@@ -20,12 +20,6 @@ tags:
   - Web
 role:
   en: Author and maintainer
-  ar: المؤلف والمشرف على صيانته
-  ary: كتبتو وكنتهلا فيه
-  fr: Auteur et mainteneur
-  es: Autor y mantenedor
-  it: Autore e manutentore
-  ja: 作者・メンテナー
 blurb:
   en: Finds what KingOfLightning reacts to, and when, in streams over six hours long.
   ar: يجد ما يتفاعل معه KingOfLightning ومتى، في بثوث تتجاوز ست ساعات.
@@ -44,9 +38,3 @@ note:
   ja: オープンソース。ファンのために作った、Chrome、Edge、Firefox、Safari向けのブラウザ拡張機能。
 long:
   en: Patreon takes down posts that name copyrighted shows, so the anime reactor KingOfLightning stopped naming them. This extension puts a panel under each post listing every reaction, when it starts and how long it lasts, and starts the video right there.
-  ar: يحذف Patreon المنشورات التي تذكر أعمالًا محمية بحقوق النشر، فتوقّف KingOfLightning، صانع فيديوهات التفاعل مع الأنمي، عن ذكرها. تضع هذه الإضافة لوحة تحت كل منشور تسرد كل تفاعل، ومتى يبدأ، وكم يدوم، وتشغّل الفيديو من تلك النقطة مباشرة.
-  ary: Patreon كيحيّد البوسطات اللي كيذكرو أعمال عندها حقوق النشر، داكشي علاش KingOfLightning، اللي كيدير ريأكشن على الأنمي، ما بقاش كيذكرهم. هاد الإضافة كتحط لوحة تحت كل بوسط فيها كاع الريأكشنات، فوقاش كيبدا كل واحد وشحال كيدوم، وكتشغّل الفيديو من تما نيشان.
-  fr: Patreon supprime les publications qui nomment des œuvres protégées, alors KingOfLightning, qui réagit à des animes, a cessé de les nommer. Cette extension ajoute sous chaque publication un panneau qui liste chaque réaction, son début et sa durée, et lance la vidéo au bon endroit.
-  es: Patreon retira las publicaciones que nombran series con derechos de autor, así que KingOfLightning, que reacciona a anime, dejó de nombrarlas. Esta extensión pone bajo cada publicación un panel con cada reacción, cuándo empieza y cuánto dura, y arranca el vídeo justo ahí.
-  it: Patreon rimuove i post che nominano serie protette da copyright, così KingOfLightning, che fa reaction agli anime, ha smesso di nominarle. Questa estensione mette sotto ogni post un pannello con ogni reaction, quando inizia e quanto dura, e fa partire il video proprio da lì.
-  ja: Patreonは著作権のある作品名を書いた投稿を削除するため、アニメのリアクション配信者KingOfLightningは作品名を書かなくなりました。この拡張機能は各投稿の下にパネルを置き、すべてのリアクションと、その開始時刻、長さを一覧にして、その場から動画を再生します。

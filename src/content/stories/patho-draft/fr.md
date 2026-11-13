@@ -1,1 +1,0 @@
-Chaque organe a plusieurs modèles de compte rendu : le cœur du projet est donc une correspondance détaillée entre mots-clés et modèles. L’IA remplit le brouillon et transcrit la dictée ; le pathologiste modifie le modèle à la volée.

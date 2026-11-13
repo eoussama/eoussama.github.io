@@ -11,12 +11,6 @@ tags:
   - Open:MP
 role:
   en: Contributor
-  ar: مساهم
-  ary: ساهمت فيه
-  fr: Contributeur
-  es: Colaborador
-  it: Collaboratore
-  ja: コントリビューター
 blurb:
   en: Changes to the formatex string formatting include.
   ar: تعديلات في formatex، ملف التضمين لتنسيق النصوص.

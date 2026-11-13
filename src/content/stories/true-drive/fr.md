@@ -1,1 +1,0 @@
-Les compromis font partie de la blague : le stockage est gratuit partout où il y a de la vidéo, mais les vidéos ne sont pas chiffrées, les plateformes en limitent la durée et peuvent s’en apercevoir, et une vidéo supprimée emporte son fichier avec elle.

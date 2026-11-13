@@ -17,12 +17,6 @@ tags:
   - Web
 role:
   en: Developer
-  ar: مطوّر
-  ary: المطوّر
-  fr: Développeur
-  es: Desarrollador
-  it: Sviluppatore
-  ja: 開発者
 blurb:
   en: An app shell and an NFT marketplace template for Farm Planet.
   ar: هيكل تطبيق وقالب سوق NFT لـ Farm Planet.
@@ -41,9 +35,3 @@ note:
   ja: 受託。React、その後Next.js、Chakra UI、web3.js。
 long:
   en: "The starting point for the Farm Planet NFT project: an app shell with home, collection and filter pages, then a marketplace template, the base Crypto Katana’s marketplace was built on a month later."
-  ar: "نقطة انطلاق مشروع Farm Planet من رموز NFT: هيكل تطبيق بصفحات رئيسية ومجموعة وتصفية، ثم قالب سوق، وهو الأساس الذي بُني عليه سوق Crypto Katana بعد شهر."
-  ary: "نقطة البداية ديال مشروع Farm Planet ديال NFT: هيكل ديال تطبيق فيه الصفحة الرئيسية، والمجموعة، والفيلتر، ومن بعد قالب ديال السوق، هو الأساس اللي تبنى عليه السوق ديال Crypto Katana من بعد شهر."
-  fr: "Le point de départ du projet NFT Farm Planet : une coquille d’application avec des pages d’accueil, de collection et de filtres, puis un modèle de place de marché, la base sur laquelle celle de Crypto Katana a été construite un mois plus tard."
-  es: "El punto de partida del proyecto NFT Farm Planet: un esqueleto de app con páginas de inicio, colección y filtros, y después una plantilla de marketplace, la base sobre la que se construyó el de Crypto Katana un mes más tarde."
-  it: "Il punto di partenza del progetto NFT Farm Planet: uno scheletro di app con pagine home, collezione e filtri, poi un modello di marketplace, la base su cui un mese dopo è stato costruito quello di Crypto Katana."
-  ja: NFTプロジェクトFarm Planetの出発点。ホーム、コレクション、絞り込みのページを持つアプリのひな形と、マーケットプレイスのテンプレートです。1か月後、Crypto Katanaのマーケットプレイスはこれをもとに作られました。

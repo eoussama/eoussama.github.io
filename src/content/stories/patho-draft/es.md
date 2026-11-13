@@ -1,1 +1,0 @@
-Cada órgano tiene varias plantillas de informe, así que el corazón del proyecto es un mapa detallado de palabras clave a plantillas. La IA rellena el borrador y convierte el dictado en texto; el patólogo edita la plantilla sobre la marcha.

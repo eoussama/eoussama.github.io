@@ -20,12 +20,6 @@ tags:
   - Web
 role:
   en: Author and maintainer
-  ar: المؤلف والمشرف على صيانته
-  ary: كتبتو وكنتهلا فيه
-  fr: Auteur et mainteneur
-  es: Autor y mantenedor
-  it: Autore e manutentore
-  ja: 作者・メンテナー
 blurb:
   en: Your own emojis, stickers and GIFs in Discord, without paying for Nitro.
   ar: إيموجياتك وملصقاتك وصور GIF الخاصة بك في Discord، دون دفع اشتراك Nitro.
@@ -52,9 +46,3 @@ note:
   ja: オープンソース。Chrome、Edge、Firefox向けのブラウザ拡張機能。サーバーなし、トラッキングなし。
 long:
   en: Nitfree keeps your emojis, stickers, GIFs and images in a library and sends them in any Discord channel from a button in the chat bar. It also turns clips into GIFs, edits images and adds Nitro-style themes, all inside the browser.
-  ar: يحفظ Nitfree إيموجياتك وملصقاتك وصور GIF وصورك في مكتبة، ويرسلها في أي قناة على Discord من زر في شريط الدردشة. ويحوّل المقاطع أيضًا إلى GIF، ويعدّل الصور، ويضيف سمات على طريقة Nitro، وكل ذلك داخل المتصفح.
-  ary: Nitfree كيخبّي الإيموجي والستيكرز والـ GIF والتصاور ديالك ف مكتبة، وكيصيفطهم ف أي قناة ف Discord من بوطونة ف شريط الدردشة. وكيحوّل حتى المقاطع ل GIF، وكيعدّل التصاور، وكيزيد ثيمات بحال ديال Nitro، وكلشي وسط المتصفح.
-  fr: Nitfree range vos emojis, stickers, GIF et images dans une bibliothèque et les envoie dans n’importe quel salon Discord depuis un bouton de la barre de discussion. Il transforme aussi des extraits vidéo en GIF, retouche des images et ajoute des thèmes façon Nitro, le tout dans le navigateur.
-  es: Nitfree guarda tus emojis, stickers, GIF e imágenes en una biblioteca y los envía a cualquier canal de Discord desde un botón en la barra del chat. También convierte clips en GIF, edita imágenes y añade temas al estilo de Nitro, todo dentro del navegador.
-  it: Nitfree conserva i tuoi emoji, sticker, GIF e immagini in una libreria e li invia in qualsiasi canale Discord da un pulsante nella barra della chat. Trasforma anche le clip in GIF, modifica le immagini e aggiunge temi in stile Nitro, tutto nel browser.
-  ja: Nitfreeは絵文字、スタンプ、GIF、画像をライブラリにまとめ、チャット欄のボタンからDiscordのどのチャンネルにも送れます。動画クリップのGIF化、画像の編集、Nitro風のテーマの追加も、すべてブラウザの中で行います。

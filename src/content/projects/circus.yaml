@@ -22,12 +22,6 @@ tags:
   - Web
 role:
   en: Author
-  ar: المؤلف
-  ary: كتبتو
-  fr: Auteur
-  es: Autor
-  it: Autore
-  ja: 作者
 blurb:
   en: "The Nakama Realm’s members’ hub: reminders, memes, games, football matches and its own history."
   ar: "ملتقى أعضاء Nakama Realm: تذكيرات وميمز وألعاب ومباريات كرة قدم وتاريخه الخاص."
@@ -46,9 +40,3 @@ note:
   ja: オープンソース。AWS上のNext.jsで、Discordがあれば誰でも参加できる。nakamaorg.vercel.appで公開中。
 long:
   en: circus is the Nakama Realm’s web hub. Members sign in with Discord and find in one place the reminders the community’s bot keeps, the memes they upload, the games they play, the football matches they schedule and the pitches they play on, and a timeline of the group’s history, written by its historians. It also makes FUT-style player cards. Anyone with a Discord account can join.
-  ar: circus هو ملتقى Nakama Realm على الويب. يسجّل الأعضاء دخولهم بـ Discord فيجدون في مكان واحد التذكيرات التي يحفظها بوت المجتمع، والميمز التي يرفعونها، والألعاب التي يلعبونها، ومباريات كرة القدم التي ينظّمونها والملاعب التي يلعبون فيها، وخطًّا زمنيًا لتاريخ المجموعة يكتبه مؤرّخوها. ويصنع أيضًا بطاقات لاعبين على طريقة FUT. ويمكن لأي شخص لديه حساب Discord الانضمام.
-  ary: circus هو البلاصة ديال Nakama Realm ف الويب. الأعضاء كيدخلو ب Discord وكيلقاو ف بلاصة وحدة التذكيرات اللي كيحفظ البوت ديال الجماعة، والميمز اللي كيطلعو، والألعاب اللي كيلعبو، والماتشات ديال الكورة اللي كيوجدو والتيرانات اللي كيلعبو فيهم، وخط زمني ديال التاريخ ديال الجماعة كيكتبوه المؤرخين ديالها. وكيصاوب حتى كارطات ديال اللاعبين بحال FUT. وأي واحد عندو حساب Discord يقدر يدخل.
-  fr: circus est le repaire web du Nakama Realm. Les membres se connectent avec Discord et retrouvent au même endroit les rappels que garde le bot de la communauté, les mèmes qu’ils publient, les jeux auxquels ils jouent, les matchs de foot qu’ils organisent et les terrains où ils jouent, ainsi qu’une frise de l’histoire du groupe, écrite par ses historiens. Il crée aussi des cartes de joueur façon FUT. Toute personne ayant un compte Discord peut le rejoindre.
-  es: circus es el punto de encuentro web del Nakama Realm. Los miembros entran con Discord y encuentran en un solo lugar los recordatorios que guarda el bot de la comunidad, los memes que suben, los juegos a los que juegan, los partidos de fútbol que organizan y las canchas donde juegan, y una línea de tiempo de la historia del grupo, escrita por sus historiadores. También crea cartas de jugador al estilo FUT. Cualquiera con una cuenta de Discord puede unirse.
-  it: circus è il ritrovo web del Nakama Realm. I membri accedono con Discord e trovano in un solo posto i promemoria che tiene il bot della community, i meme che caricano, i giochi a cui giocano, le partite di calcio che organizzano e i campi dove giocano, e una linea del tempo della storia del gruppo, scritta dai suoi storici. Crea anche carte giocatore in stile FUT. Chiunque abbia un account Discord può unirsi.
-  ja: circusはNakama Realmのウェブ上の拠点です。メンバーはDiscordでログインし、コミュニティのボットが管理するリマインダー、アップロードしたミーム、遊んでいるゲーム、予定したサッカーの試合とそのグラウンド、そして歴史係が書くグループの年表を、ひとつの場所で見られます。FUT風の選手カードも作れます。Discordのアカウントがあれば誰でも参加できます。

@@ -16,12 +16,6 @@ links:
   - https://npmx.dev/package/@eoussama/dx
 role:
   en: Author and maintainer
-  ar: المؤلف والمشرف على صيانته
-  ary: كتبتو وكنتهلا فيه
-  fr: Auteur et mainteneur
-  es: Autor y mantenedor
-  it: Autore e manutentore
-  ja: 作者・メンテナー
 blurb:
   en: My ESLint config and a small CLI for every repo I touch.
   ar: إعداد ESLint الخاص بي وأداة سطر أوامر صغيرة لكل مستودع أعمل عليه.
@@ -48,9 +42,3 @@ note:
   ja: オープンソース。TypeScriptとESLint。このサイトもSewniqueもNitfreeも、これでLintしています。
 long:
   en: One ESLint config and a small command-line tool that lints, fixes and sets up every repo I touch.
-  ar: إعداد ESLint واحد وأداة سطر أوامر صغيرة تدقّق كل مستودع أعمل عليه وتصلحه وتهيّئه.
-  ary: إعداد ESLint واحد وأداة صغيرة ف سطر الأوامر كتدقّق وتصلح وتوجّد كل مستودع كنخدم عليه.
-  fr: Une config ESLint et un petit outil en ligne de commande qui vérifie, corrige et configure chaque dépôt que je touche.
-  es: Una configuración de ESLint y una pequeña herramienta de línea de comandos que revisa, corrige y prepara cada repositorio que toco.
-  it: Una configurazione ESLint e un piccolo strumento da riga di comando che controlla, corregge e configura ogni repository che tocco.
-  ja: 触るすべてのリポジトリをLint・修正・セットアップする、ESLint設定ひとつと小さなコマンドラインツール。
