@@ -56,7 +56,7 @@ const textDir = textLang ? "ltr" : undefined;
       <section class="row rise contact" style="--d: 20ms">
         <h2 class="lab" id="whereabouts"><a class="anchor" href="#whereabouts" aria-label={t.where + t.anchor}>{t.where}</a></h2>
         <ul class="val cv-contact">
-          <li><a class="link" href={`mailto:${PROFILE.email}`} dir="ltr">{PROFILE.email}</a></li>
+          <li><a class="link" href={`mailto:${PROFILE.email}`}><span dir="ltr">{PROFILE.email}</span><LinkIcon kind="mail" /></a></li>
           <li><Ext href={PROFILE.site} hint={t.newTab}><span dir="ltr">ouss.es</span></Ext></li>
           <li><Ext href={PROFILE.github.url} hint={t.newTab}><span dir="ltr">{PROFILE.github.label}</span></Ext></li>
           <li><Ext href={PROFILE.linkedin.url} hint={t.newTab}><span dir="ltr">{PROFILE.linkedin.label}</span></Ext></li>

@@ -10,6 +10,8 @@ import { keepFrom } from "./tail";
  * - A link that leaves the site does what Ext.astro's do: it opens in a new tab, ends
  *   in the arrow that nudges out on hover, keeps its last word on one line with it,
  *   and tells screen readers it opens a new tab.
+ * - A link to another page of the site ends in the chevron the site's own links have,
+ *   and an email address in an at sign, both shown on hover.
  * - A heading is a link to itself, as the margin headings are, showing a "#" on hover.
  *
  * Posts are written in English, so the words for screen readers are too.
@@ -45,6 +47,30 @@ function h(tagName: string, properties: Record<string, unknown>, children: Node[
 function arrow(): Element {
   return h("svg", { className: ["arrow"], width: 11, height: 11, viewBox: "0 0 11 11", ariaHidden: "true" }, [
     h("path", { d: "M2.5 8.5l6-6M3.5 2.5h5v5", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" }),
+  ]);
+}
+
+/**
+ * The icon that ends a link within the site, as LinkIcon.astro draws it: a chevron for
+ * a page, an at sign for an email. It shows on hover, and always on a touch screen.
+ *
+ * @param kind - What the link opens
+ * @returns The icon's svg
+ */
+function linkIcon(kind: "page" | "mail"): Element {
+  const box = { width: 11, height: 11, viewBox: "0 0 11 11", ariaHidden: "true" };
+
+  if (kind === "mail") {
+    return h("svg", { className: ["lk-ic", "lk-mail"], ...box }, [
+      h("g", { fill: "none", stroke: "currentColor", strokeWidth: 1.25, strokeLinecap: "round" }, [
+        h("circle", { cx: 5.5, cy: 5.5, r: 1.9 }),
+        h("path", { d: "M7.4 3.8v2.3a1.25 1.25 0 0 0 2.5 0v-.6a4.4 4.4 0 1 0-1.75 3.5" }),
+      ]),
+    ]);
+  }
+
+  return h("svg", { className: ["lk-ic", "lk-page"], ...box }, [
+    h("path", { d: "M4 2.3l3.2 3.2L4 8.7", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round" }),
   ]);
 }
 
@@ -216,6 +242,30 @@ export default function proseLinks(site: string): AstroIntegration {
     },
   };
 
+  const internal = {
+    name: "internal-links",
+    element: {
+      filter: ["a"],
+      visit(node: Readonly<Element>): Element | void {
+        const href = node.properties?.href;
+
+        // Not a link that leaves (it has its arrow), to a place on the same page, or by
+        // any other scheme than email.
+        if (typeof href !== "string" || href.startsWith("#") || leaves(href, site)) {
+          return;
+        }
+
+        const mail = href.startsWith("mailto:");
+
+        if (!mail && /^[a-z][\w+.-]*:/i.test(href) && !href.startsWith(site)) {
+          return;
+        }
+
+        return { ...node, children: [...node.children, linkIcon(mail ? "mail" : "page")] };
+      },
+    },
+  };
+
   return {
     name: "prose-links",
     hooks: {
@@ -226,7 +276,7 @@ export default function proseLinks(site: string): AstroIntegration {
           throw new Error("prose-links: Markdown is no longer rendered by Sätteri; port the plugin.");
         }
 
-        processor.options.hastPlugins.push(external, headingLinks, scrollableTables);
+        processor.options.hastPlugins.push(external, internal, headingLinks, scrollableTables);
       },
     },
   };
