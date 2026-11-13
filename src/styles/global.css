@@ -1991,6 +1991,7 @@ a:is(:hover, :focus-visible) > .lk-ic,
   /* It signs again on a double click or a long press (scripts/sign.ts): neither
      selects the text around it nor opens the phone's menu. */
   -webkit-touch-callout: none;
+  -webkit-user-select: none;
   user-select: none;
 }
 
