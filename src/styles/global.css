@@ -4241,6 +4241,13 @@ a.anchor .rv-i,
     margin-bottom: 8px;
   }
 
+  /* Under its label rather than beside it, a post's date and a project's role read as
+     the page's own text: the quiet colour is for when they sit out in the margin's
+     company, beside it. */
+  .row > .val.when {
+    color: var(--ink);
+  }
+
   /* Under its label, a post that opens on a heading starts as close as one that opens
      on a paragraph: the heading's margin is for the sections it divides, not the top. */
   .row > .prose > :first-child {
