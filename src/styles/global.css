@@ -1972,6 +1972,10 @@ a:is(:hover, :focus-visible) > .lk-ic,
 .sig {
   margin: 4px 0 12px -6px;
   color: var(--ink);
+  /* It signs again on a double click or a long press (scripts/sign.ts): neither
+     selects the text around it nor opens the phone's menu. */
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 [dir="rtl"] .sig {
