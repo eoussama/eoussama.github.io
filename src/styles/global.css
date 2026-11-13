@@ -1995,6 +1995,119 @@ a:is(:hover, :focus-visible) > .lk-ic,
   user-select: none;
 }
 
+/* Once the ink has run out (scripts/sign.ts): a pane of glass over the signature, a
+   sign taped on it. */
+.sig {
+  position: relative;
+}
+
+.sig-glass {
+  position: absolute;
+  inset: -6px -10px;
+  border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  border-radius: 10px;
+  background: linear-gradient(125deg, color-mix(in srgb, var(--bg) 55%, transparent), color-mix(in srgb, var(--bg) 14%, transparent) 48%, color-mix(in srgb, var(--bg) 38%, transparent));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent),
+    0 12px 22px -14px rgb(0 0 0 / 40%);
+  backdrop-filter: blur(0.6px) saturate(1.1);
+  cursor: not-allowed;
+}
+
+/* A glint runs across it as it lands, kept within the pane. The sign taped on it may
+   reach past its edges. */
+.sig-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 42%, color-mix(in srgb, #fff 60%, transparent) 50%, transparent 58%) no-repeat;
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  opacity: 0;
+}
+
+.sig-glass.is-set::before {
+  animation: sig-glint 900ms 60ms cubic-bezier(0.2, 0, 0.2, 1) both;
+}
+
+@keyframes sig-glint {
+  from {
+    opacity: 1;
+    background-position: 100% 0;
+  }
+
+  to {
+    opacity: 1;
+    background-position: 0 0;
+  }
+}
+
+/* Taped to the top right corner, whichever way the page reads. */
+.sig-sign {
+  position: absolute;
+  top: 3px;
+  right: -12px;
+  z-index: 5;
+  margin: 0;
+  padding: 3px 10px 4px;
+  border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--ink);
+  font: italic 500 14px/1.35 var(--text);
+  white-space: nowrap;
+  box-shadow: 0 3px 8px -4px color-mix(in srgb, var(--ink) 40%, transparent);
+  transform-origin: 50% 0;
+  rotate: 5deg;
+}
+
+/* On a phone the sign, a size down, may be wider than the pane: it stays clear of the
+   list above all the same. */
+@media (max-width: 700px) {
+  .sig-sign {
+    font-size: 13px;
+  }
+}
+
+/* Stapled to the paper on either side, across the pane's edge: it won't be moved. */
+.sig-glass > .sig-staple {
+  top: calc(50% - 3px);
+}
+
+/* Upright, a little in from each edge, through the pane into the paper. */
+.sig-glass > .sig-staple:first-of-type {
+  left: -6px;
+  transform: rotate(86deg);
+}
+
+.sig-glass > .sig-staple:last-of-type {
+  right: -6px;
+  transform: rotate(93deg);
+}
+
+/* The tape that holds it. */
+.sig-sign::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 34px;
+  height: 10px;
+  background: color-mix(in srgb, var(--acc) 38%, transparent);
+  translate: -50% 0;
+  rotate: 4deg;
+}
+
+/* With a mouse, a pen over the signature: it can be signed again. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .foot .sig {
+    cursor:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M2.5 21.5 4.2 16 15.8 4.4a2.3 2.3 0 0 1 3.3 0l.5.5a2.3 2.3 0 0 1 0 3.3L8 19.8Z' fill='%231e2230' stroke='%23fff' stroke-width='1.5' stroke-linejoin='round'/%3E%3Cpath d='M2.8 21.2 6.4 17.6' stroke='%23fff' stroke-width='1.2' stroke-linecap='round'/%3E%3C/svg%3E") 2 22,
+      pointer;
+  }
+}
+
 [dir="rtl"] .sig {
   margin: 4px -6px 12px 0;
 }
@@ -2483,7 +2596,8 @@ html:has(.ck[open]) {
  * steel with its ends pressed into the paper, catching the light along its top.
  */
 .ck-sheet::before,
-.ck-sheet::after {
+.ck-sheet::after,
+.sig-staple {
   content: "";
   position: absolute;
   top: 9px;
@@ -2511,7 +2625,7 @@ html:has(.ck[open]) {
   transform: rotate(2.5deg);
 }
 
-:root[data-mode="dark"] :is(.ck-sheet::before, .ck-sheet::after) {
+:root[data-mode="dark"] :is(.ck-sheet::before, .ck-sheet::after, .sig-staple) {
   background:
     radial-gradient(circle at 3px 50%, rgba(0, 0, 0, 0.6) 0 1.6px, transparent 2.2px),
     radial-gradient(circle at calc(100% - 3px) 50%, rgba(0, 0, 0, 0.6) 0 1.6px, transparent 2.2px),
@@ -4282,7 +4396,7 @@ a.anchor .rv-i,
 
 /* ---------- Other scripts ---------- */
 
-:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty, .dr-kind, .dr-fh, .dr-on-k, .dr-empty, .or, .nf-path) {
+:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty, .dr-kind, .dr-fh, .dr-on-k, .dr-empty, .or, .nf-path, .sig-sign) {
   font-style: normal;
 }
 

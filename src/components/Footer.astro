@@ -15,6 +15,6 @@ const t = ui(Astro.props.lang);
 ---
 
 <footer class="foot">
-  <Signature label={t.signature} />
+  <Signature label={t.signature} noInk={t.noInk} />
   <p class="small">{t.copyright}</p>
 </footer>

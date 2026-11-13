@@ -7,6 +7,11 @@
  * paler as it goes, and after a few the pen gives out partway through and leaves the
  * rest unwritten. Left alone for a few seconds, it is filled again: the next signing
  * is dark from the start, opening on a blot that soaks into the paper.
+ *
+ * Signed again once it has run quite dry, even after a rest, the pen is filled one last
+ * time and writes it in full, and a pane of glass slams down over it, with a sign taped
+ * on: no more ink.
+ * It stays for the visit; signing again only knocks on it.
  */
 
 const sig = document.querySelector<HTMLElement>(".sig");
@@ -39,6 +44,8 @@ if (sig && "animate" in Element.prototype) {
   /** Signings since the pen was last filled. */
   let used = 0;
   let rested = 0;
+  /** Whether the glass is down. */
+  let sealed = false;
 
   /**
    * Drops a blot where the pen first touches: it spreads a little past the stroke,
@@ -73,16 +80,109 @@ if (sig && "animate" in Element.prototype) {
     ).finished.then(() => drop.remove(), () => drop.remove());
   };
 
+  /**
+   * How the sign tilts at rest, so its swings settle back there.
+   *
+   * @param tag - The sign
+   * @returns Its tilt, in degrees
+   */
+  const tilt = (tag: Element) => Number.parseFloat(getComputedStyle(tag).rotate) || 0;
+
+  /**
+   * Brings a pane of glass down over the signature: it falls, lands with a little
+   * bounce that jolts the signature under it, and a glint runs across it. A staple
+   * punches through each side into the paper, and a sign taped to its corner swings
+   * into place.
+   */
+  const slam = () => {
+    sealed = true;
+
+    const glass = document.createElement("div");
+    const tag = document.createElement("p");
+    const staples = [document.createElement("span"), document.createElement("span")];
+
+    glass.className = "sig-glass";
+    tag.className = "sig-sign";
+    tag.setAttribute("role", "status");
+    tag.textContent = sig.dataset.noInk ?? "";
+    staples.forEach(staple => staple.className = "sig-staple");
+    glass.append(...staples, tag);
+    sig.append(glass);
+
+    // It lands seven tenths of the way through its fall.
+    const fall = 460;
+    const lands = fall * 0.7;
+    const rest = tilt(tag);
+    const jolt = (el: Element | null, delay: number, px = 3) => el?.animate(
+      [{ transform: "none" }, { transform: `translate(${-px}px, 1px)` }, { transform: `translate(${px}px, -1px)` }, { transform: `translate(${-px / 2}px, 0)` }, { transform: "none" }],
+      { duration: 280, delay, easing: "ease-out", composite: "add" },
+    );
+
+    // Close to the eye at first and hardly there, it comes down faster and faster,
+    // shows in full only just before it lands, squashes a little on impact and settles.
+    glass.animate(
+      [
+        { transform: "translateY(-34px) scale(1.3)", easing: "cubic-bezier(.55,0,1,.55)" },
+        { transform: "none", offset: 0.7, easing: "cubic-bezier(0,0,.3,1)" },
+        { transform: "scale(.985)", offset: 0.78, easing: "cubic-bezier(.3,0,.5,1)" },
+        { transform: "translateY(-2px)", offset: 0.9, easing: "cubic-bezier(.5,0,1,.5)" },
+        { transform: "none" },
+      ],
+      { duration: fall, fill: "backwards" },
+    );
+    glass.animate([{ opacity: 0 }, { opacity: 0.12, offset: 0.75 }, { opacity: 1 }], { duration: lands, easing: "cubic-bezier(.7,0,1,.7)", fill: "backwards" });
+    jolt(sig.querySelector("svg"), lands);
+    window.setTimeout(() => glass.classList.add("is-set"), lands);
+    tag.animate(
+      [{ opacity: 0, rotate: `${rest - 22}deg`, scale: "0.9" }, { opacity: 1, rotate: `${rest + 6}deg`, scale: "1", offset: 0.55 }, { rotate: `${rest - 4}deg`, offset: 0.8 }, { rotate: `${rest}deg` }],
+      { duration: 720, delay: lands + 60, easing: "ease-out", fill: "backwards" },
+    );
+
+    // Then the staples, one side after the other, each a jolt as it goes in.
+    staples.forEach((staple, i) => {
+      const at = lands + 420 + i * 220;
+
+      staple.animate(
+        [{ opacity: 0, scale: "1.5", translate: "0 -6px" }, { opacity: 1, scale: "0.92", translate: "0 0", offset: 0.6 }, { scale: "1" }],
+        { duration: 160, delay: at, easing: "cubic-bezier(.6,0,1,.6)", fill: "backwards" },
+      );
+      jolt(glass, at + 100, 1.5);
+    });
+  };
+
+  /** A knock on the glass: pinned down, it only shudders, and the sign swings on its tape. */
+  const knock = () => {
+    const glass = sig.querySelector<HTMLElement>(".sig-glass");
+    const tag = glass?.querySelector(".sig-sign");
+
+    glass?.animate([{ transform: "none" }, { transform: "translateX(-1px)" }, { transform: "translateX(1px)" }, { transform: "none" }], { duration: 160, easing: "ease-out" });
+
+    if (tag) {
+      const rest = tilt(tag);
+
+      tag.animate([{ rotate: `${rest}deg` }, { rotate: `${rest - 8}deg` }, { rotate: `${rest + 5}deg` }, { rotate: `${rest - 2}deg` }, { rotate: `${rest}deg` }], { duration: 640, easing: "ease-out" });
+    }
+  };
+
   /** Writes it again, from the first stroke, with whatever ink the pen has. */
   const sign = () => {
     if (signing || matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
+    if (sealed) {
+      knock();
+
+      return;
+    }
+
     const now = performance.now();
     const dry = used >= 3;
+    // Signed again once it has run quite dry, rested or not, the pen is filled one
+    // final time, and then the glass. A rest only fills a pen that is running low.
+    const last = used >= INK.length;
 
-    if (now - rested >= REST) {
+    if (last || now - rested >= REST) {
       used = 0;
     }
 
@@ -96,7 +196,8 @@ if (sig && "animate" in Element.prototype) {
     signing = true;
     used += 1;
 
-    if (filled) {
+    // The last filling drops no blot: the glass is what lands there.
+    if (filled && !last) {
       blot();
     }
 
@@ -124,6 +225,10 @@ if (sig && "animate" in Element.prototype) {
     Promise.all(pen.map(animation => animation.finished)).then(() => {
       signing = false;
       rested = performance.now();
+
+      if (last) {
+        slam();
+      }
     }, () => {});
 
     // Written in full and in full ink, it is let go once dry: the drawn signature is
