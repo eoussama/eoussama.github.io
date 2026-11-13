@@ -603,10 +603,31 @@ a:is(:hover, :focus-visible) > .lk-ic,
   align-items: center;
   min-height: 52px;
   padding-top: 18px;
-  /* The strip below already paints this, edge to edge. Set on the bar itself too, it
-     is what Safari on iOS reads to fill the status bar above a stuck header; without
-     it Safari lets the page scroll up under the clock. */
-  background-color: var(--bg);
+}
+
+/*
+ * Safari on iOS colours the status bar from what it finds along the window's top edge:
+ * a fixed box there, as wide as the window, with a background colour. Finding none, it
+ * lets the page scroll up under the clock. The bar's strip is only painted, and the bar
+ * itself is as wide as the column and transparent, so this thin band is that box. It
+ * lies over the bar's empty top edge (12px of its 18px padding), under the drawer, in
+ * the page's colour, with the paper laid over it like everything else. Only on iOS:
+ * nothing else reads it.
+ */
+.sky {
+  display: none;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .sky {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 5;
+    display: block;
+    height: 12px;
+    background-color: var(--bg);
+    transition: background-color var(--fast) linear;
+  }
 }
 
 /* Stuck to the top, the bar keeps its own strip of page under it, as wide as the

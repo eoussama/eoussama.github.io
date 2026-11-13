@@ -190,6 +190,9 @@ const speculation = JSON.stringify({
         </main>
       </div>
     </div>
+    <!-- What Safari on iOS reads to colour the status bar: see .sky in global.css. After
+         the page, so it lies over the header's empty top edge. -->
+    <div class="sky" aria-hidden="true"></div>
     <!-- Beside the page rather than in it, so it stays put while the drawer moves the page aside. -->
     <slot name="aside" />
     <!-- Far down a page, a way back up, ringed by how much of the page has been read: scripts/top.ts. -->
