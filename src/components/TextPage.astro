@@ -1,0 +1,68 @@
+---
+import type { Lang } from "~/i18n/langs";
+import type { PageId } from "~/lib/pages";
+
+import Ext from "~/components/Ext.astro";
+import { PROFILE } from "~/data/profile";
+import { ui } from "~/i18n/ui";
+import Base from "~/layouts/Base.astro";
+import { formatDate } from "~/lib/dates";
+import { getPage, sections } from "~/lib/pages";
+import { localized, url } from "~/lib/url";
+
+
+
+/**
+ * One of the site's own pages (the CV, the now page): its title and lead, then a row
+ * for each of its sections, in the margin layout of a project's page.
+ * The CV ends on the one-page PDF.
+ */
+interface Props {
+  lang: Lang;
+  id: PageId;
+}
+
+const { lang, id } = Astro.props;
+const t = ui(lang);
+const page = await getPage(id, lang);
+const { label, title, lead, description, updated } = page.entry.data;
+const rows = sections(page.entry.rendered?.html ?? "");
+// Not yet written in this language: the English text says so, for screen readers and fonts.
+const textLang = page.lang === lang ? undefined : page.lang;
+const textDir = textLang ? "ltr" : undefined;
+---
+
+<Base lang={lang} path={`${id}/`} title={`${title === t.name ? label : title} · ${t.name}`} description={description} label={label}>
+  <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
+
+  <article class={`page-${id}`}>
+    <section class="row first">
+      <h2 class="lab" id={id}><a class="anchor" href={`#${id}`} aria-label={label + t.anchor}>{label}</a></h2>
+      <div class="hero" lang={textLang} dir={textDir}>
+        <h1><span class="title">{title}</span></h1>
+        {lead && <p class="lead rise">{lead}</p>}
+      </div>
+    </section>
+
+    {updated && (
+      <section class="row rise" style="--d: 20ms">
+        <h2 class="lab" id="updated"><a class="anchor" href="#updated" aria-label={t.lastUpdated + t.anchor}>{t.lastUpdated}</a></h2>
+        <p class="val mut when"><time datetime={updated.toISOString().slice(0, 10)}>{formatDate(updated, lang)}</time></p>
+      </section>
+    )}
+
+    {rows.map((row, i) => (
+      <section class={i === 0 && !updated ? "row rise" : "row tight rise"} style={`--d: ${30 + i * 15}ms`}>
+        <h2 class="lab" id={row.id} lang={textLang} dir={textDir}><a class="anchor" href={`#${row.id}`} aria-label={row.heading + t.anchor}>{row.heading}</a></h2>
+        <div class="val prose" lang={textLang} dir={textDir} set:html={row.html} />
+      </section>
+    ))}
+
+    {id === "cv" && (
+      <section class="row tight rise" style={`--d: ${30 + rows.length * 15}ms`}>
+        <h2 class="lab" id="pdf"><a class="anchor" href="#pdf" aria-label={`PDF${t.anchor}`}>PDF</a></h2>
+        <p class="val"><Ext href={url(PROFILE.resume)} hint={t.newTab}>{t.resume}</Ext>{t.resumeTail}</p>
+      </section>
+    )}
+  </article>
+</Base>

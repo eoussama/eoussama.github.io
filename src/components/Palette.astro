@@ -6,6 +6,7 @@ import { PROFILE } from "~/data/profile";
 import { LANG_NAMES, LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import { formatDate } from "~/lib/dates";
+import { getPage, PAGES } from "~/lib/pages";
 import { getPosts, postPath } from "~/lib/posts";
 import { getProjects, pick, projectPath } from "~/lib/projects";
 import { localized, url } from "~/lib/url";
@@ -48,6 +49,7 @@ const { lang, path, hello, consent } = Astro.props;
 const t = ui(lang);
 const projects = await getProjects();
 const posts = await getPosts(lang);
+const pages = await Promise.all(PAGES.map(async id => ({ id, data: (await getPage(id, lang)).entry.data })));
 
 const groups: { label: string; items: Item[] }[] = [
   {
@@ -56,6 +58,7 @@ const groups: { label: string; items: Item[] }[] = [
       { label: t.cHome, href: localized(lang), keywords: "home" },
       { label: t.allProjectsLabel, hint: t.cList, href: "?list=projects", drawer: "work", keywords: "projects work" },
       { label: t.allPostsLabel, hint: t.cList, href: "?list=posts", drawer: "writing", keywords: "posts writing blog" },
+      ...pages.map(({ id, data }) => ({ label: data.label, href: localized(lang, `${id}/`), keywords: `${id} ${data.title} ${data.description}` })),
     ],
   },
   {

@@ -101,4 +101,24 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { projects, stories, posts };
+/**
+ * The site's own pages beyond the lists: the CV and the now page. One Markdown file
+ * per language, at pages/<page>/<language>.md, falling back to English.
+ * Each "##" section becomes a row of the page, its heading in the margin.
+ */
+const pages = defineCollection({
+  loader: glob({ pattern: "*/*.md", base: "./src/content/pages" }),
+  schema: z.object({
+    /** The margin heading of the first row. */
+    label: z.string(),
+    title: z.string(),
+    /** The paragraph under the title, if it has one. */
+    lead: z.string().optional(),
+    /** For search engines and shared links. */
+    description: z.string(),
+    /** When it was last brought up to date, shown in a row of its own after the title. */
+    updated: z.coerce.date().optional(),
+  }),
+});
+
+export const collections = { projects, stories, posts, pages };
