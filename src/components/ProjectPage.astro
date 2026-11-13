@@ -159,7 +159,7 @@ function cut(text: string): number {
     )}
 
     {Content && (
-      <section class="row rise" style="--d: 75ms">
+      <section class={role || chips.length || project.repos.length || site || project.links.length ? "row tight rise" : "row rise"} style="--d: 75ms">
         <h2 class="lab" id="notes"><a class="anchor" href="#notes" aria-label={t.notes + t.anchor}>{t.notes}</a></h2>
         <div class="val prose"><Content /></div>
       </section>
