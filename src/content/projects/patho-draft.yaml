@@ -3,6 +3,8 @@ order: 4
 featured: true
 kind: private
 type: app
+started: 2025-03-13
+active: 2025-08-10
 org: gomu-gomu
 languages:
   - TypeScript

@@ -9,7 +9,9 @@
       "pushed": "2026-07-02T02:03:15Z",
       "description": "Anime themes API.",
       "homepage": "https://anusic-api.herokuapp.com/api/v1/",
-      "archived": false
+      "archived": false,
+      "started": "2020-06-28T13:55:40Z",
+      "tag": null
     },
     "eoussama/core": {
       "stars": 0,
@@ -19,7 +21,12 @@
       "pushed": "2026-10-18T20:18:22Z",
       "description": "Common JavaScript/TypeScript utilities.",
       "homepage": "http://ouss.es/core/",
-      "archived": false
+      "archived": false,
+      "started": "2025-07-20T20:10:32Z",
+      "tag": {
+        "name": "v0.1.2",
+        "date": "2026-10-18T20:15:25Z"
+      }
     },
     "eoussama/dx": {
       "stars": 0,
@@ -29,7 +36,12 @@
       "pushed": "2026-10-18T20:08:14Z",
       "description": "Personal DX config.",
       "homepage": "https://www.npmjs.com/package/@eoussama/dx",
-      "archived": false
+      "archived": false,
+      "started": "2025-07-20T17:23:26Z",
+      "tag": {
+        "name": "v0.1.3",
+        "date": "2026-10-18T19:59:46Z"
+      }
     },
     "eoussama/eo-house-system": {
       "stars": 3,
@@ -39,7 +51,9 @@
       "pushed": "2018-05-16T10:32:10Z",
       "description": "A feature rich housing system for GTA SAMP.",
       "homepage": null,
-      "archived": true
+      "archived": true,
+      "started": "2018-04-02T23:08:11Z",
+      "tag": null
     },
     "eoussama/eo-textdraw-editor": {
       "stars": 4,
@@ -49,7 +63,9 @@
       "pushed": "2026-09-13T11:45:11Z",
       "description": "Your on-the-fly, online Textdraw editor.",
       "homepage": "https://eoussama.github.io/eo-textdraw-editor/",
-      "archived": false
+      "archived": false,
+      "started": "2020-04-24T16:21:59Z",
+      "tag": null
     },
     "eoussama/eo-translatorjs": {
       "stars": 17,
@@ -59,7 +75,12 @@
       "pushed": "2026-10-26T16:43:51Z",
       "description": "A simple javascript library for translating web content.",
       "homepage": "http://eo-translatorjs.ouss.es/",
-      "archived": true
+      "archived": true,
+      "started": "2018-08-18T18:12:02Z",
+      "tag": {
+        "name": "v3.1.4",
+        "date": "2026-10-26T16:23:50Z"
+      }
     },
     "eoussama/eo-typewriterjs": {
       "stars": 9,
@@ -69,7 +90,12 @@
       "pushed": "2026-10-26T13:33:56Z",
       "description": "On the go typewriting utility for JavaScript.",
       "homepage": "http://eo-typewriterjs.ouss.es/",
-      "archived": true
+      "archived": true,
+      "started": "2018-04-30T23:51:27Z",
+      "tag": {
+        "name": "v6.0.1",
+        "date": "2026-10-26T13:09:51Z"
+      }
     },
     "eoussama/fireguard": {
       "stars": 0,
@@ -79,7 +105,12 @@
       "pushed": "2026-10-18T23:20:01Z",
       "description": "Firebase middleman authenticator.",
       "homepage": "http://ouss.es/fireguard/",
-      "archived": true
+      "archived": true,
+      "started": "2024-01-06T14:31:16Z",
+      "tag": {
+        "name": "v0.1.4",
+        "date": "2026-10-18T23:09:26Z"
+      }
     },
     "eoussama/firemitt": {
       "stars": 0,
@@ -89,7 +120,12 @@
       "pushed": "2026-10-18T23:04:46Z",
       "description": "Intermediate package that facilitates working with Fireguard.",
       "homepage": "http://ouss.es/firemitt/",
-      "archived": true
+      "archived": true,
+      "started": "2024-01-06T15:06:18Z",
+      "tag": {
+        "name": "v0.1.9",
+        "date": "2026-10-18T23:03:52Z"
+      }
     },
     "eoussama/freego": {
       "stars": 0,
@@ -99,7 +135,12 @@
       "pushed": "2026-10-01T16:58:05Z",
       "description": "FreeStuff API Go Wrapper.",
       "homepage": null,
-      "archived": false
+      "archived": false,
+      "started": "2024-05-18T18:19:37Z",
+      "tag": {
+        "name": "v0.1.0",
+        "date": "2026-10-01T16:54:16Z"
+      }
     },
     "eoussama/kol-pt": {
       "stars": 0,
@@ -109,7 +150,12 @@
       "pushed": "2026-10-19T13:16:36Z",
       "description": "King of Lightning's Patreon Tracker.",
       "homepage": "http://kol-pt.ouss.es/",
-      "archived": false
+      "archived": false,
+      "started": "2023-04-23T12:23:17Z",
+      "tag": {
+        "name": "v0.2.0",
+        "date": "2026-10-19T12:26:59Z"
+      }
     },
     "eoussama/mal_reviewer": {
       "stars": 0,
@@ -119,7 +165,12 @@
       "pushed": "2026-10-30T00:32:14Z",
       "description": "An unofficial Anime and Manga reviewing tool for MyAnimeList.net.",
       "homepage": null,
-      "archived": true
+      "archived": true,
+      "started": "2018-10-24T12:56:39Z",
+      "tag": {
+        "name": "v0.2.0",
+        "date": "2026-10-30T00:31:44Z"
+      }
     },
     "eoussama/nitfree": {
       "stars": 1,
@@ -129,7 +180,12 @@
       "pushed": "2026-10-30T10:24:21Z",
       "description": "I'll never pay for Discord Nitro, and neither should you!",
       "homepage": "http://nitfree.ouss.es/",
-      "archived": false
+      "archived": false,
+      "started": "2025-01-09T21:13:07Z",
+      "tag": {
+        "name": "v0.4.0",
+        "date": "2026-10-25T13:35:02Z"
+      }
     },
     "eoussama/phoshare": {
       "stars": 0,
@@ -139,7 +195,12 @@
       "pushed": "2026-10-29T19:09:06Z",
       "description": "A simple offline photo sharing application for those who don't have friends. 😥",
       "homepage": "http://phoshare.ouss.es/",
-      "archived": true
+      "archived": true,
+      "started": "2018-06-05T14:17:08Z",
+      "tag": {
+        "name": "v0.2.0",
+        "date": "2026-10-27T22:00:46Z"
+      }
     },
     "eoussama/playback-sync": {
       "stars": 0,
@@ -149,7 +210,12 @@
       "pushed": "2026-06-12T12:39:50Z",
       "description": "Syncs multiple sources together for playback and rewind with ease.",
       "homepage": "http://ouss.es/playback-sync/",
-      "archived": true
+      "archived": true,
+      "started": "2023-10-08T19:32:55Z",
+      "tag": {
+        "name": "0.4.0",
+        "date": "2026-06-12T12:38:50Z"
+      }
     },
     "eoussama/publi-pro-max": {
       "stars": 0,
@@ -159,7 +225,9 @@
       "pushed": "2019-04-01T20:35:52Z",
       "description": "Publi Pro Max's official web page",
       "homepage": "https://eoussama.github.io/publi-pro-max/",
-      "archived": true
+      "archived": true,
+      "started": "2018-08-18T11:51:00Z",
+      "tag": null
     },
     "eoussama/samp-front": {
       "stars": 5,
@@ -169,7 +237,9 @@
       "pushed": "2020-11-15T13:33:07Z",
       "description": "A starter landing page template for samp servers.",
       "homepage": null,
-      "archived": true
+      "archived": true,
+      "started": "2018-11-23T13:37:26Z",
+      "tag": null
     },
     "eoussama/steam-mcl": {
       "stars": 1,
@@ -179,7 +249,12 @@
       "pushed": "2026-10-16T14:10:40Z",
       "description": "A quick and reliable web app dedicated to missing content (DLCs, Prequels, Sequels...etc) on Steam for a given user.",
       "homepage": "https://steam-mcl.ouss.es/",
-      "archived": true
+      "archived": true,
+      "started": "2019-08-31T23:00:55Z",
+      "tag": {
+        "name": "v0.3.0",
+        "date": "2026-10-16T14:08:26Z"
+      }
     },
     "eoussama/temmejs": {
       "stars": 11,
@@ -189,7 +264,12 @@
       "pushed": "2026-10-25T23:45:34Z",
       "description": "Emmet, but for JavaScript.",
       "homepage": "https://temmejs.ouss.es/",
-      "archived": true
+      "archived": true,
+      "started": "2018-05-12T21:07:44Z",
+      "tag": {
+        "name": "v1.0.9",
+        "date": "2026-10-25T23:43:26Z"
+      }
     },
     "gomu-gomu/ma-java-avancee-projet": {
       "stars": 0,
@@ -199,7 +279,9 @@
       "pushed": "2024-07-08T13:40:10Z",
       "description": "Student management web app.",
       "homepage": "https://eoussama.notion.site/Student-Management-0cff916853904214a395a25de0ccdf3f?pvs=4",
-      "archived": true
+      "archived": true,
+      "started": "2024-03-22T16:06:30Z",
+      "tag": null
     },
     "gomu-gomu/ma-java-avancee-projet-backend": {
       "stars": 0,
@@ -209,7 +291,9 @@
       "pushed": "2024-04-28T13:16:39Z",
       "description": "The backend for student management web app.",
       "homepage": null,
-      "archived": true
+      "archived": true,
+      "started": "2024-04-04T19:45:40Z",
+      "tag": null
     },
     "gomu-gomu/ma-java-avancee-projet-frontend": {
       "stars": 0,
@@ -219,7 +303,9 @@
       "pushed": "2024-07-08T13:39:49Z",
       "description": "The frontend for student management web app.",
       "homepage": null,
-      "archived": true
+      "archived": true,
+      "started": "2024-04-08T23:37:18Z",
+      "tag": null
     },
     "gomu-gomu/ma-java-avancee-projet-seed": {
       "stars": 0,
@@ -229,7 +315,9 @@
       "pushed": "2024-07-07T22:26:07Z",
       "description": "Data seeding for student management web app.",
       "homepage": null,
-      "archived": true
+      "archived": true,
+      "started": "2024-04-05T13:47:30Z",
+      "tag": null
     },
     "nakamaorg/circus": {
       "stars": 0,
@@ -239,7 +327,12 @@
       "pushed": "2026-05-29T09:45:01Z",
       "description": "All clowns belong in a circus.",
       "homepage": "https://nakamaorg.vercel.app",
-      "archived": false
+      "archived": false,
+      "started": "2023-05-13T13:30:05Z",
+      "tag": {
+        "name": "0.0.7",
+        "date": "2026-05-29T09:41:08Z"
+      }
     },
     "nakamaorg/langkama": {
       "stars": 0,
@@ -249,7 +342,12 @@
       "pushed": "2024-03-24T20:57:21Z",
       "description": "Retard complete programming language.",
       "homepage": "https://github.com/nakamaorg/langkama/wiki",
-      "archived": true
+      "archived": true,
+      "started": "2024-03-06T11:38:24Z",
+      "tag": {
+        "name": "0.1.6",
+        "date": "2024-03-24T20:44:43Z"
+      }
     },
     "nakamaorg/langkama-online": {
       "stars": 0,
@@ -259,7 +357,12 @@
       "pushed": "2024-03-26T18:14:56Z",
       "description": "Online LangKama editor.",
       "homepage": "https://nakamaorg.github.io/langkama-online/",
-      "archived": true
+      "archived": true,
+      "started": "2024-03-23T01:13:30Z",
+      "tag": {
+        "name": "0.0.3",
+        "date": "2024-03-26T18:13:24Z"
+      }
     },
     "nakamaorg/nakama-realm-vscode": {
       "stars": 0,
@@ -269,7 +372,12 @@
       "pushed": "2024-03-24T21:06:10Z",
       "description": "Visual Studio Code support for Nakama Realm bs.",
       "homepage": "https://marketplace.visualstudio.com/items?itemName=Eoussama.nakama-realm",
-      "archived": true
+      "archived": true,
+      "started": "2024-03-20T14:44:26Z",
+      "tag": {
+        "name": "0.1.4",
+        "date": "2024-03-24T21:05:09Z"
+      }
     },
     "openmultiplayer/wiki": {
       "stars": 70,
@@ -279,7 +387,9 @@
       "pushed": "2020-12-20T20:41:50Z",
       "description": "The open.mp API documentation",
       "homepage": "https://open.mp/docs",
-      "archived": true
+      "archived": true,
+      "started": "2019-03-03T13:02:57Z",
+      "tag": null
     },
     "pawn-lang/ysi-includes": {
       "stars": 226,
@@ -289,7 +399,12 @@
       "pushed": "2025-12-22T03:36:10Z",
       "description": "Just the YSI include files, none of the extra stuff.",
       "homepage": null,
-      "archived": false
+      "archived": false,
+      "started": "2012-07-15T11:48:10Z",
+      "tag": {
+        "name": "v5.10.0006",
+        "date": "2024-04-24T17:45:41Z"
+      }
     },
     "southclaws/formatex": {
       "stars": 10,
@@ -299,7 +414,12 @@
       "pushed": "2020-05-07T15:13:43Z",
       "description": "Slice's formatex because it doesn't have a GitHub repo",
       "homepage": null,
-      "archived": true
+      "archived": true,
+      "started": "2017-09-26T18:07:11Z",
+      "tag": {
+        "name": "1.0.0",
+        "date": "2018-09-02T17:53:25Z"
+      }
     },
     "southclaws/vscode-pawn": {
       "stars": 50,
@@ -309,7 +429,9 @@
       "pushed": "2022-12-15T18:01:14Z",
       "description": "Pawn tools for vscode, powered by sampctl.",
       "homepage": null,
-      "archived": false
+      "archived": false,
+      "started": "2017-12-29T15:52:14Z",
+      "tag": null
     },
     "true-drive/cli": {
       "stars": 0,
@@ -319,7 +441,12 @@
       "pushed": "2026-11-09T21:42:21Z",
       "description": "The command line interface that gives True Drive Core hands and legs.",
       "homepage": "https://hub.docker.com/repository/docker/eoussama/true-drive",
-      "archived": true
+      "archived": true,
+      "started": "2026-11-09T21:22:20Z",
+      "tag": {
+        "name": "v0.1.0",
+        "date": "2026-11-09T21:41:19Z"
+      }
     },
     "true-drive/core": {
       "stars": 7,
@@ -329,7 +456,12 @@
       "pushed": "2026-11-09T21:25:50Z",
       "description": "The core of True Drive, responsible for encoding and decoding files",
       "homepage": null,
-      "archived": true
+      "archived": true,
+      "started": "2023-06-05T21:14:34Z",
+      "tag": {
+        "name": "v0.1.0",
+        "date": "2026-11-09T21:18:50Z"
+      }
     },
     "umami-software/umami": {
       "stars": 40094,
@@ -339,7 +471,12 @@
       "pushed": "2026-11-12T05:57:35Z",
       "description": "Umami is a privacy-first web and product analytics platform. Traffic, campaigns, behavior, conversions, and revenue in one place. No cookies, no surveillance, self-hosted or in the cloud.",
       "homepage": "https://umami.is",
-      "archived": false
+      "archived": false,
+      "started": "2020-07-17T08:03:38Z",
+      "tag": {
+        "name": "v3.5.0",
+        "date": "2026-11-12T02:26:07Z"
+      }
     }
   }
 }

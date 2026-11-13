@@ -42,6 +42,12 @@ const projects = defineCollection({
     languages: z.array(z.string()).default([]),
     /** The key frameworks and libraries it is built on, for the "Built with" filter. */
     tools: z.array(z.string()).default([]),
+    /**
+     * When the work began and when it was last active (its latest tag), for a project
+     * whose repository is private: a public one gives both from GitHub.
+     */
+    started: z.coerce.date().optional(),
+    active: z.coerce.date().optional(),
     /** Filled in from GitHub (the year the repository was created) when left out. */
     year: z.number().nullable().default(null),
     /** Its repository, or a list of them when the code lives in several (the main one first). */

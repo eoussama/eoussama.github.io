@@ -2,6 +2,8 @@ name: PockInv
 order: 5
 kind: private
 type: app
+started: 2023-10-22
+active: 2026-10-29
 year: 2023
 live: https://pockinv.ouss.es/
 languages:

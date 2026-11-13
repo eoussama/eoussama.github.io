@@ -16,7 +16,7 @@ type Localized = Entry["data"]["blurb"];
 /** One of a project's repositories, with what GitHub knows about it. */
 export type Source = { url: string; stats: RepoStats | null };
 
-export type Project = Omit<Entry["data"], "repo"> & {
+export type Project = Omit<Entry["data"], "repo" | "started" | "active"> & {
   id: string;
   /** Its main repository. */
   repo: string | null;
@@ -27,6 +27,14 @@ export type Project = Omit<Entry["data"], "repo"> & {
   access: "open" | "private";
   /** The repository's GitHub details, when it has a public one. */
   stats: RepoStats | null;
+  /**
+   * When the work began: the day of the main repository's first commit, or the day the
+   * project gives when its repository is private. Unknown for a contribution, whose
+   * repository began before the work did.
+   */
+  started: string | null;
+  /** When it was last worked on: the day of the latest tag, by version, found the same way. */
+  active: string | null;
 };
 
 let all: Promise<Project[]> | null = null;
@@ -75,6 +83,8 @@ export function getProjects(): Promise<Project[]> {
         languages: data.languages.length ? data.languages : [data.language ?? programming(stats?.language)].filter((l): l is string => !!l),
         year: data.year ?? created,
         stats,
+        started: data.kind === "contribution" ? null : data.started?.toISOString() ?? stats?.started ?? null,
+        active: data.kind === "contribution" ? null : data.active?.toISOString() ?? (stats?.tag?.date || null),
       } satisfies Project;
     }));
 

@@ -3,6 +3,8 @@ order: 1
 featured: true
 kind: commissioned
 type: app
+started: 2026-07-21
+active: 2026-11-11
 year: 2026
 languages:
   - TypeScript

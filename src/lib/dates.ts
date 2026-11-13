@@ -15,3 +15,22 @@ const LOCALES: Record<Lang, string> = { ar: "ar-MA", ary: "ar-MA", en: "en-GB", 
 export function formatDate(date: Date, lang: Lang): string {
   return new Intl.DateTimeFormat(LOCALES[lang], { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }).format(date);
 }
+
+/**
+ * Two dates as one span, the way the page's language writes a range: "14 March 2021 –
+ * 8 November 2026", shortened when they share a year ("21 July – 11 November 2026").
+ *
+ * @param from - When it began, as an ISO date
+ * @param to - When it was last active, as an ISO date
+ * @param lang - The page's language
+ * @returns The span, spelled out
+ */
+export function formatSpan(from: string, to: string, lang: Lang): string {
+  // Japanese ranges come out in figures ("2021/03/14～…"), unlike its dates elsewhere:
+  // there, the two dates are written out and joined.
+  if (lang === "ja") {
+    return `${formatDate(new Date(from), lang)}～${formatDate(new Date(to), lang)}`;
+  }
+
+  return new Intl.DateTimeFormat(LOCALES[lang], { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }).formatRange(new Date(from), new Date(to));
+}
