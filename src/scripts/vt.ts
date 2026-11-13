@@ -88,3 +88,62 @@ window.addEventListener("pageswap", (event) => {
     viewTransition.finished.finally(carry(link, key));
   }
 });
+
+/*
+ * Changing language: the same page in another language. Each section on screen is
+ * named, so each blurs out of one language and into the other, top to bottom
+ * (global.css), rather than the whole page flipping at once. The new page names
+ * them too, in Base.astro, before its first paint.
+ */
+
+/** A language's part of an address: /p/<code>/ for all but English. */
+const LANG_PART = /\/p\/(ar|ary|fr|es|it|ja)\//;
+
+/**
+ * The page an address shows and the language it shows it in.
+ *
+ * @param url - The address
+ * @returns Its page, without the language, and its language
+ */
+function pageOf(url: string): { page: string; lang: string } {
+  const path = new URL(url, location.href).pathname;
+
+  return { page: path.replace(LANG_PART, "/p/").replace(/\/p\/$/, "/"), lang: LANG_PART.exec(path)?.[1] ?? "en" };
+}
+
+window.addEventListener("pageswap", (event) => {
+  const { viewTransition, activation } = event as SwapEvent;
+  const to = activation?.entry?.url;
+
+  if (!viewTransition || !to) {
+    return;
+  }
+
+  const here = pageOf(location.href);
+  const there = pageOf(to);
+
+  if (here.page !== there.page || here.lang === there.lang) {
+    return;
+  }
+
+  const root = document.documentElement;
+  const shown = (el: Element) => {
+    const box = el.getBoundingClientRect();
+
+    return box.bottom > 0 && box.top < innerHeight;
+  };
+  const parts: [HTMLElement, string][] = [];
+
+  document.querySelectorAll<HTMLElement>("main .row").forEach((row, i) => {
+    if (shown(row)) {
+      parts.push([row, `lang-r${i}`]);
+    }
+  });
+
+  root.classList.add("vt-lang");
+  parts.forEach(([el, name]) => el.style.setProperty("view-transition-name", name, "important"));
+  viewTransition.finished.finally(() => {
+    root.classList.remove("vt-lang");
+    parts.forEach(([el]) => el.style.removeProperty("view-transition-name"));
+  });
+});

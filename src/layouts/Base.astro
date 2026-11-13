@@ -213,6 +213,44 @@ const speculation = JSON.stringify({
       }
 
       addEventListener("pagereveal", (event) => {
+        // The same page in another language: its sections are named as the page left
+        // behind named them (scripts/vt.ts), and each blurs into this language. The page
+        // makes no entrance of its own, then or after.
+        const langPart = /\/p\/(ar|ary|fr|es|it|ja)\//;
+        const pageOf = (href) => {
+          const path = new URL(href, location.href).pathname;
+
+          return { page: path.replace(langPart, "/p/").replace(/\/p\/$/, "/"), lang: langPart.exec(path)?.[1] ?? "en" };
+        };
+        const came = globalThis.navigation?.activation?.from?.url;
+
+        if (event.viewTransition && came) {
+          const here = pageOf(location.href);
+          const there = pageOf(came);
+
+          if (here.page === there.page && here.lang !== there.lang) {
+            const root = document.documentElement;
+            const parts = [];
+
+            document.querySelectorAll("main .row").forEach((row, i) => {
+              const box = row.getBoundingClientRect();
+
+              if (box.bottom > 0 && box.top < innerHeight) {
+                parts.push([row, `lang-r${i}`]);
+              }
+            });
+
+            root.classList.add("vt-lang", "lang-changed");
+            parts.forEach(([el, name]) => el.style.setProperty("view-transition-name", name, "important"));
+            event.viewTransition.finished.finally(() => {
+              root.classList.remove("vt-lang");
+              parts.forEach(([el]) => el.style.removeProperty("view-transition-name"));
+            });
+
+            return;
+          }
+        }
+
         // Arrived through a view transition: the page's own entrance waits for what travels.
         if (event.viewTransition) {
           document.documentElement.classList.add("vt-arrive");

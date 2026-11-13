@@ -993,6 +993,114 @@ a:is(:hover, :focus-visible) > .lk-ic,
 }
 
 /*
+ * Changing language, the page stays where it is and its words change: each section on
+ * screen fades out of one language and into the other, top to bottom, a moment apart,
+ * while the header simply fades over. Only opacity moves, which costs the screen next
+ * to nothing; a blur over sections this size would drop frames. Nothing travels (scripts/vt.ts names the parts).
+ */
+:root.vt-lang * {
+  view-transition-name: none !important;
+}
+
+:root.vt-lang::view-transition-group(*) {
+  animation-duration: 0ms;
+}
+
+:root.vt-lang::view-transition-old(*),
+:root.vt-lang::view-transition-new(*) {
+  mix-blend-mode: normal;
+}
+
+:root.vt-lang::view-transition-old(*) {
+  animation: lang-out 180ms ease-in both;
+}
+
+:root.vt-lang::view-transition-new(*) {
+  animation: lang-in 320ms ease-out both;
+  animation-delay: 80ms;
+}
+
+/* The page under them, its header and its marks, hands over quickly: the paper is the
+   same on both sides, so only what sits on it changes. */
+:root.vt-lang::view-transition-old(root) {
+  animation: lang-hide 140ms linear both;
+}
+
+:root.vt-lang::view-transition-new(root) {
+  animation: lang-show 180ms linear both;
+}
+
+:root.vt-lang::view-transition-new(lang-r0) {
+  animation-delay: 120ms;
+}
+
+:root.vt-lang::view-transition-new(lang-r1) {
+  animation-delay: 160ms;
+}
+
+:root.vt-lang::view-transition-new(lang-r2) {
+  animation-delay: 200ms;
+}
+
+:root.vt-lang::view-transition-new(lang-r3) {
+  animation-delay: 240ms;
+}
+
+:root.vt-lang::view-transition-new(lang-r4) {
+  animation-delay: 280ms;
+}
+
+:root.vt-lang::view-transition-new(lang-r5) {
+  animation-delay: 320ms;
+}
+
+:root.vt-lang::view-transition-new(lang-r6) {
+  animation-delay: 360ms;
+}
+
+:root.vt-lang::view-transition-new(lang-r7) {
+  animation-delay: 400ms;
+}
+
+:root.vt-lang::view-transition-new(lang-r8) {
+  animation-delay: 440ms;
+}
+
+:root.vt-lang::view-transition-new(lang-r9) {
+  animation-delay: 480ms;
+}
+
+/* Nothing on the new page makes its own entrance over the change, or after it. */
+:root.lang-changed .rise,
+:root.lang-changed .rise .chips > li {
+  animation: none;
+}
+
+@keyframes lang-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes lang-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes lang-show {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes lang-hide {
+  to {
+    opacity: 0;
+  }
+}
+
+/*
  * At rest, only search, the language and the current theme show, small and muted.
  * The full controls open up on hover or keyboard focus (not a mouse click's focus),
  * or while a menu is open.
