@@ -31,12 +31,28 @@ type Word = { space: boolean; chars: string[] };
 
 /**
  * Text cut into words and letters. Arabic letters join, so they stay whole words.
+ * Japanese has no spaces to cut at: it is cut into its words, each keeping the
+ * punctuation after it, so a line never starts on a full stop. Each word is kept whole
+ * on a line, so cut at spaces alone, its sentences would run off the page.
  *
  * @param text - The text
  * @returns Its words, each with its letters
  */
 function split(text: string): Word[] {
-  return text.split(/(\s+)/).filter(Boolean).map(part => /^\s+$/.test(part) ? { space: true, chars: [part] } : { space: false, chars: rtl ? [part] : Array.from(part) });
+  const parts = /\s/.test(text.trim())
+    ? text.split(/(\s+)/).filter(Boolean)
+    : Array.from(new Intl.Segmenter(lang, { granularity: "word" }).segment(text)).reduce<string[]>((words, { segment, isWordLike }) => {
+        if (!isWordLike && words.length > 0) {
+          words[words.length - 1] += segment;
+        }
+        else {
+          words.push(segment);
+        }
+
+        return words;
+      }, []);
+
+  return parts.map(part => /^\s+$/.test(part) ? { space: true, chars: [part] } : { space: false, chars: rtl ? [part] : Array.from(part) });
 }
 
 const codes = LANGS.filter(l => l.code !== DEFAULT_LANG).map(l => l.code);
