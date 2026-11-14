@@ -254,9 +254,26 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-// Picking a language remembers it, so the next visit opens in it.
+// Picking a language remembers it, so the next visit opens in it. Picking the one the
+// page is already in changes nothing: the page stays as it is, without loading again,
+// and the menu it was picked from closes.
 document.querySelectorAll<HTMLAnchorElement>("[data-lang-link]").forEach((link) => {
-  link.addEventListener("click", () => remember("local", "lang", link.dataset.langLink ?? "en"));
+  link.addEventListener("click", (event) => {
+    const code = link.dataset.langLink ?? "en";
+
+    remember("local", "lang", code);
+
+    if (code === document.documentElement.dataset.lang && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
+      event.preventDefault();
+
+      if (open && link.closest(".menu")) {
+        const button = open;
+
+        setMenu(null);
+        button.focus();
+      }
+    }
+  });
 });
 
 /*

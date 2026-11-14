@@ -111,7 +111,9 @@ if (dialog) {
     const action = item.dataset.action;
     // Leaving for another page: the note goes at once, out of the way of the page's
     // own transition. Otherwise it folds away first, then the action runs.
-    const leaving = item instanceof HTMLAnchorElement && !item.dataset.drawer && item.target !== "_blank";
+    // The page's own language goes nowhere (site.ts): the note folds away as usual.
+    const here = item.dataset.langLink === document.documentElement.dataset.lang;
+    const leaving = item instanceof HTMLAnchorElement && !item.dataset.drawer && item.target !== "_blank" && !here;
 
     if (!action) {
       close(leaving);
