@@ -1,7 +1,7 @@
 {
   "name": "portfolio",
   "type": "module",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "packageManager": "pnpm@12.15.0",
   "description": "Oussama Essamadi's portfolio, v0.5: a static Astro site served at ouss.es.",
