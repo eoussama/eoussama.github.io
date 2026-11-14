@@ -90,7 +90,12 @@ if (drawer) {
     const chips = element.querySelector<HTMLElement>(".dr-active")!;
     const clearAll = chips.querySelector<HTMLElement>("[data-clear]")!;
     const empty = element.querySelector<HTMLElement>(".dr-empty")!;
+    const status = element.querySelector<HTMLElement>("[data-dr-status]");
     const items = [...element.querySelectorAll<HTMLElement>(".dr-list > li")];
+    // Searched without accents, hamzas or case, as the command menu is (palette.ts).
+    const fold = (text: string) => text.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
+    const keywords = new Map(items.map(item => [item, fold(item.dataset.kw ?? "")]));
+    const facetsOf = new Map(items.map(item => [item, JSON.parse(item.dataset.facets ?? "{}") as Record<string, string | string[]>]));
     const options = [...element.querySelectorAll<HTMLButtonElement>(".dr-fo")];
     const groups = [...element.querySelectorAll<HTMLElement>(".dr-fg")].map(group => group.dataset.group!);
     const picked = new Set<HTMLButtonElement>();
@@ -99,7 +104,7 @@ if (drawer) {
 
     /** Shows the items that match the search and every group's picks, then redraws the chips. */
     const update = () => {
-      const query = input.value.trim().toLowerCase();
+      const query = fold(input.value.trim());
       const wanted = new Map<string, Set<string>>();
 
       picked.forEach((option) => {
@@ -112,8 +117,8 @@ if (drawer) {
 
       items.forEach((item) => {
         // A facet holds one value (a year) or several (tags); an item matches a group when any of its values is picked.
-        const facets = JSON.parse(item.dataset.facets ?? "{}") as Record<string, string | string[]>;
-        const matches = (!query || (item.dataset.kw ?? "").includes(query))
+        const facets = facetsOf.get(item)!;
+        const matches = (!query || keywords.get(item)!.includes(query))
           && [...wanted].every(([group, values]) => [facets[group] ?? ""].flat().some(value => values.has(value)));
 
         item.hidden = !matches;
@@ -159,7 +164,13 @@ if (drawer) {
       }
 
       empty.hidden = shown > 0;
-      empty.querySelector("span")!.textContent = shown > 0 ? "" : (query ? (drawer.dataset.noneQ ?? "").replace("%", input.value.trim()) : drawer.dataset.noneF ?? "");
+      const none = shown > 0 ? "" : (query ? (drawer.dataset.noneQ ?? "").replace("%", input.value.trim()) : drawer.dataset.noneF ?? "");
+
+      empty.querySelector("span")!.textContent = none;
+
+      if (status && status.textContent !== none) {
+        status.textContent = none;
+      }
     };
 
     const setMenu = (opened: boolean) => {

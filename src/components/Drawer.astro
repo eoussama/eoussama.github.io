@@ -176,6 +176,8 @@ const sheets: Sheet[] = [
           </div>
         </div>
         <p class="dr-empty" hidden><span></span> <button type="button" class="link" data-clear>{t.clearSearch}</button></p>
+        {/* Said aloud when a search or the filters leave nothing: the list emptying is silent. */}
+        <p class="sr" role="status" data-dr-status></p>
         <ul class="list dr-list">
           {sheet.items.map((item, i) => (
             <li style={`--i: ${i}`} data-kw={keywords(item)} data-facets={JSON.stringify(item.facets)}>
