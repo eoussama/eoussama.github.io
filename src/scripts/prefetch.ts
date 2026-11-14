@@ -6,18 +6,26 @@
  * not: there, a click waited for the network, and for a page on GitHub Pages that wait
  * is the server's own, a quarter of a second or more, however small the page. So when
  * speculation rules are out of reach, a page is fetched into the browser's cache as soon
- * as the visitor shows interest in its link: the pointer resting on it, a finger
- * touching it, or the keyboard reaching it. The click then finds it there.
+ * as the visitor shows interest in its link, as Chrome's "moderate" rules would: the
+ * pointer resting on it, or a finger or button pressing it. The click then finds it
+ * there. Not the keyboard reaching it: tabbing across a page would fetch every page it
+ * links to, and the speculation rules do not either.
  *
  * It follows the same rules as the speculation rules: pages of the site only, not the
- * lists (they open over the page), new tabs, files, or other versions.
+ * lists (they open over the page), new tabs, files, or other versions. And nothing is
+ * fetched ahead for a visitor who asked to save data, or on a 2G connection, where a
+ * page fetched and never opened costs more than a quicker page saves.
  */
 
 /** How long the pointer rests on a link before its page is fetched, in milliseconds. */
 const DWELL = 80;
 const BASE = import.meta.env.BASE_URL;
 
-if (!HTMLScriptElement.supports?.("speculationrules")) {
+/** The Network Information API, where the browser has it (not in TypeScript's DOM types). */
+const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+const thrifty = !!connection?.saveData || /2g/.test(connection?.effectiveType ?? "");
+
+if (!HTMLScriptElement.supports?.("speculationrules") && !thrifty) {
   const asked = new Set<string>();
   const links = document.createElement("link").relList;
   let timer = 0;
@@ -90,14 +98,6 @@ if (!HTMLScriptElement.supports?.("speculationrules")) {
       fetchAhead(address);
     }
   }, { passive: true });
-
-  document.addEventListener("focusin", (event) => {
-    const address = pageOf(event.target);
-
-    if (address) {
-      fetchAhead(address);
-    }
-  });
 }
 
 export {};
