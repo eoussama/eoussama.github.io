@@ -44,7 +44,7 @@ const textDir = textLang ? "ltr" : undefined;
 
   <article class={`page-${id}`}>
     <section class="row first">
-      <h2 class="lab" id={id}><a class="anchor" href={`#${id}`} aria-label={label + t.anchor}>{label}</a></h2>
+      <h2 class="lab" id={id}><a class="anchor" href={`#${id}`} aria-label={label + t.anchor} lang={textLang} dir={textDir}>{label}</a></h2>
       <div class="hero" lang={textLang} dir={textDir}>
         <h1><span class="title">{title}</span></h1>
         {lead && <p class="lead rise">{lead}</p>}
@@ -61,7 +61,7 @@ const textDir = textLang ? "ltr" : undefined;
     {id === "cv" && (
       <section class="row rise contact" style="--d: 20ms">
         <h2 class="lab" id="whereabouts"><a class="anchor" href="#whereabouts" aria-label={t.where + t.anchor}>{t.where}</a></h2>
-        <ul class="val cv-contact">
+        <ul class="val cv-contact" dir={textDir}>
           <li><a class="link" href={`mailto:${PROFILE.email}`}><span dir="ltr">{PROFILE.email}</span><LinkIcon kind="mail" /></a></li>
           <li><Ext href={PROFILE.site} hint={t.newTab}><span dir="ltr">ouss.es</span></Ext></li>
           <li><Ext href={PROFILE.github.url} hint={t.newTab}><span dir="ltr">{PROFILE.github.label}</span></Ext></li>
@@ -72,7 +72,8 @@ const textDir = textLang ? "ltr" : undefined;
 
     {rows.map((row, i) => (
       <section class={i === 0 && !updated && id !== "cv" ? "row rise" : "row tight rise"} style={`--d: ${30 + i * 15}ms`}>
-        <h2 class="lab" id={row.id} lang={textLang} dir={textDir}><a class="anchor" href={`#${row.id}`} aria-label={row.heading + t.anchor}>{row.heading}</a></h2>
+        {/* The label keeps the page's side of the margin; only its words are the text's language. */}
+        <h2 class="lab" id={row.id}><a class="anchor" href={`#${row.id}`} aria-label={row.heading + t.anchor} lang={textLang} dir={textDir}>{row.heading}</a></h2>
         <div class="val prose" lang={textLang} dir={textDir} set:html={row.html} />
       </section>
     ))}

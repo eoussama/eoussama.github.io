@@ -414,11 +414,16 @@ a.anchor:focus-visible::before {
   color: var(--ink);
 }
 
-[dir="rtl"] .arrow {
+/* Mirrored where the text around it reads right to left: not in an English passage on
+   a right-to-left page, but still on an address's end, kept with the arrow so it wraps
+   together (Ext.astro), which is the page's link like any other. */
+.arrow:dir(rtl),
+.ext:dir(rtl) .ext-tail .arrow {
   transform: scaleX(-1);
 }
 
-[dir="rtl"] .ext:hover .arrow {
+.ext:hover .arrow:dir(rtl),
+.ext:dir(rtl):hover .ext-tail .arrow {
   transform: translate(-1.5px, -1.5px) scaleX(-1);
 }
 
@@ -495,7 +500,7 @@ a:is(:hover, :focus-visible) > .lk-ic {
 
 /* Links within the site: a drawer for a list, a chevron for a page, pointing the way
    the page reads. Left out of the name a link lends to the next page's title. */
-[dir="rtl"] .lk-ic {
+.lk-ic:dir(rtl) {
   transform: scaleX(-1);
 }
 
@@ -4517,6 +4522,11 @@ a.anchor .rv-i,
 
 :root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty, .dr-kind, .dr-fh, .dr-on-k, .dr-empty, .or, .nf-path, .sig-sign) {
   font-style: normal;
+}
+
+/* A note or a label in a Latin script, on a page that is not, keeps its italic. */
+:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.note, .lab) > :is(:lang(en), :lang(fr), :lang(es), :lang(it)) {
+  font-style: italic;
 }
 
 :root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.ck-q, .dr-q)::placeholder {
