@@ -124,7 +124,8 @@ function cut(text: string): number {
       <h2 class="lab" id="work"><a class="anchor" href="#work" aria-label={t.work + t.anchor}>{t.work}</a></h2>
       <div class="hero">
         <h1><span class="title"><ProjectName owner={project.owner} name={project.name} /></span></h1>
-        <p class="lead rise" {...en}>{pick(project.long ?? project.blurb, lang)}</p>
+        {/* The lead is English; without one, the blurb stands in, in the page's language. */}
+        <p class="lead rise" {...(project.long ? en : {})}>{pick(project.long ?? project.blurb, lang)}</p>
       </div>
     </section>
 
