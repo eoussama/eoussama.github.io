@@ -40,3 +40,76 @@
   src: url("../assets/fonts/newsreader-latin-italic.woff2") format("woff2-variations");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+/*
+ * Until Newsreader arrives, Georgia stands in, sized to take the room Newsreader takes:
+ * the text wraps the same way before and after, so the page does not shift when the
+ * font swaps in. Measured on body text (18 to 20px): Newsreader's roman sets 0.908 of
+ * Georgia's width, its italic 0.825; its ascent is 0.74em, its descent 0.26em. Every
+ * weight uses Georgia's regular, which is never made bolder, as Newsreader's 500 is not
+ * much wider than its 400.
+ */
+@font-face {
+  font-family: "Newsreader Fallback";
+  font-style: normal;
+  font-weight: 400 600;
+  src: local("Georgia");
+  size-adjust: 90.8%;
+  ascent-override: 81.5%;
+  descent-override: 28.6%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Newsreader Fallback";
+  font-style: italic;
+  font-weight: 400 600;
+  src: local("Georgia Italic"), local("Georgia-Italic");
+  size-adjust: 82.5%;
+  ascent-override: 89.7%;
+  descent-override: 31.5%;
+  line-gap-override: 0%;
+}
+
+/*
+ * Set large, Newsreader draws its letters for display and takes more room: titles
+ * (38 to 60px) get a stand-in sized for them, measured at 46 to 48px.
+ */
+@font-face {
+  font-family: "Newsreader Display Fallback";
+  font-style: normal;
+  font-weight: 400 600;
+  src: local("Georgia");
+  size-adjust: 97.5%;
+  ascent-override: 75.9%;
+  descent-override: 26.7%;
+  line-gap-override: 0%;
+}
+
+/*
+ * Arabic's stand-in until Noto Naskh Arabic arrives: the system's Arabic, given Naskh's
+ * tall ascent (1.07em) and deep descent (0.63em), which set the height of every line
+ * that mixes Arabic with Latin, and sized to Naskh's width: Geeza Pro on Apple's
+ * systems, Arial on Windows. Only Arabic letters: Latin keeps its own stand-in.
+ */
+@font-face {
+  font-family: "Naskh Fallback";
+  font-weight: 400 600;
+  src: local("Geeza Pro"), local("GeezaPro");
+  size-adjust: 101%;
+  ascent-override: 106%;
+  descent-override: 62.4%;
+  line-gap-override: 0%;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "Naskh Fallback Arial";
+  font-weight: 400 600;
+  src: local("Arial");
+  size-adjust: 107.6%;
+  ascent-override: 99.4%;
+  descent-override: 58.6%;
+  line-gap-override: 0%;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}

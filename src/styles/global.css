@@ -15,7 +15,9 @@
   --lg-a: var(--ink);
   --lg-b: var(--lg-acc);
   --lg-acc: #5b4bc4;
-  --text: "Newsreader Variable", "Noto Naskh Arabic", "Noto Serif JP", Georgia, serif;
+  --text: "Newsreader Variable", "Newsreader Fallback", "Noto Naskh Arabic", "Naskh Fallback", "Naskh Fallback Arial", "Noto Serif JP", Georgia, serif;
+  /* For titles, whose stand-in is sized for their size (fonts.css). */
+  --display: "Newsreader Variable", "Newsreader Display Fallback", "Noto Naskh Arabic", "Naskh Fallback", "Naskh Fallback Arial", "Noto Serif JP", Georgia, serif;
   --fast: 150ms;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   /* Things that travel: the header opening, the drawer, page-to-page morphs. They set
@@ -236,6 +238,7 @@ p {
 
 h1 {
   margin: 0 0 26px;
+  font-family: var(--display);
   font-size: 46px;
   font-weight: 500;
   line-height: 1.1;
@@ -3161,7 +3164,7 @@ html {
   position: relative;
   top: 4px;
   margin: 0;
-  font: 500 38px/1.1 var(--text);
+  font: 500 38px/1.1 var(--display);
   letter-spacing: -0.015em;
   outline: none;
 }
