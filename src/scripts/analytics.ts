@@ -191,6 +191,22 @@ if (banner && id) {
     start();
   }
 
+  // A page put back from the browser's back/forward cache, after the question was
+  // answered on another page: it no longer asks, and counts if that was allowed.
+  addEventListener("pageshow", (event) => {
+    const decided = stored();
+
+    if (!event.persisted || !decided) {
+      return;
+    }
+
+    banner.hidden = true;
+
+    if (decided === "granted") {
+      load();
+    }
+  });
+
   // What is counted, besides page views.
   document.addEventListener("click", (event) => {
     const link = (event.target as Element).closest("a");

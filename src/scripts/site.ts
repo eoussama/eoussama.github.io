@@ -198,6 +198,20 @@ prefersDark.addEventListener("change", () => {
 
 applyTheme((root.dataset.theme as Theme) || "auto");
 
+// A page put back from the browser's back/forward cache shows the theme it was left
+// in: one picked since, on another page, is put on it too.
+addEventListener("pageshow", (event) => {
+  if (!event.persisted) {
+    return;
+  }
+
+  const [, saved] = tryCatchSync(() => localStorage.getItem("theme"));
+
+  if ((saved === "light" || saved === "dark" || saved === "auto") && saved !== root.dataset.theme) {
+    applyTheme(saved);
+  }
+});
+
 /* ---------- Header menus ---------- */
 
 
