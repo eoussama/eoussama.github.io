@@ -200,11 +200,21 @@ if (banner && id) {
       track("select_content", { content_type: "project", item_id: project });
     }
 
-    if (link?.dataset.langLink) {
+    // Picking the language the page is already in changes nothing (site.ts).
+    if (link?.dataset.langLink && link.dataset.langLink !== document.documentElement.dataset.lang) {
       track("language_change", { language: link.dataset.langLink });
     }
   }, true);
 
-  new MutationObserver(() => track("theme_change", { theme: document.documentElement.dataset.theme ?? "" }))
-    .observe(document.documentElement, { attributeFilter: ["data-theme"] });
+  // Only a theme that changed: the system turning dark sets "auto" over "auto".
+  let theme = document.documentElement.dataset.theme ?? "";
+
+  new MutationObserver(() => {
+    const now = document.documentElement.dataset.theme ?? "";
+
+    if (now !== theme) {
+      theme = now;
+      track("theme_change", { theme });
+    }
+  }).observe(document.documentElement, { attributeFilter: ["data-theme"] });
 }
