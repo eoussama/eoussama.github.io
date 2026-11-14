@@ -271,66 +271,6 @@ document.querySelectorAll<HTMLAnchorElement>("[data-lang-link]").forEach((link) 
 
 const hello = document.querySelector<HTMLButtonElement>("[data-hellos]");
 
-/** On the days of Eid, the greeting each language gives then. */
-const EID: Record<string, string> = {
-  en: "Eid Mubarak!",
-  fr: "Aïd Moubarak !",
-  es: "¡Eid Mubarak!",
-  it: "Eid Mubarak!",
-  ja: "イード・ムバラク！",
-  ar: "عيد مبارك!",
-  ary: "عواشر مبروكة!",
-};
-
-/** The greeting each language gives in the morning, the afternoon and the evening. */
-const DAY: Record<string, [string, string, string]> = {
-  en: ["Good morning!", "Good afternoon!", "Good evening!"],
-  fr: ["Bonjour !", "Bonjour !", "Bonsoir !"],
-  es: ["¡Buenos días!", "¡Buenas tardes!", "¡Buenas noches!"],
-  it: ["Buongiorno!", "Buongiorno!", "Buonasera!"],
-  ja: ["おはよう！", "こんにちは！", "こんばんは！"],
-  ar: ["صباح الخير!", "مساء الخير!", "مساء الخير!"],
-  ary: ["صباح الخير!", "مسا الخير!", "مسا الخير!"],
-};
-
-/**
- * Whether today is Eid: the first three days of Shawwal (al-Fitr) or the four from
- * the tenth of Dhu al-Hijjah (al-Adha), by the browser's Umm al-Qura calendar. A
- * browser without it never says so.
- *
- * @returns Whether it is
- */
-function isEid(): boolean {
-  const [error, parts] = tryCatchSync(() => new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", { month: "numeric", day: "numeric" }).formatToParts(new Date()));
-
-  if (error || !parts) {
-    return false;
-  }
-
-  const month = Number(parts.find(part => part.type === "month")?.value);
-  const day = Number(parts.find(part => part.type === "day")?.value);
-
-  return (month === 10 && day <= 3) || (month === 12 && day >= 10 && day <= 13);
-}
-
-/**
- * The greeting the page opens on, in its own language: Eid's on the days of Eid,
- * otherwise the one for the visitor's time of day (morning from five, afternoon from
- * noon, evening from six).
- *
- * @param lang - The page's language
- * @returns The greeting, or nothing for a language without one
- */
-function opening(lang: string): string | undefined {
-  if (isEid()) {
-    return EID[lang];
-  }
-
-  const hour = new Date().getHours();
-
-  return DAY[lang]?.[hour >= 5 && hour < 12 ? 0 : hour >= 12 && hour < 18 ? 1 : 2];
-}
-
 /** How long the page must be left alone before the greeting moves on. */
 const IDLE = 8000;
 /** How long each greeting stays at least. */
@@ -338,7 +278,8 @@ const EVERY = 5000;
 
 if (hello) {
   const hellos = JSON.parse(hello.dataset.hellos ?? "[]") as Hello[];
-  const special = hellos[0] && opening(hellos[0].lang);
+  // The day's greeting the page opened on, set before it was drawn (Home.astro).
+  const special = hello.dataset.opening;
   const hint = hello.dataset.hint ?? "";
 
   const intro = hello.closest<HTMLElement>(".row") ?? hello;
@@ -385,8 +326,6 @@ if (hello) {
   // back.
   if (special) {
     index = -1;
-    hello.textContent = special;
-    hello.setAttribute("aria-label", `${special} ${hint}`);
     fit();
     document.fonts.ready.then(fit, () => {});
     addEventListener("resize", fit, { passive: true });

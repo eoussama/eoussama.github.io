@@ -6,6 +6,7 @@ import Footer from "~/components/Footer.astro";
 import LinkIcon from "~/components/LinkIcon.astro";
 import ProjectName from "~/components/ProjectName.astro";
 import { PROFILE } from "~/data/profile";
+import { DAY, EID } from "~/i18n/greetings";
 import { HELLO_ORDER, langInfo } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
@@ -55,6 +56,52 @@ const posts = await getPosts(lang);
     <div>
       <h1><span class="site-name">{t.name}</span></h1>
       <p class="intro"><button type="button" class="link hello" lang={first.lang} dir={first.dir} aria-label={`${first.text} ${t.hiAria}`} data-hint={t.hiAria} data-hellos={JSON.stringify(hellos)}>{first.text}</button>{introWords.map(part => /^\s+$/.test(part) ? part : <span class="iw">{part}</span>)}</p>
+      {/*
+        The page opens on the day's greeting: Eid's on the days of Eid (the first three of
+        Shawwal, the four from the tenth of Dhu al-Hijjah, by the browser's Umm al-Qura
+        calendar), otherwise the visitor's time of day's (morning from five, afternoon
+        from noon, evening from six). Set as the page is read, before it is first drawn,
+        so the intro never rewraps around a greeting that changed under it.
+        scripts/site.ts takes it from there.
+      */}
+      <script is:inline define:vars={{ eid: EID[lang], day: DAY[lang], hint: t.hiAria }}>
+        const hello = document.querySelector("[data-hellos]");
+        let eidToday = false;
+
+        try {
+          const parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", { month: "numeric", day: "numeric" }).formatToParts(new Date());
+          const month = Number(parts.find(part => part.type === "month")?.value);
+          const date = Number(parts.find(part => part.type === "day")?.value);
+
+          eidToday = (month === 10 && date <= 3) || (month === 12 && date >= 10 && date <= 13);
+        }
+        catch {}
+
+        const hour = new Date().getHours();
+        const special = eidToday ? eid : day[hour >= 5 && hour < 12 ? 0 : hour >= 12 && hour < 18 ? 1 : 2];
+
+        if (hello && special) {
+          hello.textContent = special;
+          hello.setAttribute("aria-label", `${special} ${hint}`);
+          hello.dataset.opening = special;
+
+          // One too wide to drop beside the text is set a size down to fit, on one line,
+          // as fit() in site.ts does again once the fonts are in.
+          const room = hello.parentElement.clientWidth * (matchMedia("(min-width: 701px)").matches ? 0.62 : 1);
+
+          hello.style.whiteSpace = "nowrap";
+
+          const width = hello.getBoundingClientRect().width;
+          const size = Number.parseFloat(getComputedStyle(hello).fontSize);
+
+          hello.style.whiteSpace = "";
+
+          if (width > room) {
+            hello.style.setProperty("--drop", `${(size * room / width).toFixed(1)}px`);
+            hello.dataset.fit = "";
+          }
+        }
+      </script>
     </div>
   </section>
 
