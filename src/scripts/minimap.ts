@@ -16,6 +16,8 @@ if (nav) {
   const links = items.map(item => item.querySelector<HTMLAnchorElement>("a")!);
   const targets = links.map(link => document.getElementById(decodeURIComponent(link.hash.slice(1))));
   let tops: number[] = [];
+  /** How far under the top of the window a heading lands (the header's room), measured with the headings. */
+  let under = 0;
   let current = -2;
 
   /**
@@ -40,7 +42,7 @@ if (nav) {
    * Marks the section being read, those before it and those after.
    */
   const update = () => {
-    const reach = scrollY + (Number.parseFloat(getComputedStyle(root).scrollPaddingTop) || 0) + 32;
+    const reach = scrollY + under + 32;
     let at = -1;
 
     tops.forEach((top, i) => {
@@ -87,6 +89,7 @@ if (nav) {
    */
   const measure = () => {
     tops = targets.map(target => (target ? target.getBoundingClientRect().top + scrollY : Number.POSITIVE_INFINITY));
+    under = Number.parseFloat(getComputedStyle(root).scrollPaddingTop) || 0;
     current = -2;
     update();
   };
