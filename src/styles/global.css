@@ -332,11 +332,11 @@ a:is(:hover, :focus-visible) .hl {
   background-position: 0 55%;
 }
 
-[dir="rtl"] .hl {
+.hl:dir(rtl) {
   background-position: 0 55%;
 }
 
-[dir="rtl"] a:is(:hover, :focus-visible) .hl {
+a:is(:hover, :focus-visible) .hl:dir(rtl) {
   background-position: 100% 55%;
 }
 
@@ -345,15 +345,15 @@ a:is(:hover, :focus-visible) .hl {
   background-image: none;
 }
 
-[dir="rtl"] a,
-[dir="rtl"] .link {
+/* The underline grows the way the link's own text reads: left to right in an English
+   passage on a right-to-left page. */
+a:dir(rtl),
+.link:dir(rtl) {
   background-position: 0 55%;
 }
 
-[dir="rtl"] a:hover,
-[dir="rtl"] a:focus-visible,
-[dir="rtl"] .link:hover,
-[dir="rtl"] .link:focus-visible {
+a:dir(rtl):is(:hover, :focus-visible),
+.link:dir(rtl):is(:hover, :focus-visible) {
   background-position: 100% 55%;
 }
 
@@ -385,6 +385,13 @@ a.anchor::before {
 
 [dir="rtl"] a.anchor::before {
   transform: translateX(-4px);
+}
+
+/* A label in English on a right-to-left page (the CV's) keeps its "#" on the page's
+   outer side, as the page's own labels do. */
+:root[dir="rtl"] .lab > a.anchor:dir(ltr)::before {
+  right: -17px;
+  left: auto;
 }
 
 a.anchor:hover,
