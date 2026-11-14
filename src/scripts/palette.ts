@@ -192,7 +192,11 @@ if (dialog) {
   });
 
   document.addEventListener("keydown", (event) => {
-    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+    // K by its letter, or by where it sits on a keyboard that types another there
+    // (Arabic's ن), as the single-key shortcuts do (keys.ts).
+    const k = /^[a-z]$/i.test(event.key) ? event.key.toLowerCase() === "k" : event.code === "KeyK";
+
+    if ((event.metaKey || event.ctrlKey) && k) {
       event.preventDefault();
 
       if (dialog.open && !dialog.classList.contains("is-closing")) {
