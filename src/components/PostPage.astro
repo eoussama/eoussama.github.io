@@ -10,6 +10,7 @@ import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
 import { formatDate } from "~/lib/dates";
 import { getPosts, postPath } from "~/lib/posts";
+import { postSchema } from "~/lib/schema";
 import { localized } from "~/lib/url";
 
 
@@ -33,13 +34,18 @@ const next = posts.length > 1 ? posts[(index + 1) % posts.length]! : null;
 const { Content, headings } = await render(post.entry);
 // The map shows the post's sections and their parts, when there are enough to need one.
 const outline = headings.filter(heading => heading.depth >= 2 && heading.depth <= 4);
-const { title, summary, date } = post.entry.data;
+const { title, summary, date, tags } = post.entry.data;
 
 // A post not written in this language shows in English, marked as such.
 const own = { lang: post.lang, dir: langInfo(post.lang).dir };
 ---
 
-<Base lang={lang} path={postPath(post)} title={`${title} · ${t.name}`} description={summary} kind="article" label={title}>
+<Base lang={lang} path={postPath(post)} title={`${title} · ${t.name}`} description={summary} kind="article" label={title} schema={postSchema(lang, { path: postPath(post), title, summary, date, lang: post.lang, tags })}>
+  <Fragment slot="head">
+    <meta property="article:published_time" content={date.toISOString()} />
+    <meta property="article:author" content={new URL(localized(lang), Astro.site).href} />
+    {tags.map(tag => <meta property="article:tag" content={tag} />)}
+  </Fragment>
   <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
   {outline.length >= 3 && <Minimap slot="aside" lang={lang} own={post.lang} headings={outline} />}
 

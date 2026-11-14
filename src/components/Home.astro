@@ -13,6 +13,7 @@ import Base from "~/layouts/Base.astro";
 import { formatDate } from "~/lib/dates";
 import { getPosts, postPath } from "~/lib/posts";
 import { getProjects, pick, projectPath } from "~/lib/projects";
+import { homeSchema } from "~/lib/schema";
 import { localized, url } from "~/lib/url";
 
 
@@ -50,7 +51,7 @@ const featured = projects.filter(p => p.featured).slice(0, 4);
 const posts = await getPosts(lang);
 ---
 
-<Base lang={lang} title={t.name} description={`${t.name}.${t.intro}`} hello>
+<Base lang={lang} title={`${t.name} · ${t.job}`} label={t.name} description={`${t.name}.${t.intro}`} schema={homeSchema(lang)} hello>
   <section class="row first" aria-labelledby="whoami">
     <h2 class="lab hello-lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
     <div>

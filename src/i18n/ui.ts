@@ -10,6 +10,8 @@ import type { Lang } from "./langs";
 const en = {
   skip: "Skip to the content",
   name: "Oussama Essamadi",
+  /** What I do, after the name in the home page's title. */
+  job: "Software engineer",
   home: "Home",
   whoami: "Whoami",
   intro: " I'm Oussama, a software engineer. I design and build web, desktop and mobile apps, system programs, AI tools, cloud services and open-source tools.",
@@ -157,6 +159,7 @@ export type UI = typeof en;
 const ar: UI = {
   skip: "انتقل إلى المحتوى",
   name: "أسامة الصمدي",
+  job: "مهندس برمجيات",
   home: "الرئيسية",
   whoami: "من أنا",
   intro: " أنا أسامة، مهندس برمجيات. أصمّم وأبني تطبيقات الويب وسطح المكتب والجوال، وبرامج النظام، وأدوات الذكاء الاصطناعي، والخدمات السحابية، وأدوات مفتوحة المصدر.",
@@ -415,6 +418,7 @@ const ary: UI = {
 const fr: UI = {
   skip: "Aller au contenu",
   name: "Oussama Essamadi",
+  job: "Ingénieur logiciel",
   home: "Accueil",
   whoami: "Portrait",
   intro: " Je suis Oussama, ingénieur logiciel. Je conçois et crée des applications web, de bureau et mobiles, des programmes système, des outils d’IA, des services cloud et des outils open source.",
@@ -557,6 +561,7 @@ const fr: UI = {
 const es: UI = {
   skip: "Saltar al contenido",
   name: "Oussama Essamadi",
+  job: "Ingeniero de software",
   home: "Inicio",
   whoami: "Perfil",
   intro: " Soy Oussama, ingeniero de software. Diseño y creo aplicaciones web, de escritorio y móviles, programas de sistema, herramientas de IA, servicios en la nube y herramientas de código abierto.",
@@ -699,6 +704,7 @@ const es: UI = {
 const it: UI = {
   skip: "Vai al contenuto",
   name: "Oussama Essamadi",
+  job: "Ingegnere del software",
   home: "Home",
   whoami: "Profilo",
   intro: " Sono Oussama, ingegnere del software. Progetto e realizzo applicazioni web, desktop e mobile, programmi di sistema, strumenti di IA, servizi cloud e strumenti open source.",
@@ -841,6 +847,7 @@ const it: UI = {
 const ja: UI = {
   skip: "本文へ移動",
   name: "Oussama Essamadi",
+  job: "ソフトウェアエンジニア",
   home: "ホーム",
   whoami: "わたしのこと",
   intro: "ウサマです。ソフトウェアエンジニアとして、Web・デスクトップ・モバイルのアプリ、システムプログラム、AIツール、クラウドサービス、オープンソースのツールを設計し、作っています。",

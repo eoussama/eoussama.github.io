@@ -1,5 +1,6 @@
 ---
 import type { Lang } from "~/i18n/langs";
+import type { Schema } from "~/lib/schema";
 
 import naskh400 from "@fontsource/noto-naskh-arabic/arabic-400.css?inline";
 import naskh500 from "@fontsource/noto-naskh-arabic/arabic-500.css?inline";
@@ -35,9 +36,11 @@ interface Props {
   kind?: "website" | "article";
   /** What the way back names this page from the next one: its name, or the title. */
   label?: string;
+  /** What search engines read about the page beside its text (lib/schema.ts). */
+  schema?: Schema;
 }
 
-const { lang, path = "", title, description, hello = false, noindex = false, kind = "website", label } = Astro.props;
+const { lang, path = "", title, description, hello = false, noindex = false, kind = "website", label, schema } = Astro.props;
 /** Google Analytics' measurement ID; without one, nothing is asked and nothing loads. */
 const gaId = import.meta.env.PUBLIC_GA_ID ?? "";
 const LOCALES: Record<Lang, string> = { ar: "ar_MA", ary: "ar_MA", en: "en_GB", fr: "fr_FR", es: "es_ES", it: "it_IT", ja: "ja_JP" };
@@ -46,6 +49,9 @@ const info = langInfo(lang);
 const alternates = Object.fromEntries(LANGS.map(l => [l.code, localized(l.code, path)]));
 const codes = LANGS.map(l => l.code);
 const absolute = (href: string) => new URL(href, Astro.site).href;
+// Search engines take a language's two-letter code, which Darija has none of: they
+// know it as the Arabic of Morocco.
+const hreflang = (code: Lang) => (code === "ary" ? "ar-MA" : code);
 
 /*
  * Pages of the site are prerendered as a link is pointed at (or touched), so they open
@@ -162,7 +168,7 @@ const speculation = JSON.stringify({
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
     {!noindex && <link rel="canonical" href={absolute(localized(lang, path))} />}
-    {!noindex && LANGS.map(l => <link rel="alternate" hreflang={l.code} href={absolute(alternates[l.code] ?? url())} />)}
+    {!noindex && LANGS.map(l => <link rel="alternate" hreflang={hreflang(l.code)} href={absolute(alternates[l.code] ?? url())} />)}
     {!noindex && <link rel="alternate" hreflang="x-default" href={absolute(localized("en", path))} />}
     <meta property="og:type" content={kind} />
     <meta property="og:site_name" content={t.name} />
@@ -176,6 +182,9 @@ const speculation = JSON.stringify({
     <meta property="og:image:alt" content={t.name} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@OussamaEssamadi" />
+    <meta name="twitter:creator" content="@OussamaEssamadi" />
+    <meta name="author" content={t.name} />
+    {schema && !noindex && <script is:inline type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, "\\u003c")} />}
     <slot name="head" />
     <link rel="icon" href={url("favicon.svg")} type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title={t.feed} href={localized(lang, "rss.xml")} />
