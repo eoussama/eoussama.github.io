@@ -212,7 +212,13 @@ const speculation = JSON.stringify({
             on it (back, or a link up) pops what came after. The crumb then leads to the
             page before this one, back through the history when that is where it is, so
             the page returns where it was left. Inline, so it is right before the first
-            paint. A missing page (no label) is never on the trail. */}
+            paint. A missing page (no label) is never on the trail.
+
+            The trail is walked whenever the page is shown, not only when it is loaded: a
+            page prepared in the background as a link is pointed at is not shown until it
+            is opened, and a page put back from the browser's back/forward cache (the way
+            back to the home page is one) loads nothing and runs nothing, so it would
+            leave the trail as the page after it had left it. */}
         <script is:inline define:vars={{ lang, base: import.meta.env.BASE_URL, codes }}>
           (() => {
             const root = document.documentElement;
@@ -233,45 +239,71 @@ const speculation = JSON.stringify({
               return key === base ? `${base}p/${lang}/` : key.replace(`${base}p/`, `${base}p/${lang}/`);
             };
 
-            let trail = [];
-
-            try {
-              trail = JSON.parse(sessionStorage.getItem("trail") || "[]");
-            }
-            catch {}
-
-            const here = { key: keyOf(location.pathname), label };
-            const at = trail.findIndex(step => step.key === here.key);
-
-            trail = at >= 0 ? [...trail.slice(0, at), here] : [...trail, here].slice(-50);
-
-            try {
-              sessionStorage.setItem("trail", JSON.stringify(trail));
-            }
-            catch {}
-
             const crumb = document.querySelector(".bar .crumb");
-            const back = trail.at(-2);
+            // The crumb as the page was built: the site's name, leading home.
+            const named = crumb && { text: crumb.textContent, href: crumb.getAttribute("href") };
+            /** The page before this one on the trail, if there is one. */
+            let back = null;
 
-            if (!crumb || !back) {
-              return;
-            }
+            /** Puts this page on the trail, popping what came after it, and points the crumb at the page before. */
+            const walk = () => {
+              let trail = [];
 
-            // The home page keeps the crumb as it is: the site's name, which turns into
-            // the home page's own as the page changes. Any other is named by its label.
-            if (back.key !== base) {
-              crumb.textContent = back.label;
-              crumb.href = hrefOf(back.key);
-              crumb.style.viewTransitionName = "none";
-            }
+              try {
+                trail = JSON.parse(sessionStorage.getItem("trail") || "[]");
+              }
+              catch {}
 
-            crumb.addEventListener("click", (event) => {
+              const here = { key: keyOf(location.pathname), label };
+              const at = trail.findIndex(step => step.key === here.key);
+
+              trail = at >= 0 ? [...trail.slice(0, at), here] : [...trail, here].slice(-50);
+
+              try {
+                sessionStorage.setItem("trail", JSON.stringify(trail));
+              }
+              catch {}
+
+              back = trail.at(-2) ?? null;
+
+              if (!crumb) {
+                return;
+              }
+
+              // The home page keeps the crumb as it is: the site's name, which turns into
+              // the home page's own as the page changes. Any other is named by its label.
+              if (back && back.key !== base) {
+                crumb.textContent = back.label;
+                crumb.href = hrefOf(back.key);
+                crumb.style.viewTransitionName = "none";
+              }
+              else {
+                crumb.textContent = named.text;
+                crumb.setAttribute("href", named.href);
+                crumb.style.removeProperty("view-transition-name");
+              }
+            };
+
+            crumb?.addEventListener("click", (event) => {
               const entries = globalThis.navigation?.entries?.() ?? [];
               const before = entries[(globalThis.navigation?.currentEntry?.index ?? 0) - 1];
 
-              if (before?.url && keyOf(new URL(before.url).pathname) === back.key && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
+              if (back && before?.url && keyOf(new URL(before.url).pathname) === back.key && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
                 event.preventDefault();
                 history.back();
+              }
+            });
+
+            if (document.prerendering) {
+              document.addEventListener("prerenderingchange", walk, { once: true });
+            }
+            else {
+              walk();
+            }
+
+            addEventListener("pageshow", (event) => {
+              if (event.persisted) {
+                walk();
               }
             });
           })();
