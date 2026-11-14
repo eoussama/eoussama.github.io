@@ -4608,6 +4608,11 @@ a.anchor .rv-i,
     color: var(--ink);
   }
 
+  /* On a phone, a post's date always sits on the line under its name, never after it. */
+  .list .when {
+    display: block;
+  }
+
   /* Under its label, a post that opens on a heading starts as close as one that opens
      on a paragraph: the heading's margin is for the sections it divides, not the top. */
   .row > .prose > :first-child {
