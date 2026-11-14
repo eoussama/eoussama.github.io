@@ -48,8 +48,11 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # Types only: `pnpm check` would also audit and build, and the build comes next.
+      # An advisory against a dependency should not stop a weekly redeploy either; the
+      # audit belongs to `pnpm check` before committing.
       - name: Check types
-        run: pnpm check
+        run: pnpm exec astro check
 
       - name: Build site with all versions
         run: bash scripts/build-site.sh
