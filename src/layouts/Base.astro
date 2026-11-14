@@ -186,6 +186,30 @@ const speculation = JSON.stringify({
     <meta name="author" content={t.name} />
     {schema && !noindex && <script is:inline type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, "\\u003c")} />}
     <slot name="head" />
+    {/*
+      The page's scripts, in the head: a module script runs only once the page is read,
+      wherever it stands, but one at the end of the body is found only after all of the
+      page has been read, and is asked for then. Here it is asked for with the page's
+      first bytes, alongside the fonts, and is there sooner; the first words wait on it
+      (reveal.ts).
+    */}
+    <script>
+      import "~/scripts/site";
+      import "~/scripts/copy";
+      import "~/scripts/palette";
+      import "~/scripts/keys";
+      import "~/scripts/tug";
+      import "~/scripts/drawer";
+      import "~/scripts/vt";
+      import "~/scripts/top";
+      import "~/scripts/minimap";
+      import "~/scripts/chips";
+      import "~/scripts/reveal";
+      import "~/scripts/name";
+      import "~/scripts/sign";
+      import "~/scripts/logo";
+      import "~/scripts/analytics";
+    </script>
     <link rel="icon" href={url("favicon.svg")} type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title={t.feed} href={localized(lang, "rss.xml")} />
     <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
@@ -407,23 +431,6 @@ const speculation = JSON.stringify({
           });
         }
       });
-    </script>
-    <script>
-      import "~/scripts/site";
-      import "~/scripts/copy";
-      import "~/scripts/palette";
-      import "~/scripts/keys";
-      import "~/scripts/tug";
-      import "~/scripts/drawer";
-      import "~/scripts/vt";
-      import "~/scripts/top";
-      import "~/scripts/minimap";
-      import "~/scripts/chips";
-      import "~/scripts/reveal";
-      import "~/scripts/name";
-      import "~/scripts/sign";
-      import "~/scripts/logo";
-      import "~/scripts/analytics";
     </script>
   </body>
 </html>

@@ -551,9 +551,11 @@ if (root.dataset.rv === "pre") {
     }
   };
 
-  // Waits for the fonts, but not for long: a slow connection still sees the page.
+  // Waits for the fonts only if they are about to arrive: the text is set in a stand-in
+  // sized like them until they do (fonts.css), so it does not shift when they come, and
+  // a slow connection sees the page now rather than half a second later.
   document.fonts.ready.then(start, start);
-  setTimeout(start, 500);
+  setTimeout(start, 120);
 }
 
 export {};
