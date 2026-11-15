@@ -4,6 +4,9 @@ export const PROFILE = {
   site: "https://ouss.es",
   github: { url: "https://github.com/eoussama", label: "github.com/eoussama" },
   linkedin: { url: "https://www.linkedin.com/in/eoussama", label: "linkedin.com/in/eoussama" },
+  behance: "https://www.behance.net/eoussama",
+  dribbble: "https://dribbble.com/EOussama",
+  figma: "https://www.figma.com/@eoussama",
   /** The CV page, printed to PDF, inside the site under /p/ like every page but the home page. */
   resume: "p/resume.pdf",
   /** Ways to support the work, as in the repository's FUNDING.yml. */
