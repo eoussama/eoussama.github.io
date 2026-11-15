@@ -164,7 +164,8 @@ if (drawer) {
       }
 
       empty.hidden = shown > 0;
-      const none = shown > 0 ? "" : (query ? (drawer.dataset.noneQ ?? "").replace("%", input.value.trim()) : drawer.dataset.noneF ?? "");
+      // Put in as it was typed: a "$&" in the search is not a replacement pattern.
+      const none = shown > 0 ? "" : (query ? (drawer.dataset.noneQ ?? "").replace("%", () => input.value.trim()) : drawer.dataset.noneF ?? "");
 
       empty.querySelector("span")!.textContent = none;
 

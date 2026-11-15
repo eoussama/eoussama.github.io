@@ -8,10 +8,14 @@
  * Only a plain click that opens the page in place: not one handled on the page itself
  * (a list's drawer), one with a modifier key (a new tab or window), a file to download,
  * or a link to a place on the same page.
+ *
+ * The whole icon turns, not the circle inside it: Safari stops drawing a page the moment
+ * a link is followed, and only an animation of an element's transform, which it hands to
+ * the graphics card, goes on turning after that.
  */
 
-/** A circle three-quarters drawn, turned by global.css; it fits the chevron's box. */
-const SPINNER = "<circle class=\"lk-spin\" cx=\"5.5\" cy=\"5.5\" r=\"3.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-dasharray=\"16 5.4\"></circle>";
+/** A circle three-quarters drawn; it fits the chevron's box, and the icon turns it. */
+const SPINNER = "<circle cx=\"5.5\" cy=\"5.5\" r=\"3.4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-dasharray=\"16 5.4\"></circle>";
 
 /** The icons turned, with what they drew before. */
 const turned = new Map<SVGElement, { link: HTMLAnchorElement; drawing: string }>();
@@ -48,6 +52,7 @@ document.addEventListener("click", (event) => {
 
   turned.set(icon, { link, drawing: icon.innerHTML });
   icon.innerHTML = SPINNER;
+  icon.classList.add("lk-spin");
   link.dataset.loading = "";
 });
 
@@ -58,6 +63,7 @@ addEventListener("pageshow", (event) => {
 
   turned.forEach(({ link, drawing }, icon) => {
     icon.innerHTML = drawing;
+    icon.classList.remove("lk-spin");
     delete link.dataset.loading;
   });
   turned.clear();

@@ -69,7 +69,8 @@ if (dialog) {
     const none = visible().length === 0;
 
     empty.hidden = !none;
-    empty.textContent = none ? (dialog.dataset.none ?? "").replace("%", input.value.trim()) : "";
+    // Put in as it was typed: a "$&" in the search is not a replacement pattern.
+    empty.textContent = none ? (dialog.dataset.none ?? "").replace("%", () => input.value.trim()) : "";
     select(visible()[0] ?? null);
     list.scrollTop = 0;
   };
