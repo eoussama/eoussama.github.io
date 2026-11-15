@@ -1,6 +1,6 @@
 import { askConsent } from "./analytics";
 import { copyEmail } from "./copy";
-import { openKeys } from "./keys";
+import { openKeys, setShortcuts, shortcutsOn } from "./keys";
 import { lakamaRain } from "./lakama";
 import { closeNote, foldOnDismiss, openNote } from "./note";
 
@@ -82,10 +82,23 @@ if (dialog) {
     });
   };
 
+  /** Words the shortcuts' switch for what choosing it does now: turn them off, or on. */
+  const markShortcuts = () => {
+    dialog.querySelectorAll<HTMLElement>("[data-action='shortcuts']").forEach((item) => {
+      const label = item.querySelector(".ck-l > span");
+
+      if (label) {
+        label.textContent = (shortcutsOn() ? item.dataset.off : item.dataset.on) ?? "";
+      }
+    });
+  };
+
   const open = () => {
     if (dialog.open && !dialog.classList.contains("is-closing")) {
       return;
     }
+
+    markShortcuts();
 
     const keys = document.querySelector<HTMLDialogElement>("#keys");
 
@@ -138,6 +151,9 @@ if (dialog) {
     }
     else if (action === "keys") {
       openKeys();
+    }
+    else if (action === "shortcuts") {
+      setShortcuts(!shortcutsOn());
     }
   };
 

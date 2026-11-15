@@ -8,10 +8,47 @@ import { closeNote, foldOnDismiss, openNote } from "./note";
  * (or close) the projects and writing lists, S searches the list that is open, H goes
  * home, C starts an email and ? lists them all. They stay out of the way while typing, and while a dialog is open.
  * With a keyboard in another script, the keys in the same places do the same.
+ *
+ * They can be turned off from the command menu, and stay off on every page after: a
+ * single key is easy to set off by accident, with speech input for one. ⌘K or Ctrl K
+ * still opens the menu, where they can be turned back on.
  */
 
 const keys = document.querySelector<HTMLDialogElement>("#keys");
 const root = document.documentElement;
+const KEY = "shortcuts";
+
+/**
+ * Whether the single-key shortcuts are on. Storage can throw (private windows,
+ * blocked cookies): they are on unless turned off.
+ *
+ * @returns Whether they are on
+ */
+export function shortcutsOn(): boolean {
+  try {
+    return localStorage.getItem(KEY) !== "off";
+  }
+  catch {
+    return true;
+  }
+}
+
+/**
+ * Turns the single-key shortcuts on or off, for this visit and the next.
+ *
+ * @param on - Whether they are on
+ */
+export function setShortcuts(on: boolean) {
+  try {
+    if (on) {
+      localStorage.removeItem(KEY);
+    }
+    else {
+      localStorage.setItem(KEY, "off");
+    }
+  }
+  catch {}
+}
 
 /** Where each shortcut's key sits, for keyboards that type other letters there. */
 const BY_CODE: Record<string, string> = { KeyT: "t", KeyP: "p", KeyW: "w", KeyS: "s", KeyH: "h", KeyC: "c" };
@@ -59,7 +96,7 @@ if (keys) {
 }
 
 document.addEventListener("keydown", (event) => {
-  if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.isComposing || event.repeat || typing(event.target)) {
+  if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.isComposing || event.repeat || typing(event.target) || !shortcutsOn()) {
     return;
   }
 
