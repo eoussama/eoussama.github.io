@@ -1,0 +1,41 @@
+name: Portfolio
+order: 35
+kind: open-source
+type: site
+year: 2018
+repo: https://github.com/eoussama/eoussama.github.io
+live: https://ouss.es
+languages:
+  - TypeScript
+tools:
+  - Astro
+tags:
+  - Web
+links:
+  - https://dribbble.com/shots/27884363-Eclipse-Logo
+  - https://www.behance.net/gallery/258401211/Eclipse-logo
+  - https://www.behance.net/gallery/128615595/Personal-Branding-Logo
+  - https://dribbble.com/shots/16578608-Personal-Branding-Logo
+  - https://www.behance.net/gallery/137829029/Portfolio
+  - https://dribbble.com/shots/23155702-Portfolio
+  - https://www.figma.com/design/XziYl1qcWAUZjj1WppDuqI/Portfolio
+  - https://www.behance.net/gallery/258508127/Portfolio-Redesigns
+  - https://dribbble.com/shots/27890243-Portfolio-Redesigns
+role:
+  en: Designer and developer
+blurb:
+  en: This site, my portfolio, and the designs I iterated on to reach how it looks now.
+  ar: هذا الموقع، معرض أعمالي، والتصاميم التي جرّبتها حتى وصل إلى شكله الحالي.
+  ary: هاد الموقع، البورتفوليو ديالي، والتصاميم اللي جربت حتى وصل للشكل ديالو دابا.
+  fr: Ce site, mon portfolio, et les maquettes par lesquelles je suis passé pour arriver à son allure actuelle.
+  es: Este sitio, mi portafolio, y los diseños con los que fui iterando hasta llegar a su aspecto actual.
+  it: Questo sito, il mio portfolio, e i design su cui ho iterato per arrivare al suo aspetto attuale.
+  ja: このサイト、つまり私のポートフォリオと、今の見た目にたどり着くまで重ねてきたデザイン。
+note:
+  en: Open source. Astro, with every earlier version still online.
+  ar: مفتوح المصدر. Astro، وكل إصدار سابق ما زال على الإنترنت.
+  ary: مفتوح المصدر. Astro، وكل نسخة قديمة باقية ف الإنترنت.
+  fr: Open source. Astro, avec chaque version précédente toujours en ligne.
+  es: Código abierto. Astro, con cada versión anterior todavía en línea.
+  it: Open source. Astro, con ogni versione precedente ancora online.
+  ja: オープンソース。Astroで、過去のすべてのバージョンも公開中。
