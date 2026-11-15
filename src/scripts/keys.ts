@@ -68,6 +68,16 @@ function paint() {
   root.dataset.shortcuts = on ? "on" : "off";
   keys?.toggleAttribute("data-off", !on);
 
+  // The menu tells screen readers each item's key only while it does something.
+  document.querySelectorAll<HTMLElement>("[data-keyshortcut]").forEach((item) => {
+    if (on) {
+      item.setAttribute("aria-keyshortcuts", item.dataset.keyshortcut ?? "");
+    }
+    else {
+      item.removeAttribute("aria-keyshortcuts");
+    }
+  });
+
   if (button && status) {
     button.textContent = (on ? button.dataset.off : button.dataset.on) ?? "";
     status.textContent = (on ? button.dataset.isOn : button.dataset.isOff) ?? "";

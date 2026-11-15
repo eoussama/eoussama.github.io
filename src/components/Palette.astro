@@ -184,8 +184,8 @@ let n = 0;
                 );
 
                 return item.href
-                  ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} download={item.download} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} aria-keyshortcuts={item.key} data-kw={keywords}>{inner}</a>
-                  : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} aria-keyshortcuts={item.key} data-kw={keywords} data-off={item.action === "shortcuts" ? t.keysOff : undefined} data-on={item.action === "shortcuts" ? t.keysOn : undefined}>{inner}</button>;
+                  ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} download={item.download} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} aria-keyshortcuts={item.key} data-keyshortcut={item.key} data-kw={keywords}>{inner}</a>
+                  : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} aria-keyshortcuts={item.key} data-keyshortcut={item.key} data-kw={keywords} data-off={item.action === "shortcuts" ? t.keysOff : undefined} data-on={item.action === "shortcuts" ? t.keysOn : undefined}>{inner}</button>;
               })}
             </div>
           ))}
