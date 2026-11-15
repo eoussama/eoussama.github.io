@@ -535,6 +535,29 @@ a:is(:hover, :focus-visible) > .lk-ic,
   display: none;
 }
 
+/* A page on its way: the chevron of the link followed turns into a spinning circle
+   (scripts/loading.ts), and stays out as on hover until the page is left. The spin
+   is the only sign the page is coming, so it plays with reduced motion too. */
+a[data-loading] > .lk-ic,
+.next[data-loading] > span > .lk-ic {
+  width: 0.55em;
+  margin-inline-start: 0.2em;
+  opacity: 1;
+  color: var(--ink);
+}
+
+.lk-spin {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+  animation: lk-spin 0.8s linear infinite;
+}
+
+@keyframes lk-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
 /* An at sign reads the same way in every script. */
 [dir="rtl"] .lk-mail {
   transform: none;
