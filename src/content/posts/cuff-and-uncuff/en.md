@@ -20,7 +20,7 @@ if you don't have there, you can download them from here,
 
 > SSCANF2 : [https://sampforum.blast.hk/showthread.php?tid=570927](https://sampforum.blast.hk/showthread.php?tid=570927)
 >
-> ZCMD : [http://www.solidfiles.com/d/d20f/](http://www.solidfiles.com/d/d20f/)
+> ZCMD : [http://www.solidfiles.com/d/d20f/](https://web.archive.org/web/20201024123126/http://www.solidfiles.com/d/d20f/) (archived, the original is gone)
 
 ## Setting up
 
