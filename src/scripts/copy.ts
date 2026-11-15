@@ -1,5 +1,7 @@
 import { tryCatch } from "@eoussama/core";
 
+import { track } from "./analytics";
+
 
 
 /*
@@ -14,17 +16,21 @@ let timer = 0;
 /**
  * Copies the email address, with a short "Copied" on the button when there is one.
  *
+ * @param method - How it was asked for, for analytics: the button, or the command menu
  * @returns Once the address is copied, or a new email is opened instead
  */
-export async function copyEmail() {
+export async function copyEmail(method: "button" | "menu" = "button") {
   const email = button?.dataset.copy ?? "oussama.essamadi@gmail.com";
   const [error] = await tryCatch(() => navigator.clipboard.writeText(email));
 
   if (error) {
+    track("email_write", { method: "fallback" });
     location.href = `mailto:${email}`;
 
     return;
   }
+
+  track("email_copy", { method });
 
   if (!button) {
     return;
@@ -112,4 +118,4 @@ function slide(win: HTMLElement, text: string) {
   Promise.all(moves.map(move => move.finished)).then(done, () => {});
 }
 
-button?.addEventListener("click", copyEmail);
+button?.addEventListener("click", () => copyEmail());

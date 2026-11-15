@@ -1,5 +1,7 @@
 import lakama from "~/assets/lakama.png?url";
 
+import { track } from "./analytics";
+
 
 
 /*
@@ -19,6 +21,7 @@ export function lakamaRain() {
   }
 
   running = true;
+  track("lakama_rain");
 
   const canvas = document.createElement("canvas");
   const image = new Image();

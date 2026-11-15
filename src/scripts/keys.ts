@@ -1,3 +1,4 @@
+import { track } from "./analytics";
 import { closeNote, foldOnDismiss, openNote } from "./note";
 
 
@@ -122,6 +123,7 @@ document.addEventListener("keydown", (event) => {
     }
   }
   else if (key === "c" && keys?.dataset.mail) {
+    track("email_write", { method: "key" });
     location.href = keys.dataset.mail;
   }
   else {

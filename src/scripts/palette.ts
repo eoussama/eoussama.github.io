@@ -127,7 +127,7 @@ if (dialog) {
       document.querySelector<HTMLButtonElement>(`.bar [data-theme-pick="${item.dataset.value}"]`)?.click();
     }
     else if (action === "copy") {
-      copyEmail();
+      copyEmail("menu");
     }
     else if (action === "hello") {
       document.querySelector<HTMLButtonElement>("[data-hellos]")?.click();

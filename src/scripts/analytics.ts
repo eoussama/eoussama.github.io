@@ -6,7 +6,11 @@ import { tryCatchSync } from "@eoussama/core";
  * Google Analytics 4, after consent. Nothing loads until the visitor allows it; ads
  * signals stay off either way. Counted: page views, each with the version of the site
  * seen (site_version, as the archived versions send too), project opens, language and
- * theme changes, plus GA's own outbound links and downloads.
+ * theme changes, plus GA's own outbound links and scrolls (its enhanced measurement;
+ * its file downloads are off, as cv_download counts the one file). And the little things a
+ * visitor can find: the CV downloaded (cv_download), the email copied (email_copy) or
+ * written to (email_write), a page printed (page_print) and the Lakama rain
+ * (lakama_rain). Each says how it was reached, where there are several ways (method).
  */
 
 type Gtag = (...args: unknown[]) => void;
@@ -216,11 +220,22 @@ if (banner && id) {
       track("select_content", { content_type: "project", item_id: project });
     }
 
+    // From the home page, the CV page or the command menu (its items are links too).
+    if (link?.hasAttribute("download") && link.pathname.endsWith("/resume.pdf")) {
+      track("cv_download", { method: link.closest(".ck") ? "menu" : "link" });
+    }
+
+    if (link?.protocol === "mailto:") {
+      track("email_write", { method: "link" });
+    }
+
     // Picking the language the page is already in changes nothing (site.ts).
     if (link?.dataset.langLink && link.dataset.langLink !== document.documentElement.dataset.lang) {
       track("language_change", { language: link.dataset.langLink });
     }
   }, true);
+
+  addEventListener("beforeprint", () => track("page_print"));
 
   // Only a theme that changed: the system turning dark sets "auto" over "auto".
   let theme = document.documentElement.dataset.theme ?? "";
