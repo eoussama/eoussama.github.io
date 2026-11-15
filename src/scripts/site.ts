@@ -293,7 +293,9 @@ document.querySelectorAll<HTMLAnchorElement>("[data-lang-link]").forEach((link) 
 /*
  * ---------- Greeting: "Hi!" in the next language while the page is idle ----------
  *
- * It moves on by itself only once the visitor has left the page alone for a moment
+ * The day's greeting the page opens on moves on to the first hello five seconds after
+ * the page opened (once its entrance is over), whatever the visitor is doing. After that, it moves on by itself only
+ * once the visitor has left the page alone for a moment
  * (no pointer, scroll, touch or key), every few seconds after that. It holds while the
  * intro is under the cursor, while something else has their attention (a menu, a
  * list, the page out of sight), and with reduced motion. Selecting it moves on at once,
@@ -434,6 +436,19 @@ if (hello) {
    */
   const tick = () => {
     const now = performance.now();
+
+    // The day's greeting ("Good evening") is not worth the wait for a quiet page: five
+    // seconds after the page opened (or once its entrance is over, if that takes longer)
+    // it moves on to the round of hellos, though the page is being scrolled or touched.
+    // Still not under the cursor, or with something open.
+    if (index === -1) {
+      if (now - changed >= EVERY && !busy()) {
+        next();
+        changed = now;
+      }
+
+      return;
+    }
 
     if (now - active >= IDLE && now - changed >= EVERY && !busy()) {
       next();
