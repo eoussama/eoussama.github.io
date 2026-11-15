@@ -233,6 +233,12 @@ function reveal() {
 
 
   units.forEach((unit) => {
+    // A list item's own bullet or number is no element to hide: it waits with the
+    // item, held back by a class (global.css), and comes in with its first words.
+    if (unit.block.localName === "li") {
+      unit.block.classList.add("rv-mk");
+    }
+
     unit.words.forEach((word) => {
       word.style.transform = HIDDEN;
     });
@@ -336,6 +342,10 @@ function reveal() {
     unit.played = true;
 
     const delay = t0 - now();
+
+    if (unit.block.classList.contains("rv-mk")) {
+      later(() => unit.block.classList.remove("rv-mk"), delay);
+    }
 
     unit.words.forEach((word, j) => {
       play(word, [{ transform: HIDDEN }, { transform: "none" }], { delay: delay + Math.min(j * WSTEP, 220) });
@@ -491,6 +501,7 @@ function reveal() {
     timers.forEach(clearTimeout);
     anims.forEach(animation => animation.cancel());
     units.forEach((unit) => {
+      unit.block.classList.remove("rv-mk");
       unit.words.forEach((word) => {
         word.style.transform = "";
       });
