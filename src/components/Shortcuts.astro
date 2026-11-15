@@ -51,6 +51,11 @@ const rows: { label: string; keys: string[] }[] = [
             </div>
           ))}
         </dl>
+        {/* Whether they are on, and the switch for it: the words are set by scripts/keys.ts. */}
+        <div class="kd-state">
+          <p class="kd-status" data-keys-status aria-live="polite">{t.keysIsOn}</p>
+          <button type="button" class="pill-btn kd-toggle" data-keys-toggle data-off={t.keysOff} data-on={t.keysOn} data-is-on={t.keysIsOn} data-is-off={t.keysIsOff}>{t.keysOff}</button>
+        </div>
       </div>
       <span class="note-tear" aria-hidden="true"><i></i></span>
     </div>

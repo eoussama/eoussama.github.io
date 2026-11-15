@@ -2555,6 +2555,43 @@ a[data-loading] > .lk-ic,
   min-width: 24px;
 }
 
+/* While they are off, the list is set back in the muted ink, still readable: it still
+   says which key does what. */
+.kd[data-off] .kd-list {
+  color: var(--mut);
+}
+
+/* Whether they are on, and the switch for it. */
+.kd-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--line);
+}
+
+.kd-status {
+  margin: 0;
+  color: var(--mut);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.kd[data-off] .kd-status {
+  color: var(--ink);
+}
+
+/* The site's pill button, sized as the analytics note's, on a phone and right to left too. */
+.kd .pill-btn.kd-toggle {
+  height: 40px;
+  padding: 0 16px;
+  color: var(--ink);
+  font: 400 16px/1 var(--text);
+}
+
 /* ---------- Command menu ---------- */
 
 .ck {
@@ -3003,6 +3040,52 @@ a.ck-item:hover {
   flex: none;
   color: var(--mut);
   font: italic 400 15px/1 var(--text);
+}
+
+/* What an item does besides opening something: the copy icon after "Copy my email". */
+.ck-tail {
+  flex: none;
+  color: var(--mut);
+  overflow: visible;
+}
+
+.ck-item[aria-selected="true"] .ck-tail {
+  color: var(--ink);
+}
+
+/* A check mark for what is in use now: the page's language, the theme. */
+.ck-check {
+  display: none;
+  flex: none;
+}
+
+.ck-check[data-on] {
+  display: inline-flex;
+}
+
+.ck-check .ck-tail {
+  color: var(--ink);
+}
+
+/* The arrow out to another site points the way the page reads. */
+.ck-out:dir(rtl) {
+  transform: scaleX(-1);
+}
+
+/* The key that does the same, while the shortcuts are on (scripts/keys.ts); darker on
+   the item pointed at or arrowed to, as its icon is. */
+.ck-key {
+  display: none;
+  flex: none;
+}
+
+:root[data-shortcuts="on"] .ck-key {
+  display: inline-block;
+}
+
+.ck-item[aria-selected="true"] .ck-key {
+  border-color: var(--mut);
+  color: var(--ink);
 }
 
 .ck-empty {

@@ -75,10 +75,10 @@ if (dialog) {
     list.scrollTop = 0;
   };
 
-  /** Shows which theme is the current one, next to it in the list. */
+  /** Shows which theme is the current one, with a check mark beside it in the list. */
   const markTheme = () => {
-    dialog.querySelectorAll<HTMLElement>("[data-theme-hint]").forEach((hint) => {
-      hint.textContent = hint.dataset.themeHint === document.documentElement.dataset.theme ? (dialog.dataset.current ?? "") : "";
+    dialog.querySelectorAll<HTMLElement>("[data-theme-check]").forEach((check) => {
+      check.toggleAttribute("data-on", check.dataset.themeCheck === document.documentElement.dataset.theme);
     });
   };
 

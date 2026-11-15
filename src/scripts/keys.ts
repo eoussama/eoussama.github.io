@@ -18,9 +18,11 @@ const keys = document.querySelector<HTMLDialogElement>("#keys");
 const root = document.documentElement;
 const KEY = "shortcuts";
 
+/** What was chosen on this page, for where storage cannot hold it (private windows, blocked cookies). */
+let chosenOff = false;
+
 /**
- * Whether the single-key shortcuts are on. Storage can throw (private windows,
- * blocked cookies): they are on unless turned off.
+ * Whether the single-key shortcuts are on: they are, unless turned off.
  *
  * @returns Whether they are on
  */
@@ -29,7 +31,7 @@ export function shortcutsOn(): boolean {
     return localStorage.getItem(KEY) !== "off";
   }
   catch {
-    return true;
+    return !chosenOff;
   }
 }
 
@@ -39,6 +41,8 @@ export function shortcutsOn(): boolean {
  * @param on - Whether they are on
  */
 export function setShortcuts(on: boolean) {
+  chosenOff = !on;
+
   try {
     if (on) {
       localStorage.removeItem(KEY);
@@ -48,6 +52,26 @@ export function setShortcuts(on: boolean) {
     }
   }
   catch {}
+
+  paint();
+}
+
+/**
+ * Shows whether the shortcuts are on: on the page (the menu hides the keys it shows for
+ * them while they are off), and in the shortcuts dialog, with its switch.
+ */
+function paint() {
+  const on = shortcutsOn();
+  const button = keys?.querySelector<HTMLButtonElement>("[data-keys-toggle]");
+  const status = keys?.querySelector<HTMLElement>("[data-keys-status]");
+
+  root.dataset.shortcuts = on ? "on" : "off";
+  keys?.toggleAttribute("data-off", !on);
+
+  if (button && status) {
+    button.textContent = (on ? button.dataset.off : button.dataset.on) ?? "";
+    status.textContent = (on ? button.dataset.isOn : button.dataset.isOff) ?? "";
+  }
 }
 
 /** Where each shortcut's key sits, for keyboards that type other letters there. */
@@ -89,7 +113,16 @@ function typing(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && (target.isContentEditable || target.matches("input, textarea, select"));
 }
 
+paint();
+// Turned off or on in another tab.
+addEventListener("storage", (event) => {
+  if (event.key === KEY || event.key === null) {
+    paint();
+  }
+});
+
 if (keys) {
+  keys.querySelector("[data-keys-toggle]")?.addEventListener("click", () => setShortcuts(!shortcutsOn()));
   keys.querySelector("[data-keys-close]")?.addEventListener("click", () => closeNote(keys));
   // Escape, or a click on the veil around the note, folds it away.
   foldOnDismiss(keys);

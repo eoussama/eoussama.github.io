@@ -39,6 +39,12 @@ type Item = {
   /** The file name to save it under: a link to a file to download, not to open. */
   download?: string;
   action?: "theme" | "copy" | "hello" | "consent" | "keys" | "shortcuts";
+  /** The single key that does the same, shown when the item is pointed at or selected. */
+  key?: string;
+  /** Whether it is the one in use now (the page's language), shown as a check mark. */
+  current?: boolean;
+  /** An icon after the label, for what the item does besides opening something. */
+  tail?: "copy" | "download" | "out";
   value?: string;
   lang?: Lang;
   dir?: string;
@@ -57,9 +63,9 @@ const groups: { label: string; items: Item[] }[] = [
   {
     label: t.cGo,
     items: [
-      { label: t.cHome, href: localized(lang), keywords: "home" },
-      { label: t.allProjectsLabel, hint: t.cList, href: "?list=projects", drawer: "work", keywords: "projects work" },
-      { label: t.allPostsLabel, hint: t.cList, href: "?list=posts", drawer: "writing", keywords: "posts writing blog" },
+      { label: t.cHome, href: localized(lang), key: "H", keywords: "home" },
+      { label: t.allProjectsLabel, href: "?list=projects", drawer: "work", key: "P", keywords: "projects work list" },
+      { label: t.allPostsLabel, href: "?list=posts", drawer: "writing", key: "W", keywords: "posts writing blog list" },
       ...pages.map(({ id, data }) => ({ label: data.label, href: localized(lang, `${id}/`), keywords: `${id} ${data.title} ${data.description}` })),
     ],
   },
@@ -89,7 +95,7 @@ const groups: { label: string; items: Item[] }[] = [
     label: t.cLang,
     items: LANGS.map(l => ({
       label: l.name,
-      hint: l.code === lang ? t.cCurrent : "",
+      current: l.code === lang,
       lang: l.code,
       dir: l.dir,
       langLink: l.code,
@@ -113,12 +119,12 @@ const groups: { label: string; items: Item[] }[] = [
   {
     label: t.cWhere,
     items: [
-      { label: t.cGh, hint: "↗", href: PROFILE.github.url, external: true, keywords: "code eoussama github" },
-      { label: t.cLi, hint: "↗", href: PROFILE.linkedin.url, external: true, keywords: "work history eoussama linkedin" },
-      { label: t.cCv, hint: "PDF", href: url(PROFILE.resume), download: "Oussama-Essamadi-CV.pdf", keywords: "resume cv pdf download" },
-      { label: t.cMail, action: "copy", keywords: "contact write mail email" },
-      { label: t.cSponsor, hint: "↗", href: PROFILE.sponsors, external: true, keywords: "support sponsor donate github sponsors" },
-      { label: t.cTip, hint: "↗", href: PROFILE.paypal, external: true, keywords: "support tip donate paypal coffee" },
+      { label: t.cGh, tail: "out", href: PROFILE.github.url, external: true, keywords: "code eoussama github" },
+      { label: t.cLi, tail: "out", href: PROFILE.linkedin.url, external: true, keywords: "work history eoussama linkedin" },
+      { label: t.cCv, tail: "download", href: url(PROFILE.resume), download: "Oussama-Essamadi-CV.pdf", keywords: "resume cv pdf download" },
+      { label: t.cMail, action: "copy", tail: "copy", keywords: "contact write mail email" },
+      { label: t.cSponsor, tail: "out", href: PROFILE.sponsors, external: true, keywords: "support sponsor donate github sponsors" },
+      { label: t.cTip, tail: "out", href: PROFILE.paypal, external: true, keywords: "support tip donate paypal coffee" },
     ],
   },
 ];
@@ -126,7 +132,7 @@ const groups: { label: string; items: Item[] }[] = [
 // The single-key shortcuts can be turned off, for whoever they get in the way of (speech
 // input, say): the label says what choosing it does, and the menu sets it as it opens.
 const extras: Item[] = [
-  { label: t.keysTitle, hint: "?", action: "keys", keywords: "keyboard shortcuts keys help" },
+  { label: t.keysTitle, action: "keys", key: "?", keywords: "keyboard shortcuts keys help" },
   { label: t.keysOff, action: "shortcuts", keywords: `keyboard shortcuts keys turn off on disable enable ${t.keysOn}` },
 ];
 
@@ -145,7 +151,7 @@ if (extras.length) {
 let n = 0;
 ---
 
-<dialog class="ck" id="palette" aria-label={t.palTitle} data-none={t.palNone} data-current={t.cCurrent}>
+<dialog class="ck" id="palette" aria-label={t.palTitle} data-none={t.palNone}>
   <div class="ck-note">
     <div class="ck-sheet">
       <span class="note-shadow" aria-hidden="true"></span>
@@ -166,13 +172,20 @@ let n = 0;
                   <Fragment>
                     <i class:list={["ck-ic", item.icon ?? "z-dia"]}></i>
                     <span class="ck-l"><span lang={item.lang} dir={item.dir}>{item.owner === undefined ? item.label : <ProjectName owner={item.owner} name={item.label} />}</span></span>
-                    <span class="ck-hint" data-theme-hint={item.action === "theme" ? item.value : undefined}>{item.hint}</span>
+                    <span class="ck-hint">{item.hint}</span>
+                    {/* A check mark for what is in use: the language of the page, and the theme (set as the menu opens, scripts/palette.ts). */}
+                    {(item.current !== undefined || item.action === "theme") && <span class="ck-check" data-on={item.current ? "" : undefined} data-theme-check={item.action === "theme" ? item.value : undefined}><svg class="ck-tail" width="13" height="13" viewBox="0 0 11 11" aria-hidden="true"><path d="M1.8 5.9l2.5 2.4L9.2 2.8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="sr">{t.cCurrent}</span></span>}
+                    {/* What the item does besides opening something, as one icon size: copy, download, or out to another site. */}
+                    {item.tail === "copy" && <svg class="ck-tail" width="13" height="13" viewBox="0 0 11 11" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><rect x="1.2" y="3.6" width="6.2" height="6.2" rx="1.1"></rect><path d="M3.6 3.6V2.3a1.1 1.1 0 0 1 1.1-1.1h4a1.1 1.1 0 0 1 1.1 1.1v4a1.1 1.1 0 0 1-1.1 1.1H7.4"></path></g></svg>}
+                    {item.tail === "download" && <svg class="ck-tail" width="13" height="13" viewBox="0 0 11 11" aria-hidden="true"><path d="M5.5 1.6v5.4M3.1 4.7l2.4 2.4 2.4-2.4M2 9.4h7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>}
+                    {item.tail === "out" && <svg class="ck-tail ck-out" width="13" height="13" viewBox="0 0 11 11" aria-hidden="true"><path d="M2.5 8.5l6-6M3.5 2.5h5v5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>}
+                    {item.key && <kbd class="ck-kbd ck-key" dir="ltr" aria-hidden="true">{item.key}</kbd>}
                   </Fragment>
                 );
 
                 return item.href
-                  ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} download={item.download} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} data-kw={keywords}>{inner}</a>
-                  : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} data-kw={keywords} data-off={item.action === "shortcuts" ? t.keysOff : undefined} data-on={item.action === "shortcuts" ? t.keysOn : undefined}>{inner}</button>;
+                  ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} download={item.download} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} aria-keyshortcuts={item.key} data-kw={keywords}>{inner}</a>
+                  : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} aria-keyshortcuts={item.key} data-kw={keywords} data-off={item.action === "shortcuts" ? t.keysOff : undefined} data-on={item.action === "shortcuts" ? t.keysOn : undefined}>{inner}</button>;
               })}
             </div>
           ))}
