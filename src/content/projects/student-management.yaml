@@ -21,6 +21,8 @@ tools:
 tags:
   - API
   - Web
+links:
+  - https://www.figma.com/design/qhEHloFlYyr0oUaFrcFRAc/Student-Management?t=9RFnFx020F0nddWG-0
 blurb:
   en: Tracks students’ grades over the years and suggests where to go next.
   ar: يتتبّع درجات الطلاب على مرّ السنين ويقترح وجهتهم التالية.
