@@ -1,0 +1,40 @@
+name: no-tion
+order: 34
+kind: open-source
+type: app
+year: 2025
+repo: https://github.com/eoussama/no-tion
+live: https://no-tion.ouss.es
+languages:
+  - TypeScript
+tools:
+  - Nuxt
+  - Vue
+  - Tailwind CSS
+  - TanStack
+  - Vitest
+tags:
+  - Web
+links:
+  - https://dribbble.com/shots/27890198-no-tion-Prototype
+  - https://www.behance.net/gallery/258507537/no-tion-prototype
+role:
+  en: Author
+blurb:
+  en: A personal, local-first manager for my Notion databases.
+  ar: مدير شخصي لقواعد بيانات Notion الخاصة بي، يضع البيانات على الجهاز أولًا.
+  ary: مدير شخصي ل قواعد البيانات ديال Notion ديالي، كيخدم بالداتا ف الجهاز أولًا.
+  fr: Un gestionnaire personnel de mes bases Notion, qui garde les données sur l’appareil d’abord.
+  es: Un gestor personal de mis bases de datos de Notion, que guarda los datos primero en el dispositivo.
+  it: Un gestore personale dei miei database Notion, che tiene prima i dati sul dispositivo.
+  ja: 自分のNotionデータベースを管理する、ローカルファーストの個人用ツール。
+note:
+  en: Open source. Nuxt and Vue, with a copy of the data kept in the browser.
+  ar: مفتوح المصدر. Nuxt وVue، مع نسخة من البيانات محفوظة في المتصفح.
+  ary: مفتوح المصدر. Nuxt وVue، ونسخة من الداتا محفوظة ف المتصفح.
+  fr: Open source. Nuxt et Vue, avec une copie des données gardée dans le navigateur.
+  es: Código abierto. Nuxt y Vue, con una copia de los datos guardada en el navegador.
+  it: Open source. Nuxt e Vue, con una copia dei dati tenuta nel browser.
+  ja: オープンソース。NuxtとVueで、データの写しをブラウザーに保存。
+long:
+  en: no-tion reads the Notion databases shared with it, keeps a copy on the device, and gives each one a form that looks and feels like Notion. Pages open instantly and stay readable offline, and changes sync back in the background.
