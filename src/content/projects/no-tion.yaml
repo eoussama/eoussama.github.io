@@ -35,6 +35,6 @@ note:
   fr: Open source. Nuxt et Vue, avec une copie des données gardée dans le navigateur.
   es: Código abierto. Nuxt y Vue, con una copia de los datos guardada en el navegador.
   it: Open source. Nuxt e Vue, con una copia dei dati tenuta nel browser.
-  ja: オープンソース。NuxtとVueで、データの写しをブラウザーに保存。
+  ja: オープンソース。NuxtとVueで、データの写しをブラウザに保存。
 long:
   en: no-tion reads the Notion databases shared with it, keeps a copy on the device, and gives each one a form that looks and feels like Notion. Pages open instantly and stay readable offline, and changes sync back in the background.

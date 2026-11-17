@@ -33,7 +33,7 @@ SaaS apps across Foliatech's brands, where I looked after the front end in Angul
 
 Tangier · June 2018 to now
 
-Under the name EOussama, full time at first and alongside my jobs since. The largest is [ASIS](../projects/asis/), a strategic intelligence platform for IRES, Morocco's institute for strategic studies, where analysts get cited answers and briefs from their sources in Arabic, French and English. Others include the websites of [Georize](../projects/georize/), a ground-penetrating radar company, and [Samadisa](../projects/samadisa/), a construction company, and landing pages, NFT marketplaces and a card battle game for [Crypto Katana](../projects/crypto-katana/), [Farm Planet](../projects/farm-planet/), [Cybertown](../projects/cybertown/), [Yukiments](../projects/yukiments/) and [Card Arena](../projects/card-arena/). It began with landing pages, forums, stock management systems and online shops.
+Under the name EOussama, full time at first and alongside my jobs since. The largest is [ASIS](../projects/asis/), a strategic intelligence platform for IRES, Morocco's institute for strategic studies, where analysts get cited answers and briefs from their sources in Arabic, French and English. Others include the websites of [Georize](../projects/georize/), a ground-penetrating radar company, and [Samadisa](../projects/samadisa/), a construction company, and landing pages and NFT marketplaces for [Crypto Katana](../projects/crypto-katana/), [Farm Planet](../projects/farm-planet/), [Cybertown](../projects/cybertown/) and [Yukiments](../projects/yukiments/). It began with landing pages, forums, stock management systems and online shops.
 
 ### Game developer, TeamDRD
 

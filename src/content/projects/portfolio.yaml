@@ -4,7 +4,7 @@ kind: open-source
 type: site
 year: 2018
 repo: https://github.com/eoussama/eoussama.github.io
-live: https://ouss.es
+live: https://ouss.es/
 languages:
   - TypeScript
 tools:
