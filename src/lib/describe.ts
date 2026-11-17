@@ -92,13 +92,37 @@ function cutPhrases(text: string): string {
 }
 
 /**
+ * A description, and more text for it when it comes out too short: each of `more` is
+ * added in turn, until it says enough. A description that already does is left as it is.
+ *
+ * @param text - The text, one or more sentences
+ * @param more - Sentences to add after it, in the order to try them
+ * @returns The description
+ */
+export function describe(text: string, more: string[] = []): string {
+  let full = text.trim();
+  let out = fit(full);
+
+  for (const extra of more) {
+    if (width(out) >= MIN || !extra) {
+      continue;
+    }
+
+    full = `${full}${/[。！？؟]$/u.test(full) ? "" : " "}${extra}`;
+    out = fit(full);
+  }
+
+  return out;
+}
+
+/**
  * Text cut to whole sentences that fit a description, or, when those would fill too
  * little of it, to whole words (to a phrase, in Japanese) with an ellipsis.
  *
  * @param text - The text, one or more sentences
  * @returns The description
  */
-export function describe(text: string): string {
+function fit(text: string): string {
   const clean = text.replace(/\s+/g, " ").trim();
 
   if (width(clean) <= MAX) {

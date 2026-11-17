@@ -137,32 +137,6 @@ async function holeGL(canvas: HTMLCanvasElement | null): Promise<GL | null> {
   return { gl, u, canvas };
 }
 
-/**
- * Text cut into letters, each in its own span the hole can pull on. Screen readers get
- * the text whole beside them, as the page's own text does (NotFound.astro): letter by
- * letter, they would spell it out.
- *
- * @param el - Where to put them
- * @param text - The text
- */
-function letters(el: HTMLElement, text: string) {
-  const drawn = document.createElement("span");
-  const read = document.createElement("span");
-
-  drawn.setAttribute("aria-hidden", "true");
-  drawn.append(...Array.from(text).map((c) => {
-    const span = document.createElement("span");
-
-    span.className = "nf-ch";
-    span.textContent = c;
-
-    return span;
-  }));
-  read.className = "sr nf-sr";
-  read.textContent = text;
-  el.replaceChildren(drawn, read);
-}
-
 /** Starts the hole. */
 function start() {
   const hole = document.querySelector<HTMLElement>(".nf-hole");
@@ -172,16 +146,10 @@ function start() {
     return;
   }
 
-  // The address asked for: this page's own, or the one passed on from the root 404, a
-  // path of this site or a short link it didn't know (NotFound.astro). Only those are
-  // taken from the link, or anyone could make the page say anything under its address.
+  // The address asked for, as the page writes it out (NotFound.astro): its letters fall
+  // into the hole.
   const from = new URLSearchParams(location.search).get("from");
   const asked = from && /^(?:to\.ouss\.es)?\/(?![/\\])\S{0,200}$/.test(from) ? from : location.pathname;
-  const urlEl = document.querySelector<HTMLElement>(".nf-url");
-
-  if (urlEl) {
-    letters(urlEl, asked.startsWith("/") ? `${location.host}${asked}` : asked);
-  }
 
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   // The shader, set up once the page has been drawn: until then (and where WebGL is
