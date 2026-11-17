@@ -443,6 +443,17 @@ a.anchor:focus-visible::before {
  * below as they leave through the top, and back. The copy icon beside them shows on
  * hover or focus, and morphs into a tick once the address is copied.
  */
+/* A short link and the comma or full stop after it, on one line (Glue.astro and the
+   posts' links, prose-links.ts). */
+.glue {
+  white-space: nowrap;
+}
+
+/* A Japanese heading that breaks only where it says (ListPage.astro). */
+[data-keep] {
+  word-break: keep-all;
+}
+
 /* On paper, a button copies nothing: the line gives the address instead (in print, below). */
 .em-print {
   display: none;
@@ -2016,6 +2027,12 @@ a[data-loading] > .lk-ic,
   animation: lg-wedge 0.4s cubic-bezier(0.3, 1.35, 0.6, 1) 1.1s both;
 }
 
+/* Without a script nothing remembers that the logo has been seen, and it would settle
+   in again on every page: it stands as it is. */
+:root:not(.js) .logo :is(.lg-disc, .lg-hole, .lg-moon, .lg-wedge) {
+  animation: none;
+}
+
 /* ---------- Greeting ---------- */
 
 /*
@@ -2110,6 +2127,13 @@ a[data-loading] > .lk-ic,
   --drop-top: calc((var(--intro-lh) - var(--intro-fs)) / 2 + 0.035 * var(--intro-fs) - (var(--intro-lh) - var(--drop) / 2) - 0.035 * var(--drop));
 
   white-space: nowrap;
+}
+
+/* While it is measured on one line (scripts/site.ts): wider than a phone's screen, it
+   would widen the page for that moment, which is zoomed out to fit and moves a reader
+   at its foot up the page. */
+.intro.is-fitting {
+  overflow: clip;
 }
 
 /*
@@ -3076,6 +3100,11 @@ html:has(.ck[open]) {
   text-overflow: ellipsis;
 }
 
+/* The search in focus darkens the line under it, as the list drawer's search does. */
+.ck-top:has(.ck-q:focus-visible) {
+  border-bottom-color: var(--ink);
+}
+
 .ck-esc {
   display: grid;
   place-items: center;
@@ -3258,8 +3287,9 @@ html {
   scroll-padding-top: 96px;
 }
 
-@media (max-width: 700px) {
-  /* On a phone a page's header takes two lines: the controls, then the way home. */
+@media (max-width: 860px) and (min-height: 431px) {
+  /* On a phone or a narrow window a page's header takes two lines: the controls, then
+     the way home (on a window as short as a phone on its side, it scrolls away). */
   html:has(.crumb) {
     scroll-padding-top: 140px;
   }
@@ -3364,40 +3394,34 @@ html {
   display: none;
 }
 
-/* A list's own heading shows only without scripts (below). */
-.dr-sh {
+/* Without scripts the drawer can't open: "All projects" and "All posts" lead to the
+   lists' own pages instead. */
+:root:not(.js) :is(.dr, .dr-scrim) {
   display: none;
 }
 
-/*
- * Without scripts the drawer can't open over the page: its two lists follow the page
- * instead, as an index at its end, where "All projects" and "All posts" lead. What
- * works only with scripts (search, filters, closing, switching lists) is left out.
- */
-:root:not(.js) .dr {
-  position: static;
-  width: auto;
-  max-width: none;
-  margin-top: 60px;
-  border-top: 1px solid var(--line);
-  box-shadow: none;
-  transform: none;
+/* Until its list is in, a sheet has a quiet word where the list goes. It shows only
+   if the wait is long enough to notice; a list that didn't come says so at once. */
+.dr-wait {
+  margin: 4px 0 0;
+  color: var(--mut);
+  font-style: italic;
+  animation: dr-wait var(--fade) linear 400ms both;
 }
 
-:root:not(.js) .dr-scroll {
-  height: auto;
-  overflow: visible;
+.dr-wait[data-failed-now] {
+  animation: none;
 }
 
-:root:not(.js) :is(.dr-scrim, .dr-tear, .dr-head, .dr-tools, .dr-active, .dr-empty) {
-  display: none;
+.dr-wait .link {
+  color: var(--ink);
+  font-style: normal;
 }
 
-:root:not(.js) .dr-sh {
-  display: block;
-  margin: 40px 0 16px;
-  font-size: 24px;
-  font-weight: 500;
+@keyframes dr-wait {
+  from {
+    opacity: 0;
+  }
 }
 
 .dr-tear {
@@ -3518,6 +3542,26 @@ html {
 
 .dr-x:hover svg {
   transform: rotate(90deg);
+}
+
+/* On a narrow phone the title, the other list's name and the close button don't fit on
+   one line in every language: the title takes a line of its own, under the logo, the
+   other list's name and the close button. */
+@media (max-width: 440px) {
+  .dr-head {
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+  }
+
+  .dr-title {
+    order: 1;
+    flex-basis: 100%;
+  }
+
+  .dr-x {
+    margin: 0;
+    margin-inline-end: -10px;
+  }
 }
 
 /*
@@ -3906,7 +3950,7 @@ html {
   text-align: match-parent;
 }
 
-:root[data-open] .dr-list > li {
+:root[data-open] .dr .dr-list > li {
   animation: dr-in 140ms var(--ease) both;
   animation-delay: calc(30ms + var(--i, 0) * 14ms);
 }
@@ -3918,7 +3962,7 @@ html {
   }
 }
 
-[dir="rtl"] .dr-list > li {
+[dir="rtl"] .dr .dr-list > li {
   animation-name: dr-in-rtl;
 }
 
@@ -3940,6 +3984,7 @@ html {
   font-weight: 500;
   line-height: 52px;
   letter-spacing: -0.005em;
+  white-space: nowrap;
   text-decoration: none;
   view-transition-name: site-name;
 }
@@ -3982,6 +4027,27 @@ html {
   transform: translateX(3px) rotate(-45deg);
 }
 
+/* Where the way home and the header's controls can't share a line, in every language
+   and with the controls opened up (on hover, and always on a touch screen), it takes a
+   line of its own under them rather than break over two or three. */
+@media (max-width: 860px) {
+  .bar {
+    flex-wrap: wrap;
+  }
+
+  .crumb {
+    flex-basis: 100%;
+    order: 3;
+    margin: 14px 0 0;
+    padding-inline-start: 17px;
+    line-height: 30px;
+  }
+
+  .crumb::before {
+    inset-inline-start: 2px;
+  }
+}
+
 .hero {
   position: relative;
 }
@@ -3995,6 +4061,21 @@ html {
 .title {
   display: inline-block;
   view-transition-name: var(--vt-name);
+}
+
+/* A link to a list (its count, "All 39 projects") flies into the list page's title, as
+   a project's name does into its own, and with no script needed: both carry the same
+   name. A box, as a name on a line that wraps would call the whole transition off. */
+[data-carry] {
+  display: inline-block;
+}
+
+[data-carry="work"] {
+  view-transition-name: list-work;
+}
+
+[data-carry="writing"] {
+  view-transition-name: list-writing;
 }
 
 .lead {
@@ -4167,6 +4248,15 @@ button.chip {
   animation-delay: calc(230ms + var(--d, 0ms) * 1.5);
 }
 
+/* On a first load the text makes its own entrance (scripts/reveal.ts), from the moment
+   the page starts to arrive: the blocks do not fade in under it as well. Each is still
+   drawn as a group of its own, as its fade had it: with every word rising in a layer of
+   its own, a phone puts each frame together far sooner that way. */
+:root[data-rv] .rise {
+  animation: none;
+  will-change: opacity;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
@@ -4216,6 +4306,14 @@ button.chip {
   margin-bottom: 22px;
   font-size: 48px;
   line-height: 1.06;
+}
+
+/* ---------- A list's own page ---------- */
+
+/* The list sits under the title, as the drawer sets it out: its items' names, kinds
+   and sentences, the margin left to the title's label. */
+.page-list .dr-list {
+  grid-column: 2;
 }
 
 /* ---------- The CV and the now page ---------- */
@@ -4636,6 +4734,48 @@ button.chip {
   display: inline-block;
 }
 
+/* A link and the punctuation after it, which may not start a line of its own. */
+.rv-g {
+  white-space: nowrap;
+}
+
+/* A run of Latin words on a right-to-left page, held to the bracket or comma around it,
+   still wraps between its own words. */
+.rv-g > [dir] {
+  white-space: normal;
+}
+
+/* What screen readers read while the words are boxed apart: the text whole, drawn here
+   so that it stays out of the page's own (scripts/reveal.ts). It is written in the line
+   at no size at all rather than lifted out of it as .sr is: out of the line, it would
+   be read as a block of its own, with a pause between it and the text beside it
+   ("gomu-gomu/ Patho Draft"). Its spaces are kept, so they never take the place of
+   the spaces between the boxes; and it is laid out in reading order whatever the
+   script, as a browser reads it in the order it is drawn ("GitHubادعمني على"). */
+.rv-a {
+  font-size: 0;
+  line-height: 0;
+  letter-spacing: 0;
+  word-spacing: 0;
+  white-space: pre;
+  direction: ltr;
+  unicode-bidi: isolate-override;
+}
+
+.rv-a::before {
+  content: attr(data-t);
+}
+
+/* Letters set out for a moment, alone and beside a space, a line to each so none is set
+   with the next, to measure the kerning between them; never drawn, as they are gone
+   before the page is (scripts/reveal.ts). */
+.rv-p {
+  position: absolute;
+  top: 0;
+  white-space: pre;
+  visibility: hidden;
+}
+
 /* A list's own bullets and numbers wait for their item's first words, as the dots of
    the home page's lists do, then fade in with them (scripts/reveal.ts). They go at once
    and only their coming back fades, or they would linger over the empty page. */
@@ -4814,6 +4954,21 @@ a.anchor .rv-i,
   padding-bottom: var(--consent-room, 0px);
 }
 
+/* Where the buttons to the top and to the page's map stand in the corner over the
+   column, the page ends lower still, so its last lines and links can be scrolled clear
+   of them: on a phone, always (below); wider, by as much as the buttons the page has
+   need. The home page has neither its map nor anything under the corner, and keeps
+   to one screen where it can. */
+@media (min-width: 701px) and (max-width: 1100px) {
+  :root:has(.crumb) .page {
+    padding-bottom: max(var(--consent-room, 0px), 16px);
+  }
+
+  :root.js:has(.mm-btn) .page {
+    padding-bottom: max(var(--consent-room, 0px), 72px);
+  }
+}
+
 .consent {
   position: fixed;
   /* The far corner from the signature, which keeps the other one. */
@@ -4904,11 +5059,49 @@ a.anchor .rv-i,
   .mm[data-sheet] {
     bottom: calc(var(--consent-room, 24px) + 46px);
   }
+
+  /* And as they stand above the note, the page's end makes room for both. */
+  .page {
+    padding-bottom: calc(var(--consent-room, 24px) + 48px);
+  }
+}
+
+/* On a window this short (a phone on its side) the note would cover half of it: it
+   is set smaller, its question and its answers side by side. */
+@media (max-height: 430px) {
+  .consent {
+    width: min(540px, 100% - 32px);
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .consent-box {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 16px 22px;
+  }
+
+  .consent p {
+    margin: 0;
+  }
+
+  .consent-actions {
+    flex: none;
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+
+  .consent .pill-btn {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 14px;
+  }
 }
 
 /* ---------- Other scripts ---------- */
 
-:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty, .dr-kind, .dr-fh, .dr-on-k, .dr-empty, .or, .nf-path, .sig-sign) {
+:root:is([data-lang="ar"], [data-lang="ary"], [data-lang="ja"]) :is(.lab, .mut, .vy, .note, .ck-h, .ck-hint, .ck-empty, .dr-kind, .dr-fh, .dr-on-k, .dr-empty, .dr-wait, .kd-status, .or, .nf-path, .sig-sign) {
   font-style: normal;
 }
 
@@ -5088,22 +5281,6 @@ a.anchor .rv-i,
 
   .dr-title {
     font-size: 32px;
-  }
-
-  .bar {
-    flex-wrap: wrap;
-  }
-
-  .crumb {
-    flex-basis: 100%;
-    order: 3;
-    margin: 14px 0 0;
-    padding-inline-start: 17px;
-    line-height: 30px;
-  }
-
-  .crumb::before {
-    inset-inline-start: 2px;
   }
 
   .hero {
@@ -5402,6 +5579,7 @@ a.anchor .rv-i,
   .hello,
   .rise,
   .dr-list > li,
+  .dr-wait,
   .dr-on,
   .dr-badge,
   .ck-sheet,
