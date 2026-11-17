@@ -1,6 +1,0 @@
-Contact: mailto:hi@ouss.es
-Contact: https://github.com/eoussama/eoussama.github.io/security/advisories/new
-Expires: 2027-11-16T00:00:00.000Z
-Preferred-Languages: en
-Canonical: https://ouss.es/.well-known/security.txt
-Policy: https://github.com/eoussama/eoussama.github.io/blob/master/SECURITY.md

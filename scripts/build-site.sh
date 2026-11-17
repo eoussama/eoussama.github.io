@@ -162,8 +162,10 @@ case "$current_build" in
 esac
 echo "built /  (working tree, v$current_version, $current_build)"
 
-# Every archived version under /v/<version>/.
-while IFS=$'\t' read -r version ref build; do
+# Every archived version under /v/<version>/. The manifest comes in on fd 3, not stdin:
+# the installs and builds below read stdin if they want to, and would take the rest of the
+# manifest with them, skipping the versions after.
+while IFS=$'\t' read -r -u 3 version ref build; do
 	# A tab splits fields as whitespace, so a missing ref comes as "-" rather than as a gap.
 	[[ "$ref" == "-" ]] && ref=""
 	check_entry "$version" "$ref" "$build"
@@ -190,9 +192,14 @@ while IFS=$'\t' read -r version ref build; do
 		patch_html "$page" yes "$own" "$version"
 	done < <(find "$dest" -name '*.html' -print0)
 	echo "built /v/$version/  ($ref, $build)"
-done < <(perl -MJSON::PP -0777 -ne '
+done 3< <(perl -MJSON::PP -0777 -ne '
 	print join("\t", $_->{version}, $_->{ref} // "-", $_->{build} // "static"), "\n" for @{ decode_json($_) };
 ' "$MANIFEST")
+
+# Each version of the manifest must have come out, whatever stopped the loop short.
+while IFS= read -r -u 3 version; do
+	[[ -f "$OUT/v/$version/index.html" ]] || fail "version $version of $MANIFEST has no $OUT/v/$version/index.html"
+done 3< <(perl -MJSON::PP -0777 -ne 'print "$_->{version}\n" for @{ decode_json($_) };' "$MANIFEST")
 
 # /v/ itself has no page of its own; send visitors to the current site.
 cat > "$OUT/v/index.html" <<'EOF'

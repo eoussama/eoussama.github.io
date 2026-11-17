@@ -5,6 +5,7 @@ import { defineConfig } from "astro/config";
 
 import { canonicalLang } from "./src/lib/canonical";
 import { CODE_THEMES } from "./src/lib/code-themes";
+import csp from "./src/lib/csp";
 import proseLinks from "./src/lib/prose-links";
 
 
@@ -29,13 +30,14 @@ const PREFIXED = new Set(["ar", "ary", "fr", "es", "it", "ja"]);
 
 /**
  * Whether a page belongs in the sitemap: not a 404, which is not meant to be found, nor
- * a page that names another as its original (src/lib/canonical.ts).
+ * a list's parts, which its scripts fetch (src/components/ListPart.astro), nor a page
+ * that names another as its original (src/lib/canonical.ts).
  *
  * @param page - The page's full address
  * @returns True to list it
  */
 function listed(page: string): boolean {
-  if (/\/404\/?$/.test(page)) {
+  if (/\/404\/?$/.test(page) || /\/(?:projects|blog)\/parts\/[^/]+\/$/.test(page)) {
     return false;
   }
 
@@ -72,10 +74,12 @@ export default defineConfig({
     enabled: false,
   },
   integrations: [
-    // Every page meant to be found: not the 404s, nor the English-only pages in other languages.
+    // Every page meant to be found: not the 404s, the lists' parts, nor the English-only pages in other languages.
     sitemap({ filter: listed }),
     // Links out of a post get the site's arrow and new tab; its headings link to themselves.
     proseLinks(site),
+    // What the pages may run and load, written into each once they are built.
+    csp(),
   ],
   vite: {
     plugins: [woff2Only],

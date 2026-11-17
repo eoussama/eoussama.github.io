@@ -24,7 +24,8 @@ Needs Node 26 (see `.nvmrc`) and pnpm.
 
 * `pnpm install`, then `pnpm dev` for the site at http://localhost:4321
 * `pnpm check` before committing: it audits the dependencies, lints, checks the types and builds
-* `bash scripts/build-site.sh` builds the whole hosted site, every version included, into `_site/`
+* `pnpm build`, then `pnpm preview`, to see the built site: preview serves what the last build wrote, and has nothing without one
+* `bash scripts/build-site.sh` builds the whole hosted site, every version included, into `_site/`, building each version's pages for its own `BASE_PATH` (`/` for the root, `/v/<x.y>` under it)
 
 Builds read from the network:
 
@@ -32,6 +33,14 @@ Builds read from the network:
 * The projects' stars, languages and dates come from the GitHub API too, falling back to the saved snapshot (`src/data/github.json`, refreshed with `pnpm snapshot`) when it can't be reached. `GITHUB_OFFLINE=1` uses the snapshot without asking (and `pnpm dev` always does); it doesn't apply to the short links.
 * `GITHUB_TOKEN` lifts the GitHub API's limit of 60 requests an hour, which the projects' stats use up quickly. Without it, the short links are read from GitHub's raw file host instead, which may be up to five minutes behind.
 * `PUBLIC_GA_ID` (see `.env.example`) turns on Google Analytics, behind a consent banner.
+
+`/.well-known/security.txt` is written by each build, not kept as a file: its `Expires` is 364 days after the build (RFC 9116 asks for less than a year), and the weekly rebuild keeps it rolling.
+
+Every page carries a Content Security Policy, as a `<meta>` at the top of its head, since GitHub Pages can't send headers: it is written by the build ([`src/lib/csp.ts`](src/lib/csp.ts)), not by `pnpm dev`, so try it with `pnpm build` and `pnpm preview`. The scripts a page carries inline run by their hash, worked out from the built pages, so a new one needs nothing added by hand, as long as its text is the same on every page: a page's own values go in `data-*` attributes on the script (as in `src/layouts/Base.astro`), never into its text (`define:vars` included). The build fails, rather than leave the browser to block quietly, on:
+
+* more than 16 different inline scripts (11 today) or 4 different `<style>` elements (2 today), `MAX_SCRIPTS` and `MAX_STYLES` in `src/lib/csp.ts`: a script that changes from page to page is usually the cause
+* an `onclick`-style handler or a `javascript:` link, however it is spelled or escaped
+* a `<script src>` from another origin, or an inline `<script>` of a type that is neither one a browser runs nor a known data block (`application/ld+json`, `application/json`)
 
 ## License
 Apache License 2.0, see [LICENSE](LICENSE). Copyright 2018-2026 Oussama Essamadi.
