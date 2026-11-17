@@ -1,5 +1,6 @@
 import type { AstroIntegration } from "astro";
 
+import { short } from "./glue";
 import { keepFrom } from "./tail";
 
 
@@ -224,6 +225,46 @@ const scrollableTables = {
 };
 
 /**
+ * A link and the comma or full stop right after it kept on one line, as Glue.astro does
+ * on the pages: a browser may break between a link's closing icon and the mark after
+ * it, which then starts the next line alone. Only the closing marks join the link; the
+ * rest of the text wraps as usual.
+ */
+const gluedMarks = {
+  name: "glued-marks",
+  element: {
+    filter: ["p", "li", "td", "dd", "figcaption"],
+    visit(node: Readonly<Element>): Element | void {
+      const out: Node[] = [];
+      let changed = false;
+
+      node.children.forEach((child, i) => {
+        const before = out.at(-1);
+        const marks = child.type === "text" ? /^[,.;:!?)\]、。，．！？）」』】・،؛؟…]+/u.exec((child as Text).value)?.[0] : undefined;
+
+        if (marks && i > 0 && before?.type === "element" && (before as Element).tagName === "a" && short(text(before).replace(HINT, ""))) {
+          const rest = (child as Text).value.slice(marks.length);
+
+          out[out.length - 1] = h("span", { className: ["glue"] }, [before, { type: "text", value: marks }]);
+
+          if (rest) {
+            out.push({ type: "text", value: rest });
+          }
+
+          changed = true;
+
+          return;
+        }
+
+        out.push(child);
+      });
+
+      return changed ? { ...node, children: out } : undefined;
+    },
+  },
+};
+
+/**
  * The integration that adds the plugins to Astro's Markdown processor.
  *
  * @param site - The site's own address, such as https://ouss.es
@@ -284,7 +325,7 @@ export default function proseLinks(site: string): AstroIntegration {
           throw new Error("prose-links: Markdown is no longer rendered by Sätteri; port the plugin.");
         }
 
-        processor.options.hastPlugins.push(external, internal, headingLinks, scrollableTables);
+        processor.options.hastPlugins.push(external, internal, headingLinks, scrollableTables, gluedMarks);
       },
     },
   };
