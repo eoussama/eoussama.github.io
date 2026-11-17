@@ -1,3 +1,10 @@
+import type { List as Name, Parts } from "./lists";
+
+import { syncLanguageLinks } from "./languages";
+import { loadList } from "./lists";
+
+
+
 /*
  * The list drawer. "All projects" and "All posts" open it over whatever page is
  * showing, and the address holds its whole state, so a link brings it back as it was:
@@ -6,630 +13,805 @@
  *
  * Opening adds an entry to the history, so Back closes it; searching and filtering
  * update the address in place. The logo and the section name fly into its header.
+ *
+ * Loaded the first time it is wanted, by the links and keys that open it (lazy.ts).
+ * Each list, and its filters, come from files beside its page (lists.ts): until they
+ * are here, its sheet has its search and a quiet word in place of the list, and
+ * whatever the address asks of the filters waits for them.
  */
 
-type List = "" | "work" | "writing";
+type List = "" | Name;
 
-const PARAM: Record<Exclude<List, "">, string> = { work: "projects", writing: "posts" };
+const PARAM: Record<Name, string> = { work: "projects", writing: "posts" };
 const LIST_OF: Record<string, List> = { projects: "work", posts: "writing" };
 
-const drawer = document.querySelector<HTMLElement>("#drawer");
+// Only ever loaded on a page that has it (lazy.ts).
+const drawer = document.querySelector<HTMLElement>("#drawer")!;
+const root = document.documentElement;
 
-if (drawer) {
-  const root = document.documentElement;
+/**
+ * Puts the page out of reach while a list is open, and what stands beside it too
+ * (the skip link, the section map, the way back up, the consent banner), so that
+ * the keyboard stays in the drawer. The drawer, its scrim and the dialogs are left be.
+ *
+ * @param away - Whether a list is open
+ */
+function behind(away: boolean) {
+  for (const el of document.body.children) {
+    if (el instanceof HTMLElement && el !== drawer && !el.matches("dialog, script, style, .dr-scrim, .ground, .sky")) {
+      el.inert = away;
+    }
+  }
+}
+const pageTitle = document.title;
+const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+let opener: HTMLElement | null = null;
+
+const current = () => (root.dataset.open ?? "") as List;
+
+// What a screen reader is told as the open list changes: that it is on its way, how
+// many it holds once here, how many a search or the filters leave. One line for both
+// lists, outside their sheets, which are marked busy while their list is on its way.
+const status = drawer.querySelector<HTMLElement>("[data-dr-status]");
+let saying = 0;
+
+/**
+ * Says something through the status line, now or after a moment: while a search is
+ * typed, only once the typing pauses, so each letter isn't read out.
+ *
+ * @param text - What to say
+ * @param after - How long to wait, in milliseconds; anything said meanwhile replaces it
+ */
+function say(text: string, after = 0) {
+  window.clearTimeout(saying);
+
+  const put = () => {
+    if (status && status.textContent !== text) {
+      status.textContent = text;
+    }
+  };
+
+  if (after) {
+    saying = window.setTimeout(put, after);
+  }
+  else {
+    put();
+  }
+}
+
+/**
+ * Puts focus in a list just opened: on its search, so typing filters at once. On a
+ * touch screen that would raise the keyboard over the list: the title takes it.
+ *
+ * @param list - The list
+ */
+function focusList(list: List) {
+  const search = drawer.querySelector<HTMLInputElement>(`[data-sheet="${list}"] .dr-q`);
+  const touch = matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+  (touch ? drawer.querySelector<HTMLElement>(".dr-title") : search)?.focus({ preventScroll: true });
+}
+
+/**
+ * The window's title with a list open: the list's name before the page's, unless the
+ * page is the list's own, whose title names it already.
+ *
+ * @param list - The list open, or "" for none
+ * @returns The title
+ */
+function titleFor(list: List) {
+  const name = list ? drawer.dataset[list === "work" ? "titleWork" : "titleWriting"] : "";
+
+  return !name || pageTitle.startsWith(`${name} · `) ? pageTitle : `${name} · ${pageTitle}`;
+}
+
+/* ---------- Each list's search and filters ---------- */
+
+type Sheet = {
+  /** Every address parameter the list uses. */
+  keys: string[];
+  /** The address parameters for what is searched and picked. */
+  params: () => [string, string][];
+  /** Takes the search and the picks from the address. */
+  restore: (search: URLSearchParams) => void;
+  /** Closes the filter menu; says whether it was open. */
+  closeMenu: () => boolean;
+  /** Puts the list and its filters in, once they are here. */
+  fill: (parts: Parts) => void;
+  /** Says the list didn't come, with a way to ask again. */
+  fail: () => void;
+  /** Says, as the list opens, that it is still on its way, or that it didn't come. */
+  opened: () => void;
+};
+
+const sheets = new Map<List, Sheet>();
+
+/**
+ * The address for a list with its search and filters, keeping anything else the
+ * page's address had.
+ *
+ * @param list - The list to show, or "" for none
+ * @returns The address
+ */
+function addressFor(list: List): string {
+  const next = new URLSearchParams(location.search);
+
+  next.delete("list");
+  sheets.forEach(sheet => sheet.keys.forEach(key => next.delete(key)));
+
+  if (list) {
+    next.set("list", PARAM[list]);
+    sheets.get(list)?.params().forEach(([key, value]) => next.append(key, value));
+  }
+
+  const query = next.toString();
+
+  return `${location.pathname}${query ? `?${query}` : ""}${location.hash}`;
+}
+
+/** Writes the open list's search and filters into the address, in place. */
+function saveState() {
+  const list = current();
+
+  if (list) {
+    history.replaceState(history.state, "", addressFor(list));
+    syncLanguageLinks();
+  }
+}
+
+/**
+ * Fetches a list, if it isn't already on its way, and puts it in its sheet once it is
+ * here: as soon as a visitor heads for it, so that it is there as the drawer opens.
+ *
+ * @param list - The list
+ */
+export function prepare(list: Name) {
+  const sheet = sheets.get(list);
+
+  loadList(list).then(parts => sheet?.fill(parts), () => sheet?.fail());
+}
+
+drawer.querySelectorAll<HTMLElement>(".dr-sheet").forEach((element) => {
+  const list = element.dataset.sheet as Name;
+  const input = element.querySelector<HTMLInputElement>(".dr-q")!;
+  const search = element.querySelector<HTMLElement>(".dr-search")!;
+  const chips = element.querySelector<HTMLElement>(".dr-active")!;
+  const clearAll = chips.querySelector<HTMLElement>("[data-clear]")!;
+  const empty = element.querySelector<HTMLElement>(".dr-empty")!;
+  const wait = element.querySelector<HTMLElement>("[data-dr-wait]");
+  const waitWords = wait?.querySelector("span");
+  const waitText = waitWords?.textContent ?? "";
+  const retry = wait?.querySelector<HTMLButtonElement>("[data-dr-retry]");
+  // The parameters its filters can take, known before the filters are here.
+  const groups = (element.dataset.keys ?? "").split(" ").filter(Boolean);
+  // Searched without accents, hamzas or case, as the command menu is (palette.ts).
+  const fold = (text: string) => text.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
+
+  // All of these come with the list.
+  let filled = false;
+  let items: HTMLElement[] = [];
+  let keywords = new Map<HTMLElement, string>();
+  let facetsOf = new Map<HTMLElement, Record<string, string | string[]>>();
+  let options: HTMLButtonElement[] = [];
+  let button: HTMLButtonElement | null = null;
+  let badge: HTMLElement | null = null;
+  let menu: HTMLElement | null = null;
+  /** How many the list holds, in words ("39 projects"), as its page says it. */
+  let count = "";
+  const picked = new Set<HTMLButtonElement>();
+  /** The picks the address asked for while there was nothing yet to pick. */
+  let asked: [string, string][] = [];
+
+  const groupOf = (option: HTMLElement) => option.closest<HTMLElement>(".dr-fg")!;
+
   /**
-   * Puts the page out of reach while a list is open, and what stands beside it too
-   * (the skip link, the section map, the way back up, the consent banner), so that
-   * the keyboard stays in the drawer. The drawer, its scrim and the dialogs are left be.
+   * Shows the items that match the search and every group's picks, then redraws the
+   * chips, and says how many are left.
    *
-   * @param away - Whether a list is open
+   * @param tell - When to say it: now, once the typing pauses, or not at all (a list
+   * put in while another is open)
    */
-  const behind = (away: boolean) => {
-    for (const el of document.body.children) {
-      if (el instanceof HTMLElement && el !== drawer && !el.matches("dialog, script, style, .dr-scrim, .ground, .sky")) {
-        el.inert = away;
-      }
-    }
-  };
-  const pageTitle = document.title;
-  const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let opener: HTMLElement | null = null;
-
-  const current = () => (root.dataset.open ?? "") as List;
-  const titleFor = (list: List) => list ? `${drawer.dataset[list === "work" ? "titleWork" : "titleWriting"]} · ${pageTitle}` : pageTitle;
-
-  /* ---------- Each list's search and filters ---------- */
-
-  type Sheet = {
-    /** Every address parameter the list uses. */
-    keys: string[];
-    /** The address parameters for what is searched and picked. */
-    params: () => [string, string][];
-    /** Takes the search and the picks from the address. */
-    restore: (search: URLSearchParams) => void;
-    /** Closes the filter menu; says whether it was open. */
-    closeMenu: () => boolean;
-  };
-
-  const sheets = new Map<List, Sheet>();
-
-  /**
-   * The address for a list with its search and filters, keeping anything else the
-   * page's address had.
-   *
-   * @param list - The list to show, or "" for none
-   * @returns The address
-   */
-  const addressFor = (list: List): string => {
-    const next = new URLSearchParams(location.search);
-
-    next.delete("list");
-    sheets.forEach(sheet => sheet.keys.forEach(key => next.delete(key)));
-
-    if (list) {
-      next.set("list", PARAM[list]);
-      sheets.get(list)?.params().forEach(([key, value]) => next.append(key, value));
-    }
-
-    const query = next.toString();
-
-    return `${location.pathname}${query ? `?${query}` : ""}${location.hash}`;
-  };
-
-  /**
-   * Points the language links at the same page, with the drawer as it is, elsewhere. A
-   * missing page passes on the address asked for, so the one in another language shows
-   * it too: only a path of this site, as a link could put anything there.
-   */
-  const syncLanguageLinks = () => {
-    const missing = !!document.querySelector(".nf-hole");
-    const asked = new URLSearchParams(location.search).get("from") ?? location.pathname;
-    // Or a short link it didn't know, as the root 404 marks it (NotFound.astro).
-    const from = /^(?:to\.ouss\.es)?\/(?![/\\])\S{0,200}$/.test(asked) ? asked : "";
-
-    document.querySelectorAll<HTMLAnchorElement>("a[data-lang-link]").forEach((link) => {
-      link.dataset.base ??= link.getAttribute("href") ?? "";
-
-      const next = new URL(link.dataset.base, location.href);
-
-      next.search = location.search;
-      // A short link's UTM tags belong to the page it led to (analytics.ts): carried on,
-      // GA would count the next page as a new visit through it.
-      [...next.searchParams.keys()].filter(key => key.startsWith("utm_")).forEach(key => next.searchParams.delete(key));
-
-      if (missing && from) {
-        next.searchParams.set("from", from);
-      }
-      else if (missing) {
-        next.searchParams.delete("from");
-      }
-
-      link.href = `${next.pathname}${next.search}`;
-    });
-  };
-
-  /** Writes the open list's search and filters into the address, in place. */
-  const saveState = () => {
-    const list = current();
-
-    if (list) {
-      history.replaceState(history.state, "", addressFor(list));
-      syncLanguageLinks();
-    }
-  };
-
-  drawer.querySelectorAll<HTMLElement>(".dr-sheet").forEach((element) => {
-    const list = element.dataset.sheet as List;
-    const input = element.querySelector<HTMLInputElement>(".dr-q")!;
-    const button = element.querySelector<HTMLButtonElement>(".dr-fbtn");
-    const badge = element.querySelector<HTMLElement>(".dr-badge");
-    const menu = element.querySelector<HTMLElement>(".dr-fpop");
-    const chips = element.querySelector<HTMLElement>(".dr-active")!;
-    const clearAll = chips.querySelector<HTMLElement>("[data-clear]")!;
-    const empty = element.querySelector<HTMLElement>(".dr-empty")!;
-    const status = element.querySelector<HTMLElement>("[data-dr-status]");
-    const items = [...element.querySelectorAll<HTMLElement>(".dr-list > li")];
-    // Searched without accents, hamzas or case, as the command menu is (palette.ts).
-    const fold = (text: string) => text.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
-    const keywords = new Map(items.map(item => [item, fold(item.dataset.kw ?? "")]));
-    const facetsOf = new Map(items.map(item => [item, JSON.parse(item.dataset.facets ?? "{}") as Record<string, string | string[]>]));
-    const options = [...element.querySelectorAll<HTMLButtonElement>(".dr-fo")];
-    const groups = [...element.querySelectorAll<HTMLElement>(".dr-fg")].map(group => group.dataset.group!);
-    const picked = new Set<HTMLButtonElement>();
-
-    const groupOf = (option: HTMLElement) => option.closest<HTMLElement>(".dr-fg")!;
-
-    /** Shows the items that match the search and every group's picks, then redraws the chips. */
-    const update = () => {
-      const query = fold(input.value.trim());
-      const wanted = new Map<string, Set<string>>();
-
-      picked.forEach((option) => {
-        const group = groupOf(option).dataset.group!;
-
-        wanted.set(group, (wanted.get(group) ?? new Set()).add(option.dataset.value!));
-      });
-
-      let shown = 0;
-
-      items.forEach((item) => {
-        // A facet holds one value (a year) or several (tags); an item matches a group when any of its values is picked.
-        const facets = facetsOf.get(item)!;
-        const matches = (!query || keywords.get(item)!.includes(query))
-          && [...wanted].every(([group, values]) => [facets[group] ?? ""].flat().some(value => values.has(value)));
-
-        item.hidden = !matches;
-
-        // The entrance staggers what shows, in order, however far down the full list it sits.
-        if (matches) {
-          item.style.setProperty("--i", String(shown));
-        }
-
-        shown += matches ? 1 : 0;
-      });
-
-      options.forEach(option => option.setAttribute("aria-pressed", String(picked.has(option))));
-
-      chips.querySelectorAll(".dr-on").forEach(chip => chip.remove());
-      picked.forEach((option) => {
-        const groupLabel = groupOf(option).dataset.groupLabel ?? "";
-        const chip = document.createElement("button");
-        const key = document.createElement("span");
-
-        chip.type = "button";
-        chip.className = "dr-on";
-        chip.setAttribute("aria-label", `${drawer.dataset.remove ?? ""}${groupLabel}: ${option.dataset.label}`);
-        key.className = "dr-on-k";
-        key.textContent = groupLabel;
-        chip.append(key, option.dataset.label ?? "");
-        chip.insertAdjacentHTML("beforeend", "<svg width=\"10\" height=\"10\" viewBox=\"0 0 10 10\" aria-hidden=\"true\"><path d=\"M2 2l6 6M8 2L2 8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path></svg>");
-        chip.addEventListener("click", () => {
-          picked.delete(option);
-          update();
-          saveState();
-        });
-        clearAll.before(chip);
-      });
-
-      chips.hidden = picked.size === 0;
-      clearAll.hidden = picked.size < 2;
-
-      if (badge && button) {
-        badge.hidden = picked.size === 0;
-        badge.textContent = String(picked.size);
-        button.setAttribute("aria-label", picked.size ? `${button.dataset.label} (${picked.size})` : button.dataset.label ?? "");
-      }
-
-      empty.hidden = shown > 0;
-      // Put in as it was typed: a "$&" in the search is not a replacement pattern.
-      const none = shown > 0 ? "" : (query ? (drawer.dataset.noneQ ?? "").replace("%", () => input.value.trim()) : drawer.dataset.noneF ?? "");
-
-      empty.querySelector("span")!.textContent = none;
-
-      if (status && status.textContent !== none) {
-        status.textContent = none;
-      }
-    };
-
-    const setMenu = (opened: boolean) => {
-      menu?.setAttribute("data-open", String(opened));
-      button?.setAttribute("aria-expanded", String(opened));
-    };
-
-    sheets.set(list, {
-      keys: ["q", ...groups],
-      params: () => {
-        const params: [string, string][] = [];
-        const query = input.value.trim();
-
-        if (query) {
-          params.push(["q", query]);
-        }
-
-        picked.forEach(option => params.push([groupOf(option).dataset.group!, option.dataset.value!]));
-
-        return params;
-      },
-      restore: (search) => {
-        input.value = search.get("q") ?? "";
-        picked.clear();
-        options.forEach((option) => {
-          if (search.getAll(groupOf(option).dataset.group!).includes(option.dataset.value!)) {
-            picked.add(option);
-          }
-        });
-        update();
-      },
-      closeMenu: () => {
-        const wasOpen = menu?.dataset.open === "true";
-        // Focus in the menu would be lost with it: it goes back to the menu's button.
-        const inside = !!menu?.contains(document.activeElement);
-
-        setMenu(false);
-
-        if (inside) {
-          button?.focus();
-        }
-
-        return wasOpen;
-      },
-    });
-
-    input.addEventListener("input", () => {
-      update();
-      saveState();
-    });
-
-    button?.addEventListener("click", (event) => {
-      event.stopPropagation();
-      setMenu(menu?.dataset.open !== "true");
-    });
-
-    options.forEach((option) => {
-      option.addEventListener("click", () => {
-        if (picked.has(option)) {
-          picked.delete(option);
-        }
-        else {
-          picked.add(option);
-        }
-
-        update();
-        saveState();
-      });
-    });
-
-    element.querySelectorAll("[data-clear]").forEach((clear) => {
-      clear.addEventListener("click", () => {
-        picked.clear();
-        input.value = "";
-        update();
-        saveState();
-        input.focus();
-      });
-    });
-
-    // A click anywhere outside the filter menu closes it.
-    document.addEventListener("click", (event) => {
-      if (menu?.dataset.open === "true" && !menu.contains(event.target as Node)) {
-        setMenu(false);
-      }
-    });
-  });
-
-  const closeMenus = () => [...sheets.values()].map(sheet => sheet.closeMenu()).includes(true);
-
-  /* ---------- Opening and closing ---------- */
-
-  /**
-   * Moves an element from where something else was to where it is now, over the
-   * same time and curve as the drawer's slide, so the two travel together.
-   *
-   * @param element - The element to move
-   * @param from - Where it starts
-   * @param uniform - Whether to scale it evenly, for text
-   * @param fromSize - The font size of the text it starts as, when that differs from
-   * its box's height: the word then grows or shrinks to exactly that size
-   * @param over - Whether it flies in from outside the drawer, whose scrolling box
-   * would cut it off: a copy above everything makes the trip instead, to where the
-   * element rests once the drawer has slid in
-   * @param fromColor - The colour of the text it starts as, for a copy
-   * @returns The flight, or null when nothing moves
-   */
-  const fly = (element: Element | null, from: DOMRect | undefined, uniform = true, fromSize = 0, over = false, fromColor = ""): Animation | null => {
-    if (!element || !from?.width || reducedMotion()) {
-      return null;
-    }
-
-    let to = element.getBoundingClientRect();
-
-    if (!to.width || !to.height) {
-      return null;
-    }
-
-    let mover = element;
-
-    if (over) {
-      // The drawer is only starting to slide in: where it will be is where it is,
-      // less the slide still to come.
-      const slide = new DOMMatrix(getComputedStyle(drawer).transform);
-      const style = getComputedStyle(element);
-      const copy = element.cloneNode(true) as HTMLElement;
-
-      to = new DOMRect(to.left - slide.m41, to.top - slide.m42, to.width, to.height);
-      copy.removeAttribute("id");
-      copy.setAttribute("aria-hidden", "true");
-      Object.assign(copy.style, {
-        position: "fixed",
-        left: `${to.left}px`,
-        top: `${to.top}px`,
-        width: `${to.width}px`,
-        height: `${to.height}px`,
-        margin: "0",
-        zIndex: "80",
-        pointerEvents: "none",
-        font: style.font,
-        color: style.color,
-        letterSpacing: style.letterSpacing,
-        whiteSpace: "nowrap",
-        direction: style.direction,
-      });
-      document.body.append(copy);
-      // Not hidden: the copy's masks are still the original's, which must keep drawing.
-      (element as HTMLElement).style.opacity = "0";
-      mover = copy;
-    }
-
-    const size = fromSize && Number.parseFloat(getComputedStyle(element).fontSize);
-    const sy = size ? fromSize / size : from.height / to.height;
-    const sx = size || uniform ? sy : from.width / to.width;
-    // Text scaled by its font size lines up on the middle of its line, and on the
-    // side it starts from.
-    const dy = size ? from.top + from.height / 2 - to.top - to.height * sy / 2 : from.top - to.top;
-    const dx = size && root.dir === "rtl" ? from.right - to.left - to.width * sx : from.left - to.left;
-
-    // Text flying in from the page starts in the page's colour, muted for a label.
-    const tint = over && fromColor ? [{ color: fromColor }, { color: getComputedStyle(element).color }] : [{}, {}];
-    const flight = mover.animate(
-      [
-        { transformOrigin: "0 0", transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, ...tint[0] },
-        { transformOrigin: "0 0", transform: "none", ...tint[1] },
-      ],
-      { duration: 340, easing: "cubic-bezier(.2,0,0,1)" },
-    );
-
-    if (mover !== element) {
-      const land = () => {
-        (element as HTMLElement).style.removeProperty("opacity");
-        mover.remove();
-      };
-
-      flight.finished.then(land, land);
-    }
-
-    return flight;
-  };
-
-  const pageLogo = () => document.querySelector(".bar .logo svg");
-  // A section's name on the page: its link, not its heading, which runs the list's height.
-  const pageLabel = (list: List) => document.querySelector(list === "writing" ? "#writing > a" : "#work > a");
-  const drawerLogo = () => drawer.querySelector(".dr-mark svg");
-  const drawerTitle = (list: List) => drawer.querySelector(`.dr-title [data-show="${list}"]`);
-  const drawerTab = (list: List) => drawer.querySelector(`.dr-tabs [data-show="${list}"]`);
-  const fontSize = (element: Element | null) => element ? Number.parseFloat(getComputedStyle(element).fontSize) : 0;
-
-  /**
-   * Shows a list, switches to the other one, or closes the drawer. The address is
-   * left to the caller.
-   *
-   * @param list - The list to show, or "" to close
-   */
-  let swapping = 0;
-
-  const show = (list: List) => {
-    const was = current();
-
-    if (was === list) {
+  const update = (tell: "now" | "later" | "no" = "now") => {
+    if (!filled) {
       return;
     }
 
-    // Where things are before the change, for the flights.
-    const from = was === ""
-      ? { logo: pageLogo()?.getBoundingClientRect(), label: pageLabel(list)?.getBoundingClientRect() }
-      : { logo: drawerLogo()?.getBoundingClientRect(), label: drawerTitle(was)?.getBoundingClientRect() };
-    const swap = was === "" ? null : { title: drawerTitle(was), tab: drawerTab(was) };
-    const swapFrom = swap && {
-      title: swap.title?.getBoundingClientRect(),
-      titleSize: fontSize(swap.title),
-      tab: swap.tab?.getBoundingClientRect(),
-      tabSize: fontSize(swap.tab),
-    };
+    const query = fold(input.value.trim());
+    const wanted = new Map<string, Set<string>>();
 
-    closeMenus();
+    picked.forEach((option) => {
+      const group = groupOf(option).dataset.group!;
 
-    // Switching lists, the section names on the page behind fade rather than blink.
-    // Opening or closing, the name on the page flies instead: it shows or hides at once.
-    window.clearTimeout(swapping);
+      wanted.set(group, (wanted.get(group) ?? new Set()).add(option.dataset.value!));
+    });
 
-    if (list && was) {
-      root.dataset.swap = "";
-      swapping = window.setTimeout(() => delete root.dataset.swap, 600);
-    }
-    else {
-      delete root.dataset.swap;
-    }
+    let shown = 0;
 
-    if (list) {
-      drawer.dataset.list = list;
-      root.dataset.open = list;
-    }
-    else {
-      delete root.dataset.open;
-    }
+    items.forEach((item) => {
+      // A facet holds one value (a year) or several (tags); an item matches a group when any of its values is picked.
+      const facets = facetsOf.get(item)!;
+      const matches = (!query || keywords.get(item)!.includes(query))
+        && [...wanted].every(([group, values]) => [facets[group] ?? ""].flat().some(value => values.has(value)));
 
-    drawer.inert = !list;
-    behind(!!list);
-    document.title = titleFor(list);
+      item.hidden = !matches;
 
-    if (list) {
-      // Unless the list is scrolled down, out of sight of its header.
-      if (was === "" && !drawer.querySelector(".dr-scroll")?.scrollTop) {
-        fly(drawerLogo(), from.logo, false, 0, true);
-        const label = pageLabel(list);
-
-        fly(drawerTitle(list), from.label, true, fontSize(label), true, label ? getComputedStyle(label).color : "");
-      }
-      else if (swapFrom) {
-        // Switching lists, the two names trade places: the tab pressed grows into the
-        // title, and the old title shrinks into the tab.
-        fly(drawerTitle(list), swapFrom.tab, true, swapFrom.tabSize);
-        fly(drawerTab(list), swapFrom.title, true, swapFrom.titleSize);
+      // The entrance staggers what shows, in order, however far down the full list it sits.
+      if (matches) {
+        item.style.setProperty("--i", String(shown));
       }
 
-      // The search takes focus, also when switching lists, so typing filters at once. On
-      // a touch screen that would raise the keyboard over the list: the title takes it.
-      const search = drawer.querySelector<HTMLInputElement>(`[data-sheet="${list}"] .dr-q`);
-      const touch = matchMedia("(hover: none) and (pointer: coarse)").matches;
-      const focus = () => (touch ? drawer.querySelector<HTMLElement>(".dr-title") : search)?.focus({ preventScroll: true });
-      // Picked from the command menu, still folding away: until it closes, nothing
-      // outside it takes focus, and closing hands focus back to what had it before.
-      const menu = document.querySelector<HTMLDialogElement>("dialog.ck[open]");
+      shown += matches ? 1 : 0;
+    });
 
-      if (menu) {
-        menu.addEventListener("close", () => {
-          if (current() === list) {
-            focus();
-          }
-        }, { once: true });
-      }
-      else {
-        focus();
-      }
+    options.forEach(option => option.setAttribute("aria-pressed", String(picked.has(option))));
+
+    chips.querySelectorAll(".dr-on").forEach(chip => chip.remove());
+    picked.forEach((option) => {
+      const groupLabel = groupOf(option).dataset.groupLabel ?? "";
+      const chip = document.createElement("button");
+      const key = document.createElement("span");
+
+      chip.type = "button";
+      chip.className = "dr-on";
+      chip.setAttribute("aria-label", `${drawer.dataset.remove ?? ""}${groupLabel}${drawer.dataset.keySep ?? ": "}${option.dataset.label}`);
+      key.className = "dr-on-k";
+      key.textContent = groupLabel;
+      chip.append(key, option.dataset.label ?? "");
+      chip.insertAdjacentHTML("beforeend", "<svg width=\"10\" height=\"10\" viewBox=\"0 0 10 10\" aria-hidden=\"true\"><path d=\"M2 2l6 6M8 2L2 8\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"></path></svg>");
+      chip.addEventListener("click", () => {
+        // The chips are drawn anew, this one gone: focus on it moves to the next one,
+        // or to clearing them all, or to the search.
+        const at = chip.contains(document.activeElement) ? [...chips.querySelectorAll(".dr-on")].indexOf(chip) : -1;
+
+        picked.delete(option);
+        update();
+        saveState();
+
+        if (at >= 0) {
+          const next = chips.querySelectorAll<HTMLElement>(".dr-on")[at] ?? (clearAll.hidden ? input : clearAll);
+
+          next.focus();
+        }
+      });
+      clearAll.before(chip);
+    });
+
+    chips.hidden = picked.size === 0;
+    clearAll.hidden = picked.size < 2;
+
+    if (badge && button) {
+      badge.hidden = picked.size === 0;
+      badge.textContent = String(picked.size);
+      button.setAttribute("aria-label", picked.size ? `${button.dataset.label} (${picked.size})` : button.dataset.label ?? "");
     }
-    else {
-      const flights = [fly(pageLogo(), from.logo, false), fly(pageLabel(was), from.label, true, fontSize(drawerTitle(was)))];
-      // What flies back to the page is no longer in the drawer sliding away.
-      const left = [drawerLogo(), drawerTitle(was)] as (HTMLElement | null)[];
 
-      if (flights.some(Boolean)) {
-        left.forEach(element => element?.style.setProperty("opacity", "0"));
-        Promise.allSettled(flights.map(flight => flight?.finished)).then(() => left.forEach(element => element?.style.removeProperty("opacity")));
-      }
-      (opener ?? document.querySelector<HTMLElement>(`.page [data-drawer="${was}"]`))?.focus({ preventScroll: true });
-      opener = null;
+    empty.hidden = shown > 0;
+    // Put in as it was typed: a "$&" in the search is not a replacement pattern.
+    const none = shown > 0 ? "" : (query ? (drawer.dataset.noneQ ?? "").replace("%", () => input.value.trim()) : drawer.dataset.noneF ?? "");
+
+    empty.querySelector("span")!.textContent = none;
+
+    // How many are left, out of how many ("22 of 39"); the whole list, by its count.
+    const told = shown === 0
+      ? none
+      : query || picked.size ? (drawer.dataset.shownOf ?? "").replace("{shown}", String(shown)).replace("{all}", String(items.length)) : count;
+
+    if (tell !== "no") {
+      say(told, tell === "later" ? 500 : 0);
     }
   };
 
-  const open = (list: List, from: HTMLElement | null) => {
-    if (current() === "") {
-      // Opened by a key, or from the command menu, focus goes back where it was: on
-      // nothing in particular, the page itself, rather than to a link of the page's.
-      opener = from ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
-      show(list);
-      history.pushState({ drawer: true }, "", addressFor(list));
-    }
-    else {
-      show(list);
-      history.replaceState(history.state, "", addressFor(list));
-    }
-
-    syncLanguageLinks();
+  const setMenu = (opened: boolean) => {
+    menu?.setAttribute("data-open", String(opened));
+    button?.setAttribute("aria-expanded", String(opened));
   };
 
-  const close = () => {
-    // Opened here: going back is closing. Arrived with it open: the page takes its place.
-    if ((history.state as { drawer?: boolean } | null)?.drawer) {
-      history.back();
-    }
-    else {
-      show("");
-      history.replaceState(history.state, "", addressFor(""));
-      syncLanguageLinks();
-    }
+  /** Picks the options the address asked for. */
+  const pickAsked = () => {
+    picked.clear();
+    options.forEach((option) => {
+      if (asked.some(([group, value]) => group === groupOf(option).dataset.group && value === option.dataset.value)) {
+        picked.add(option);
+      }
+    });
   };
 
-  // Back and forward bring the drawer in line with the address.
-  window.addEventListener("popstate", () => {
-    const search = new URLSearchParams(location.search);
-    const asked = search.get("list") ?? "";
-    // Only the two lists: not whatever else an object answers to, like ?list=toString.
-    const list = Object.hasOwn(LIST_OF, asked) ? LIST_OF[asked]! : "";
+  sheets.set(list, {
+    keys: ["q", ...groups],
+    params: () => {
+      const params: [string, string][] = [];
+      const query = input.value.trim();
 
-    if (list) {
-      sheets.get(list)?.restore(search);
-    }
+      if (query) {
+        params.push(["q", query]);
+      }
 
-    show(list);
-    syncLanguageLinks();
-  });
+      // Until the filters are here, what the address asked of them stays in it.
+      if (!filled) {
+        return [...params, ...asked];
+      }
 
-  // Every "All projects" and "All posts" link opens the drawer in place. A click with
-  // a modifier key still opens the link in a new tab.
-  document.querySelectorAll<HTMLAnchorElement>("[data-drawer]").forEach((link) => {
-    link.addEventListener("click", (event) => {
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+      picked.forEach(option => params.push([groupOf(option).dataset.group!, option.dataset.value!]));
+
+      return params;
+    },
+    restore: (address) => {
+      input.value = address.get("q") ?? "";
+      asked = groups.flatMap(group => address.getAll(group).map((value): [string, string] => [group, value]));
+      pickAsked();
+      update();
+    },
+    closeMenu: () => {
+      const wasOpen = menu?.dataset.open === "true";
+      // Focus in the menu would be lost with it: it goes back to the menu's button.
+      const inside = !!menu?.contains(document.activeElement);
+
+      setMenu(false);
+
+      if (inside) {
+        button?.focus();
+      }
+
+      return wasOpen;
+    },
+    fill: (parts) => {
+      if (filled) {
         return;
       }
 
-      event.preventDefault();
+      // Copies: what was fetched stays as it came, for the command menu to read too.
+      const ul = parts.items.cloneNode(true) as HTMLUListElement;
+      const filters = parts.filters.cloneNode(true) as DocumentFragment;
+      // Focus on the way to ask again would go with it: it moves to the search.
+      const refocus = !!wait?.contains(document.activeElement);
 
-      // A chip (a project's language or tool) opens the list filtered by it.
-      if (link.dataset.filter !== undefined) {
-        sheets.get(link.dataset.drawer as List)?.restore(new URL(link.href).searchParams);
+      filled = true;
+      button = filters.querySelector<HTMLButtonElement>(".dr-fbtn");
+      badge = button?.querySelector<HTMLElement>(".dr-badge") ?? null;
+      menu = filters.querySelector<HTMLElement>(".dr-fpop");
+      items = [...ul.querySelectorAll<HTMLElement>(":scope > li")];
+      keywords = new Map(items.map(item => [item, fold(item.dataset.kw ?? "")]));
+      facetsOf = new Map(items.map(item => [item, JSON.parse(item.dataset.facets ?? "{}") as Record<string, string | string[]>]));
+      options = [...filters.querySelectorAll<HTMLButtonElement>(".dr-fo")];
+      count = ul.dataset.count ?? "";
+
+      if (button) {
+        search.append(button);
       }
 
-      open(link.dataset.drawer as List, link.closest(".ck") ? null : link);
+      if (menu) {
+        chips.before(menu);
+      }
+
+      (wait ?? empty).after(ul);
+      wait?.remove();
+      element.removeAttribute("aria-busy");
+
+      button?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setMenu(menu?.dataset.open !== "true");
+      });
+
+      options.forEach((option) => {
+        option.addEventListener("click", () => {
+          if (picked.has(option)) {
+            picked.delete(option);
+          }
+          else {
+            picked.add(option);
+          }
+
+          update();
+          saveState();
+        });
+      });
+
+      pickAsked();
+      asked = [];
+      // Here while it is open: how many it holds, or how many of them the address left.
+      update(current() === list ? "now" : "no");
+
+      if (refocus) {
+        input.focus({ preventScroll: true });
+      }
+    },
+    fail: () => {
+      if (filled || !waitWords || !retry) {
+        return;
+      }
+
+      waitWords.textContent = wait?.dataset.failed ?? "";
+      retry.hidden = false;
+      wait?.setAttribute("data-failed-now", "");
+      element.removeAttribute("aria-busy");
+
+      if (current() === list) {
+        say(waitWords.textContent);
+      }
+    },
+    opened: () => {
+      // A moment after the sheet comes in reach, for it to be read: what was said in it
+      // while out of reach isn't. A list here already says nothing.
+      if (!filled && waitWords) {
+        say(waitWords.textContent ?? "", 150);
+      }
+    },
+  });
+
+  retry?.addEventListener("click", () => {
+    // The button goes while the list is asked for again: focus waits in the search.
+    input.focus();
+    waitWords!.textContent = waitText;
+    retry.hidden = true;
+    wait?.removeAttribute("data-failed-now");
+    element.setAttribute("aria-busy", "true");
+    say(waitText);
+    prepare(list);
+  });
+
+  input.addEventListener("input", () => {
+    update("later");
+    saveState();
+  });
+
+  element.querySelectorAll("[data-clear]").forEach((clear) => {
+    clear.addEventListener("click", () => {
+      picked.clear();
+      asked = [];
+      input.value = "";
+      update();
+      saveState();
+      input.focus();
     });
   });
 
-  // Once the list is scrolled, it fades out under the search and filters at the top;
-  // while more of it waits below, it fades out at the bottom too.
-  const scroller = drawer.querySelector<HTMLElement>(".dr-scroll");
-  const markScroll = () => {
-    const top = scroller?.scrollTop ?? 0;
-    const below = scroller ? scroller.scrollHeight - scroller.clientHeight - top : 0;
+  // A click anywhere outside the filter menu closes it.
+  document.addEventListener("click", (event) => {
+    if (menu?.dataset.open === "true" && !menu.contains(event.target as Node)) {
+      setMenu(false);
+    }
+  });
+});
 
-    drawer.toggleAttribute("data-scrolled", top > 4);
-    drawer.toggleAttribute("data-more", below > 4);
-  };
+const closeMenus = () => [...sheets.values()].map(sheet => sheet.closeMenu()).includes(true);
 
-  scroller?.addEventListener("scroll", markScroll, { passive: true });
+/* ---------- Opening and closing ---------- */
 
-  // The list's length changes as it is searched, filtered or switched.
-  if (scroller) {
-    const resized = new ResizeObserver(markScroll);
-
-    resized.observe(scroller);
-    [...scroller.children].forEach(child => resized.observe(child));
+/**
+ * Moves an element from where something else was to where it is now, over the
+ * same time and curve as the drawer's slide, so the two travel together.
+ *
+ * @param element - The element to move
+ * @param from - Where it starts
+ * @param uniform - Whether to scale it evenly, for text
+ * @param fromSize - The font size of the text it starts as, when that differs from
+ * its box's height: the word then grows or shrinks to exactly that size
+ * @param over - Whether it flies in from outside the drawer, whose scrolling box
+ * would cut it off: a copy above everything makes the trip instead, to where the
+ * element rests once the drawer has slid in
+ * @param fromColor - The colour of the text it starts as, for a copy
+ * @returns The flight, or null when nothing moves
+ */
+function fly(element: Element | null, from: DOMRect | undefined, uniform = true, fromSize = 0, over = false, fromColor = ""): Animation | null {
+  if (!element || !from?.width || reducedMotion()) {
+    return null;
   }
 
-  markScroll();
+  let to = element.getBoundingClientRect();
 
-  // The P and W shortcuts: a list opens, or closes when it is the one showing.
-  document.addEventListener("drawer:toggle", (event) => {
-    const list = (event as CustomEvent<string>).detail as List;
+  if (!to.width || !to.height) {
+    return null;
+  }
 
-    if (!list || list === current()) {
-      if (current()) {
-        close();
-      }
+  let mover = element;
+
+  if (over) {
+    // The drawer is only starting to slide in: where it will be is where it is,
+    // less the slide still to come.
+    const slide = new DOMMatrix(getComputedStyle(drawer).transform);
+    const style = getComputedStyle(element);
+    const copy = element.cloneNode(true) as HTMLElement;
+
+    to = new DOMRect(to.left - slide.m41, to.top - slide.m42, to.width, to.height);
+    copy.removeAttribute("id");
+    copy.setAttribute("aria-hidden", "true");
+    Object.assign(copy.style, {
+      position: "fixed",
+      left: `${to.left}px`,
+      top: `${to.top}px`,
+      width: `${to.width}px`,
+      height: `${to.height}px`,
+      margin: "0",
+      zIndex: "80",
+      pointerEvents: "none",
+      font: style.font,
+      color: style.color,
+      letterSpacing: style.letterSpacing,
+      whiteSpace: "nowrap",
+      direction: style.direction,
+    });
+    document.body.append(copy);
+    // Not hidden: the copy's masks are still the original's, which must keep drawing.
+    (element as HTMLElement).style.opacity = "0";
+    mover = copy;
+  }
+
+  const size = fromSize && Number.parseFloat(getComputedStyle(element).fontSize);
+  const sy = size ? fromSize / size : from.height / to.height;
+  const sx = size || uniform ? sy : from.width / to.width;
+  // Text scaled by its font size lines up on the middle of its line, and on the
+  // side it starts from.
+  const dy = size ? from.top + from.height / 2 - to.top - to.height * sy / 2 : from.top - to.top;
+  const dx = size && root.dir === "rtl" ? from.right - to.left - to.width * sx : from.left - to.left;
+
+  // Text flying in from the page starts in the page's colour, muted for a label.
+  const tint = over && fromColor ? [{ color: fromColor }, { color: getComputedStyle(element).color }] : [{}, {}];
+  const flight = mover.animate(
+    [
+      { transformOrigin: "0 0", transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, ...tint[0] },
+      { transformOrigin: "0 0", transform: "none", ...tint[1] },
+    ],
+    { duration: 340, easing: "cubic-bezier(.2,0,0,1)" },
+  );
+
+  if (mover !== element) {
+    const land = () => {
+      (element as HTMLElement).style.removeProperty("opacity");
+      mover.remove();
+    };
+
+    flight.finished.then(land, land);
+  }
+
+  return flight;
+}
+
+const pageLogo = () => document.querySelector(".bar .logo svg");
+// A section's name on the page: its link, not its heading, which runs the list's height.
+const pageLabel = (list: List) => document.querySelector(list === "writing" ? "#writing > a" : "#work > a");
+const drawerLogo = () => drawer.querySelector(".dr-mark svg");
+const drawerTitle = (list: List) => drawer.querySelector(`.dr-title [data-show="${list}"]`);
+const drawerTab = (list: List) => drawer.querySelector(`.dr-tabs [data-show="${list}"]`);
+const fontSize = (element: Element | null) => element ? Number.parseFloat(getComputedStyle(element).fontSize) : 0;
+
+let swapping = 0;
+
+/**
+ * Shows a list, switches to the other one, or closes the drawer. The address is
+ * left to the caller.
+ *
+ * @param list - The list to show, or "" to close
+ */
+function show(list: List) {
+  const was = current();
+
+  if (was === list) {
+    return;
+  }
+
+  if (list) {
+    prepare(list);
+    sheets.get(list)?.opened();
+  }
+
+  // Where things are before the change, for the flights.
+  const from = was === ""
+    ? { logo: pageLogo()?.getBoundingClientRect(), label: pageLabel(list)?.getBoundingClientRect() }
+    : { logo: drawerLogo()?.getBoundingClientRect(), label: drawerTitle(was)?.getBoundingClientRect() };
+  const swap = was === "" ? null : { title: drawerTitle(was), tab: drawerTab(was) };
+  const swapFrom = swap && {
+    title: swap.title?.getBoundingClientRect(),
+    titleSize: fontSize(swap.title),
+    tab: swap.tab?.getBoundingClientRect(),
+    tabSize: fontSize(swap.tab),
+  };
+
+  closeMenus();
+
+  // Switching lists, the section names on the page behind fade rather than blink.
+  // Opening or closing, the name on the page flies instead: it shows or hides at once.
+  window.clearTimeout(swapping);
+
+  if (list && was) {
+    root.dataset.swap = "";
+    swapping = window.setTimeout(() => delete root.dataset.swap, 600);
+  }
+  else {
+    delete root.dataset.swap;
+  }
+
+  if (list) {
+    drawer.dataset.list = list;
+    root.dataset.open = list;
+  }
+  else {
+    delete root.dataset.open;
+  }
+
+  drawer.inert = !list;
+  behind(!!list);
+  document.title = titleFor(list);
+
+  if (list) {
+    // Unless the list is scrolled down, out of sight of its header.
+    if (was === "" && !drawer.querySelector(".dr-scroll")?.scrollTop) {
+      fly(drawerLogo(), from.logo, false, 0, true);
+      const label = pageLabel(list);
+
+      fly(drawerTitle(list), from.label, true, fontSize(label), true, label ? getComputedStyle(label).color : "");
+    }
+    else if (swapFrom) {
+      // Switching lists, the two names trade places: the tab pressed grows into the
+      // title, and the old title shrinks into the tab.
+      fly(drawerTitle(list), swapFrom.tab, true, swapFrom.tabSize);
+      fly(drawerTab(list), swapFrom.title, true, swapFrom.titleSize);
+    }
+
+    // Focus goes into the list, also when switching lists. Picked from the command menu,
+    // still folding away: until it closes, nothing outside it takes focus, and closing
+    // hands focus back to what had it before.
+    const menu = document.querySelector<HTMLDialogElement>("dialog.ck[open]");
+
+    if (menu) {
+      menu.addEventListener("close", () => {
+        if (current() === list) {
+          focusList(list);
+        }
+      }, { once: true });
     }
     else {
-      open(list, null);
+      focusList(list);
     }
-  });
+  }
+  else {
+    const flights = [fly(pageLogo(), from.logo, false), fly(pageLabel(was), from.label, true, fontSize(drawerTitle(was)))];
+    // What flies back to the page is no longer in the drawer sliding away.
+    const left = [drawerLogo(), drawerTitle(was)] as (HTMLElement | null)[];
 
-  document.querySelectorAll<HTMLElement>("[data-drawer-close]").forEach((button) => {
-    button.addEventListener("click", (event) => {
-      event.preventDefault();
-      close();
-    });
-  });
-
-  // Escape closes the filter menu first, then the drawer.
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || !current() || document.querySelector(".ck[open]")) {
-      return;
+    if (flights.some(Boolean)) {
+      left.forEach(element => element?.style.setProperty("opacity", "0"));
+      Promise.allSettled(flights.map(flight => flight?.finished)).then(() => left.forEach(element => element?.style.removeProperty("opacity")));
     }
+    (opener ?? document.querySelector<HTMLElement>(`.page [data-drawer="${was}"]`))?.focus({ preventScroll: true });
+    opener = null;
+  }
+}
 
-    event.preventDefault();
-
-    if (!closeMenus()) {
-      close();
-    }
-  });
-
-  // A page opened with ?list=…: its head already showed the drawer; fill in its
-  // search and filters from the address, without animating anything.
-  const initial = current();
-
-  if (initial) {
-    sheets.get(initial)?.restore(new URLSearchParams(location.search));
-    drawer.dataset.list = initial;
-    drawer.inert = false;
-    behind(true);
-    document.title = titleFor(initial);
+function open(list: List, from: HTMLElement | null) {
+  if (current() === "") {
+    // Opened by a key, or from the command menu, focus goes back where it was: on
+    // nothing in particular, the page itself, rather than to a link of the page's.
+    opener = from ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+    show(list);
+    history.pushState({ drawer: true }, "", addressFor(list));
+  }
+  else {
+    show(list);
+    history.replaceState(history.state, "", addressFor(list));
   }
 
   syncLanguageLinks();
+}
+
+/** Closes the drawer. */
+export function close() {
+  // Opened here: going back is closing. Arrived with it open: the page takes its place.
+  if ((history.state as { drawer?: boolean } | null)?.drawer) {
+    history.back();
+  }
+  else {
+    show("");
+    history.replaceState(history.state, "", addressFor(""));
+    syncLanguageLinks();
+  }
+}
+
+/** Brings the drawer in line with the address, as Back and Forward change it. */
+export function sync() {
+  const search = new URLSearchParams(location.search);
+  const asked = search.get("list") ?? "";
+  // Only the two lists: not whatever else an object answers to, like ?list=toString.
+  const list = Object.hasOwn(LIST_OF, asked) ? LIST_OF[asked]! : "";
+
+  if (list) {
+    sheets.get(list)?.restore(search);
+  }
+
+  show(list);
+  syncLanguageLinks();
+}
+
+window.addEventListener("popstate", sync);
+
+/**
+ * Follows a link to a list ("All projects", a tab, a chip of a project's stack): opens
+ * the list here, a chip's filtered by it.
+ *
+ * @param link - The link
+ */
+export function follow(link: HTMLAnchorElement) {
+  const list = link.dataset.drawer as Name;
+
+  if (link.dataset.filter !== undefined) {
+    sheets.get(list)?.restore(new URL(link.href).searchParams);
+  }
+
+  // From the command menu, closing the list hands focus back to what had it before the
+  // menu opened, which the menu marks (palette.ts, lazy.ts).
+  open(list, link.closest(".ck") ? document.querySelector<HTMLElement>("[data-menu-from]") : link);
+}
+
+/**
+ * The P and W shortcuts: a list opens, or closes when it is the one showing.
+ *
+ * @param list - The list, or "" to close whichever is open
+ */
+export function toggle(list: List) {
+  if (!list || list === current()) {
+    if (current()) {
+      close();
+    }
+  }
+  else {
+    open(list, null);
+  }
+}
+
+// Once the list is scrolled, it fades out under the search and filters at the top;
+// while more of it waits below, it fades out at the bottom too.
+const scroller = drawer.querySelector<HTMLElement>(".dr-scroll");
+
+function markScroll() {
+  const top = scroller?.scrollTop ?? 0;
+  const below = scroller ? scroller.scrollHeight - scroller.clientHeight - top : 0;
+
+  drawer.toggleAttribute("data-scrolled", top > 4);
+  drawer.toggleAttribute("data-more", below > 4);
+}
+
+scroller?.addEventListener("scroll", markScroll, { passive: true });
+
+// The list's length changes as it is searched, filtered, switched or put in.
+if (scroller) {
+  const resized = new ResizeObserver(markScroll);
+
+  resized.observe(scroller);
+  [...scroller.children].forEach(child => resized.observe(child));
+}
+
+markScroll();
+
+// Escape closes the filter menu first, then the drawer.
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape" || !current() || document.querySelector(".ck[open]")) {
+    return;
+  }
+
+  event.preventDefault();
+
+  if (!closeMenus()) {
+    close();
+  }
+});
+
+// A page opened with ?list=…: its head already showed the drawer; fill in its
+// search and filters from the address, without animating anything. Focus goes into
+// it, as it does when the drawer opens on the page: not for the sheet that slides in
+// ahead of this code (lazy.ts), which is opened anew in a moment.
+const initial = current();
+
+if (initial) {
+  const address = new URLSearchParams(location.search);
+
+  sheets.get(initial)?.restore(address);
+  drawer.dataset.list = initial;
+  drawer.inert = false;
+  behind(true);
+  document.title = titleFor(initial);
+  prepare(initial);
+
+  if (address.has("list")) {
+    sheets.get(initial)?.opened();
+    focusList(initial);
+  }
 }

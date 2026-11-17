@@ -1,0 +1,36 @@
+---
+import type { Lang } from "~/i18n/langs";
+import type { Item, List } from "~/lib/lists";
+
+import LinkIcon from "~/components/LinkIcon.astro";
+import ProjectName from "~/components/ProjectName.astro";
+import { ui } from "~/i18n/ui";
+
+
+
+/**
+ * A list's items, each with its sentence, marked with what the drawer's search and
+ * filters and the command menu read. Its page shows them (ListPage.astro), and the
+ * drawer and the menu fetch them from a file of their own (ListPart.astro): the same
+ * markup in both, made here.
+ */
+interface Props {
+  lang: Lang;
+  list: List;
+  items: Item[];
+}
+
+const { lang, list, items } = Astro.props;
+const t = ui(lang);
+---
+
+{/* How many it holds, in words, for the drawer to say as it puts the list in. */}
+<ul class="val list dr-list" data-dr-list={list} data-count={list === "work" ? t.nProjects(items.length) : t.nPosts(items.length)}>
+  {items.map((item, i) => (
+    <li style={`--i: ${i}`} data-kw={item.keywords} data-ck-kw={item.more} data-facets={JSON.stringify(item.facets)}>
+      <i class:list={["dot", item.icon]}></i>
+      <span class="dr-line"><a class="link dr-name" href={item.href} lang={item.lang}><span class="hl">{item.owner === undefined ? <span dir={item.dir}>{item.name}</span> : <ProjectName owner={item.owner} name={item.name} />}</span><LinkIcon kind="page" /></a><span class="dr-kind">{item.kind}</span></span>
+      <span class="dr-desc" lang={item.lang} dir={item.dir}>{item.blurb}</span>
+    </li>
+  ))}
+</ul>

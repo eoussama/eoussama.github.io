@@ -1,0 +1,66 @@
+---
+import type { Lang } from "~/i18n/langs";
+import type { List } from "~/lib/lists";
+
+import LinkIcon from "~/components/LinkIcon.astro";
+import ListItems from "~/components/ListItems.astro";
+import { ui } from "~/i18n/ui";
+import Base from "~/layouts/Base.astro";
+import { describe } from "~/lib/describe";
+import { getList, LIST_PATHS } from "~/lib/lists";
+import { listSchema } from "~/lib/schema";
+import { localized } from "~/lib/url";
+
+
+
+/**
+ * A list's own page: every project ("Works") or every post ("Writings"), each with its
+ * sentence, readable as it is. The list drawer and the command menu take the same list
+ * from a file of its own beside this page, with the drawer's filters in another
+ * (ListPart.astro): fetching this whole page would bring its styles along too.
+ */
+interface Props {
+  lang: Lang;
+  list: List;
+}
+
+const { lang, list } = Astro.props;
+const t = ui(lang);
+const work = list === "work";
+const other: List = work ? "writing" : "work";
+const { items } = await getList(list, lang);
+const others = (await getList(other, lang)).items.length;
+const path = LIST_PATHS[list];
+const label = work ? t.work : t.writing;
+const lead = work ? t.worksLead : t.writingsLead;
+const description = describe(lead);
+const title = work ? t.allProjects(items.length) : t.allPosts(items.length);
+// In Japanese the heading may break only before 全 ("all"), never inside a word or
+// between the count and its counter: プロジェクト / 全39件.
+const [titleHead, titleTail] = lang === "ja" ? title.split(/(?=全)/u) : [title];
+const names = items.map(item => ({ name: item.owner ? `${item.owner}/${item.name}` : item.name, path: item.path }));
+---
+
+<Base lang={lang} path={path} title={`${label} · ${t.name}`} description={description} label={label} schema={listSchema(lang, { path, name: label, description, items: names })}>
+  <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
+
+  <article class="page-list" style={`--vt-name: list-${list}`}>
+    <section class="row first">
+      {/* Named as the home page names its section, so the drawer's title flies out of it too. */}
+      <h2 class="lab" id={list}><a class="anchor" href={`#${list}`} aria-label={label + t.anchor}>{label}</a></h2>
+      <div class="hero">
+        <h1><span class="title" data-keep={titleTail ? "" : undefined}>{titleHead}{titleTail && <><wbr />{titleTail}</>}</span></h1>
+        <p class="lead rise">{lead}</p>
+      </div>
+    </section>
+
+    <section class="row rise" style="--d: 30ms">
+      <ListItems lang={lang} list={list} items={items} />
+    </section>
+
+    <section class="row">
+      <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
+      <p class="val"><a class="link" href={localized(lang, LIST_PATHS[other])} data-drawer={other} data-carry={other}>{work ? t.allPosts(others) : t.allProjects(others)}<LinkIcon kind="list" /></a><span class="or">{t.or}</span><a class="link" href={localized(lang)}>{t.cHome}<LinkIcon kind="page" /></a></p>
+    </section>
+  </article>
+</Base>

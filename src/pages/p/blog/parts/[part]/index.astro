@@ -1,0 +1,24 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import type { Part } from "~/lib/lists";
+
+import ListPart from "~/components/ListPart.astro";
+import { PARTS } from "~/lib/lists";
+
+
+
+/** Only the part, without the page around it (ListPart.astro). */
+export const partial = true;
+
+/**
+ * The parts of the list of posts, in English.
+ *
+ * @returns One file per part
+ */
+export const getStaticPaths = (() => PARTS.map(part => ({ params: { part } }))) satisfies GetStaticPaths;
+
+const part = Astro.params.part as Part;
+---
+
+<ListPart lang="en" list="writing" part={part} />

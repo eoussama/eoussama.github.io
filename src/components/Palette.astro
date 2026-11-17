@@ -1,14 +1,14 @@
 ---
 import type { Lang } from "~/i18n/langs";
 
+import type { List } from "~/lib/lists";
+
 import ProjectName from "~/components/ProjectName.astro";
 import { PROFILE } from "~/data/profile";
 import { LANG_NAMES, LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
-import { formatDate } from "~/lib/dates";
+import { LIST_PATHS } from "~/lib/lists";
 import { getPage, PAGES } from "~/lib/pages";
-import { getPosts, postPath } from "~/lib/posts";
-import { getProjects, pick, projectPath } from "~/lib/projects";
 import { getShortLinks } from "~/lib/short-links";
 import { localized, url } from "~/lib/url";
 import { versions } from "~/lib/versions";
@@ -18,7 +18,9 @@ import { versions } from "~/lib/versions";
 /**
  * The command menu (⌘K or Ctrl K): every page, project, language, theme, older
  * version and contact link, filtered as you type. Rendered on every page, opened by
- * the search button or the shortcut.
+ * the search button or the shortcut. The projects and posts come from the lists' items,
+ * in files beside their pages, fetched as the menu is about to open (scripts/lists.ts)
+ * and put in their groups, which wait here empty.
  */
 interface Props {
   lang: Lang;
@@ -56,43 +58,22 @@ type Item = {
 
 const { lang, path, hello, consent } = Astro.props;
 const t = ui(lang);
-const projects = await getProjects();
-const posts = await getPosts(lang);
 const links = await getShortLinks();
 const pages = await Promise.all(PAGES.map(async id => ({ id, data: (await getPage(id, lang)).entry.data })));
 
-const groups: { label: string; items: Item[] }[] = [
+const groups: { label: string; items: Item[]; list?: List }[] = [
   {
     label: t.cGo,
     items: [
       { label: t.cHome, href: localized(lang), key: "H", keywords: "home" },
-      { label: t.allProjectsLabel, href: "?list=projects", drawer: "work", key: "P", keywords: "projects work list" },
-      { label: t.allPostsLabel, href: "?list=posts", drawer: "writing", key: "W", keywords: "posts writing blog list" },
+      { label: t.allProjectsLabel, href: localized(lang, LIST_PATHS.work), drawer: "work", key: "P", keywords: "projects work list" },
+      { label: t.allPostsLabel, href: localized(lang, LIST_PATHS.writing), drawer: "writing", key: "W", keywords: "posts writing blog list" },
       ...pages.map(({ id, data }) => ({ label: data.label, href: localized(lang, `${id}/`), keywords: `${id} ${data.title} ${data.description}` })),
     ],
   },
-  {
-    label: t.cProjects,
-    items: projects.map(p => ({
-      label: p.name,
-      owner: p.owner,
-      hint: t.kinds[p.kind],
-      icon: "z-star",
-      href: localized(lang, projectPath(p)),
-      keywords: `${p.org ?? ""} ${pick(p.blurb, lang)} ${p.languages.join(" ")} ${p.tools.join(" ")} ${p.tags.join(" ")} ${p.type} ${p.kind} ${p.year ?? ""}`,
-    })),
-  },
-  {
-    label: t.cPosts,
-    items: posts.map(post => ({
-      label: post.entry.data.title,
-      lang: post.lang === lang ? undefined : post.lang,
-      hint: formatDate(post.entry.data.date, lang),
-      icon: "z-cross",
-      href: localized(lang, postPath(post)),
-      keywords: `${post.entry.data.summary} ${post.entry.data.tags.join(" ")}`,
-    })),
-  },
+  // Filled in once the lists are here (scripts/palette.ts).
+  { label: t.cProjects, items: [], list: "work" },
+  { label: t.cPosts, items: [], list: "writing" },
   {
     label: t.cLang,
     items: LANGS.map(l => ({
@@ -153,20 +134,20 @@ if (extras.length) {
 let n = 0;
 ---
 
-<dialog class="ck" id="palette" aria-label={t.palTitle} data-none={t.palNone}>
+<dialog class="ck" id="palette" aria-label={t.palTitle} data-none={t.palNone} data-wait={t.palWait} data-failed={t.palFailed}>
   <div class="ck-note">
     <div class="ck-sheet">
       <span class="note-shadow" aria-hidden="true"></span>
       <div class="ck-box">
         <div class="ck-top">
           <svg width="17" height="17" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
-          <input type="text" class="ck-q" role="combobox" aria-expanded="true" aria-controls="ck-list" aria-autocomplete="list" aria-label={t.palPh} placeholder={t.palPh} autocomplete="off" spellcheck="false" />
+          <input type="text" class="ck-q" role="combobox" aria-expanded="true" aria-controls="ck-list" aria-autocomplete="list" aria-label={t.palPh} placeholder={t.palPh} data-short={t.palPhShort} autocomplete="off" spellcheck="false" />
           <button type="button" class="ck-esc" aria-label={t.palClose} data-palette-close><kbd class="ck-kbd" dir="ltr">esc</kbd></button>
         </div>
         {/* Not a stop of its own for Tab, though it scrolls: the arrow keys move through it from the search. */}
         <div class="ck-list" id="ck-list" role="listbox" aria-label={t.palTitle} tabindex="-1">
           {groups.map((group, g) => (
-            <div class="ck-group" role="group" aria-labelledby={`ck-g${g}`}>
+            <div class="ck-group" role="group" aria-labelledby={`ck-g${g}`} data-ck-list={group.list} hidden={!group.items.length}>
               <p class="ck-h" id={`ck-g${g}`}>{group.label}</p>
               {group.items.map((item) => {
                 const id = `ck-${n++}`;

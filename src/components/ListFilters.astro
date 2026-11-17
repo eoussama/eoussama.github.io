@@ -1,0 +1,47 @@
+---
+import type { Lang } from "~/i18n/langs";
+import type { Group, List } from "~/lib/lists";
+
+import { ui } from "~/i18n/ui";
+
+
+
+/**
+ * The drawer's filter button and menu for a list, put in place beside its search there.
+ * They ride in a template, fetched with the list (ListPart.astro): without scripts they
+ * could do nothing, so no page shows them. Empty for a list with nothing to filter.
+ */
+interface Props {
+  lang: Lang;
+  list: List;
+  groups: Group[];
+}
+
+const { lang, list, groups } = Astro.props;
+const t = ui(lang);
+---
+
+<template data-dr-filters={list}>
+  {groups.length > 0 && (
+    <button type="button" class="dr-fbtn" aria-expanded="false" aria-controls={`dr-f-${list}`} aria-label={t.filters} title={t.filters} data-label={t.filters}>
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 5h13M5 9h8M7.5 13h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg>
+      <b class="dr-badge" hidden></b>
+    </button>
+  )}
+  {groups.length > 0 && (
+    <div class="dr-fpop" id={`dr-f-${list}`} role="group" aria-label={t.filters} data-open="false">
+      {/* Each group's options are named by its heading: ids that hold the list's name too,
+          as both lists' filters can be in the drawer at once. */}
+      {groups.map(group => (
+        <div class="dr-fg" data-group={group.key} data-group-label={group.label}>
+          <p class="dr-fh" id={`dr-fh-${list}-${group.key}`}>{group.label}</p>
+          <div class="dr-fopts" role="group" aria-labelledby={`dr-fh-${list}-${group.key}`}>
+            {group.options.map(option => (
+              <button type="button" class="dr-fo" aria-pressed="false" data-value={option.value} data-label={option.label}>{option.label}<em class="dr-n">{option.count}</em></button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )}
+</template>

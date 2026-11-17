@@ -1,0 +1,33 @@
+---
+import type { Lang } from "~/i18n/langs";
+import type { List, Part } from "~/lib/lists";
+
+import ListFilters from "~/components/ListFilters.astro";
+import ListItems from "~/components/ListItems.astro";
+import { getList } from "~/lib/lists";
+
+
+
+/**
+ * One part of a list, on its own: its items, or the drawer's filters for them. The list
+ * drawer and the command menu fetch these (scripts/lists.ts) rather than the list's
+ * whole page, which is mostly its styles and the page around the list. Rendered as a
+ * page partial, without the layout: no doctype, head, styles or scripts.
+ *
+ * Not a page to be found: no page links to it, the sitemap leaves it out
+ * (astro.config.ts), and it says noindex for whatever finds it anyway. Nothing in it
+ * runs, so it carries no security policy (lib/csp.ts).
+ */
+interface Props {
+  lang: Lang;
+  list: List;
+  part: Part;
+}
+
+const { lang, list, part } = Astro.props;
+const { items, groups } = await getList(list, lang);
+---
+
+<meta charset="utf-8" />
+<meta name="robots" content="noindex" />
+{part === "items" ? <ListItems lang={lang} list={list} items={items} /> : <ListFilters lang={lang} list={list} groups={groups} />}

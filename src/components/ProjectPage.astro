@@ -12,6 +12,7 @@ import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
 import { formatDate, formatSpan } from "~/lib/dates";
 import { describe } from "~/lib/describe";
+import { LIST_PATHS } from "~/lib/lists";
 import { readingTime } from "~/lib/posts";
 import { fullName, getProjects, pick, projectPath } from "~/lib/projects";
 import { projectSchema } from "~/lib/schema";
@@ -56,7 +57,7 @@ const own = storyLang === lang ? {} : { lang: storyLang, dir: langInfo(storyLang
 const owned = project.repo?.startsWith("https://github.com/eoussama/") ?? false;
 const role = project.role ? pick(project.role, lang) : (owned ? t.roleAuthor : "");
 // What it is built with: its languages, then its frameworks and libraries. Each opens
-// the list of projects filtered by it.
+// the list of projects filtered by it; without scripts, the projects' page, whole.
 const chips = [
   ...project.languages.map(value => ({ group: "language", value })),
   ...project.tools.map(value => ({ group: "tool", value })),
@@ -72,7 +73,18 @@ const folded = chips.length > FOLD + 1;
 // it is and what it is written in, as many whole sentences as a description holds.
 const ja = lang === "ja";
 const facts = [t.kinds[project.kind], ...project.languages].join(ja ? "・" : " · ") + (ja ? "。" : ".");
-const description = describe([lang === "en" && project.long ? pick(project.long, "en") : pick(project.blurb, lang), pick(project.note, lang), facts].filter(Boolean).join(ja ? "" : " "));
+// The timeline, as the page shows it, then the role.
+const timeline = project.started && project.active
+  ? formatSpan(project.started, project.active, lang)
+  : project.started
+    ? t.since(formatDate(new Date(project.started), lang))
+    : project.active ? t.until(formatDate(new Date(project.active), lang)) : "";
+const stop = ja ? "。" : ".";
+// A short one (a translated blurb says little) adds those, as many as it takes to say enough.
+const description = describe(
+  [lang === "en" && project.long ? pick(project.long, "en") : pick(project.blurb, lang), pick(project.note, lang), facts].filter(Boolean).join(ja ? "" : " "),
+  [timeline && timeline + stop, role && role + stop].filter(Boolean),
+);
 // Its addresses read as their short links, where they have one.
 const links = await getShortLinks();
 const site = project.live ? links.text(project.live) : "";
@@ -142,13 +154,7 @@ function cut(text: string): number {
     {(project.started || project.active) && (
       <section class={role ? "row tight rise" : "row rise"} style="--d: 35ms">
         <h2 class="lab" id="timeline"><a class="anchor" href="#timeline" aria-label={t.timeline + t.anchor}>{t.timeline}</a></h2>
-        <p class="val mut when">{
-          project.started && project.active
-            ? formatSpan(project.started, project.active, lang)
-            : project.started
-              ? t.since(formatDate(new Date(project.started), lang))
-              : t.until(formatDate(new Date(project.active!), lang))
-        }</p>
+        <p class="val mut when">{timeline}</p>
       </section>
     )}
 
@@ -164,7 +170,7 @@ function cut(text: string): number {
         <h2 class="lab" id="built-with"><a class="anchor" href="#built-with" aria-label={t.built + t.anchor}>{t.built}</a></h2>
         <ul class="val chips" data-fold={folded ? "" : undefined} data-open={folded ? "first" : undefined}>
           {chips.map(({ group, value }, i) => (
-            <li style={`--i: ${i}`}><a class="chip" href={`?list=projects&${new URLSearchParams({ [group]: value })}#list-work`} data-drawer="work" data-filter dir="ltr">{value}</a></li>
+            <li style={`--i: ${i}`}><a class="chip" href={`${localized(lang, LIST_PATHS.work)}?${new URLSearchParams({ list: "projects", [group]: value })}`} data-drawer="work" data-filter dir="ltr">{value}</a></li>
           ))}
           {folded && (
             <li class="chips-more" style={`--i: ${FOLD}`}><button type="button" class="chip" aria-label={t.showAll(chips.length)} title={t.showAll(chips.length)} tabindex="-1" data-chips-more>+{chips.length - FOLD}</button></li>
@@ -213,7 +219,7 @@ function cut(text: string): number {
     <section class={role || project.started || project.active || chips.length || project.repos.length || site || project.links.length || Content ? "row tight" : "row"}>
       <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
       <p class="val">
-        <a class="next" href={localized(lang, projectPath(next))}><span><span class="hl"><ProjectName owner={next.owner} name={next.name} /></span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href="?list=projects" data-drawer="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a><span class="or">{t.or}</span><a class="link" href={localized(lang)}>{t.cHome}<LinkIcon kind="page" /></a>
+        <a class="next" href={localized(lang, projectPath(next))}><span><span class="hl"><ProjectName owner={next.owner} name={next.name} /></span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href={localized(lang, LIST_PATHS.work)} data-drawer="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a><span class="or">{t.or}</span><a class="link" href={localized(lang)}>{t.cHome}<LinkIcon kind="page" /></a>
       </p>
     </section>
   </article>

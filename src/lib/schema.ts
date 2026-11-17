@@ -1,9 +1,12 @@
+import type { List } from "./lists";
+
 import type { Lang } from "~/i18n/langs";
 
 import { PROFILE } from "~/data/profile";
 import { ui } from "~/i18n/ui";
 
 import { canonicalLang } from "./canonical";
+import { LIST_PATHS } from "./lists";
 import { localized, url } from "./url";
 
 
@@ -75,26 +78,57 @@ function graph(...nodes: Schema[]): Schema {
 }
 
 /**
- * The trail to a page: the home page, then the page. The lists are a drawer on the home
- * page, with no address of their own, so they are not in it. A page that shows English
- * text names the English trail, the one its original has.
+ * The trail to a page: the home page, the list it is in (a project's, a post's), then
+ * the page. A page that shows English text names the English trail, the one its
+ * original has; every list has a page in every language, so it is always there.
  *
  * @param lang - The page's language
  * @param page - The page's details
  * @param page.path - Its path inside the site, before the language prefix
  * @param page.name - What it is called
+ * @param list - The list it is in, if any
  * @returns The trail
  */
-export function breadcrumbSchema(lang: Lang, page: { path: string; name: string }): Schema {
+export function breadcrumbSchema(lang: Lang, page: { path: string; name: string }, list?: List): Schema {
   const own = canonicalLang(page.path, lang) as Lang;
+  const steps = [
+    { name: ui(own).home, item: full(localized(own)) },
+    ...(list ? [{ name: list === "work" ? ui(own).work : ui(own).writing, item: full(localized(own, LIST_PATHS[list])) }] : []),
+    { name: page.name, item: canonical(lang, page.path) },
+  ];
 
   return {
     "@type": "BreadcrumbList",
-    "itemListElement": [
-      { "@type": "ListItem", "position": 1, "name": ui(own).home, "item": full(localized(own)) },
-      { "@type": "ListItem", "position": 2, "name": page.name, "item": canonical(lang, page.path) },
-    ],
+    "itemListElement": steps.map((step, i) => ({ "@type": "ListItem", "position": i + 1, ...step })),
   };
+}
+
+/**
+ * A list's page: every project or every post, each named by the address search engines
+ * list it at.
+ *
+ * @param lang - The page's language
+ * @param page - The page's details
+ * @param page.path - Its path inside the site, before the language prefix
+ * @param page.name - What it is called: "Works", "Writings"
+ * @param page.description - What it holds, in a sentence
+ * @param page.items - What it lists, in order
+ * @returns The page
+ */
+export function listSchema(lang: Lang, page: { path: string; name: string; description: string; items: { name: string; path: string }[] }): Schema {
+  return graph({
+    "@type": "CollectionPage",
+    "name": page.name,
+    "description": page.description,
+    "url": canonical(lang, page.path),
+    "inLanguage": lang,
+    "author": { "@id": PERSON },
+    "mainEntity": {
+      "@type": "ItemList",
+      "numberOfItems": page.items.length,
+      "itemListElement": page.items.map((item, i) => ({ "@type": "ListItem", "position": i + 1, "name": item.name, "url": canonical(lang, item.path) })),
+    },
+  }, breadcrumbSchema(lang, { path: page.path, name: page.name }));
 }
 
 /**
@@ -141,7 +175,7 @@ export function postSchema(lang: Lang, post: { path: string; title: string; summ
     "image": full(url("og.jpg")),
     "author": { "@id": PERSON },
     "publisher": { "@id": PERSON },
-  }, breadcrumbSchema(lang, { path: post.path, name: post.title }));
+  }, breadcrumbSchema(lang, { path: post.path, name: post.title }, "writing"));
 }
 
 /**
@@ -169,7 +203,7 @@ export function projectSchema(lang: Lang, project: { path: string; name: string;
     ...(project.repo ? { codeRepository: project.repo, programmingLanguage: project.languages } : {}),
     // Someone else's project, worked on: a contributor to it, not its creator.
     [project.contribution ? "contributor" : "creator"]: { "@id": PERSON },
-  }, breadcrumbSchema(lang, { path: project.path, name: project.name }));
+  }, breadcrumbSchema(lang, { path: project.path, name: project.name }, "work"));
 }
 
 /**
