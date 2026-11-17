@@ -203,14 +203,22 @@ function headingLinks() {
 /**
  * Lets the keyboard reach a table: on a narrow screen a wide one scrolls sideways
  * within its box, and a box that scrolls has to take focus to be scrolled without a
- * pointer, as the code blocks already do.
+ * pointer, as the code blocks already do. A table with no name of its own is named by
+ * its caption or else the heading above it, in a region around it, so that a screen
+ * reader says what it has landed on.
  */
 const scrollableTables = {
   name: "scrollable-tables",
   element: {
     filter: ["table"],
-    visit(node: Readonly<Element>): Element {
-      return { ...node, properties: { ...node.properties, tabIndex: 0 } };
+    visit(node: Readonly<Element>, ctx: { parent: (node: Readonly<Element>) => { children: Node[] } | undefined; indexOf: (node: Readonly<Element>) => number | undefined }): Element {
+      const table = { ...node, properties: { ...node.properties, tabIndex: 0 } };
+      const caption = node.children.find((child): child is Element => child.type === "element" && (child as Element).tagName === "caption");
+      const siblings = ctx.parent(node)?.children ?? [];
+      const heading = siblings.slice(0, ctx.indexOf(node) ?? 0).findLast((sibling): sibling is Element => sibling.type === "element" && /^h[1-6]$/.test((sibling as Element).tagName));
+      const name = text(caption ?? heading ?? { type: "text", value: "" }).trim();
+
+      return name ? h("div", { role: "region", ariaLabel: name }, [table]) : table;
     },
   },
 };

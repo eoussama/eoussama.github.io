@@ -4,6 +4,8 @@ import type { Schema } from "~/lib/schema";
 
 import naskh400 from "@fontsource/noto-naskh-arabic/arabic-400.css?inline";
 import naskh500 from "@fontsource/noto-naskh-arabic/arabic-500.css?inline";
+import naskh400File from "@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-400-normal.woff2?url";
+import naskh500File from "@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-500-normal.woff2?url";
 import jp400 from "@fontsource/noto-serif-jp/400.css?url";
 import jp500 from "@fontsource/noto-serif-jp/500.css?url";
 import newsreaderItalic from "~/assets/fonts/newsreader-latin-italic.woff2?url";
@@ -15,6 +17,7 @@ import Palette from "~/components/Palette.astro";
 import Shortcuts from "~/components/Shortcuts.astro";
 import { langInfo, LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
+import { canonicalLang } from "~/lib/canonical";
 import { localized, url } from "~/lib/url";
 
 import "~/styles/fonts.css";
@@ -52,6 +55,13 @@ const absolute = (href: string) => new URL(href, Astro.site).href;
 // Search engines take a language's two-letter code, which Darija has none of: they
 // know it as the Arabic of Morocco.
 const hreflang = (code: Lang) => (code === "ary" ? "ar-MA" : code);
+// The page search engines should list for this one: itself, or the English page where
+// its main text is English only (lib/canonical.ts). Only the languages that have a page
+// of their own are its alternates, and a page in one language has none.
+const canonical = absolute(localized(canonicalLang(path, lang) as Lang, path));
+const own = LANGS.filter(l => canonicalLang(path, l.code) === l.code);
+// The same languages, as a share card names them: each once (Arabic and Darija are one), the page's own left out.
+const localeAlternates = [...new Set(own.map(l => LOCALES[l.code]))].filter(locale => locale !== LOCALES[lang]);
 
 /*
  * Pages of the site are prerendered as a link is pointed at (or touched), so they open
@@ -88,9 +98,10 @@ const speculation = JSON.stringify({
     <script is:inline define:vars={{ lang, alternates, codes, redirect: !noindex }}>
       const d = document.documentElement;
 
-      function read(store, key) {
+      // The storage is named, not passed: where it is blocked, even reaching it throws.
+      function read(kind, key) {
         try {
-          return store.getItem(key);
+          return window[kind].getItem(key);
         }
         catch {
           return null;
@@ -99,7 +110,7 @@ const speculation = JSON.stringify({
 
       d.classList.add("js");
 
-      let theme = read(localStorage, "theme");
+      let theme = read("localStorage", "theme");
 
       if (theme !== "light" && theme !== "dark") {
         theme = "auto";
@@ -115,10 +126,18 @@ const speculation = JSON.stringify({
       }
 
       // ?list=projects or ?list=posts opens the list drawer over the page.
-      const list = { projects: "work", posts: "writing" }[new URLSearchParams(location.search).get("list")];
+      const lists = { projects: "work", posts: "writing" };
+      const asked = new URLSearchParams(location.search).get("list");
 
-      if (list) {
-        d.dataset.open = list;
+      // Only the two lists: not whatever else an object answers to, like ?list=toString.
+      if (Object.hasOwn(lists, asked)) {
+        d.dataset.open = lists[asked];
+      }
+
+      // The lists' links also name the list itself (#list-work), for when scripts are
+      // off and the lists follow the page; here the drawer opens instead, unscrolled.
+      if (location.hash.startsWith("#list-")) {
+        history.replaceState(history.state, "", location.pathname + location.search);
       }
 
       if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
@@ -138,9 +157,11 @@ const speculation = JSON.stringify({
         d.dataset.rv = "pre";
       }
 
-      // The 404 sends visitors on itself, keeping the address they asked for.
-      if (lang === "en" && redirect) {
-        let want = read(localStorage, "lang");
+      // Only on arriving from elsewhere: a page reached from the site, by Back or Forward,
+      // or reloaded, is one the visitor chose, English included. The 404 sends visitors
+      // on itself, keeping the address they asked for.
+      if (lang === "en" && redirect && !fromHere && nav?.type !== "back_forward" && nav?.type !== "reload") {
+        let want = read("localStorage", "lang");
 
         for (const tag of want ? [] : navigator.languages || [navigator.language || ""]) {
           const full = String(tag).toLowerCase();
@@ -152,8 +173,9 @@ const speculation = JSON.stringify({
           }
         }
 
-        if (want && want !== "en" && alternates[want]) {
-          location.replace(alternates[want] + location.hash);
+        // A stored value is checked too: only a language of the site is a page's key.
+        if (want !== "en" && codes.includes(want)) {
+          location.replace(alternates[want] + location.search + location.hash);
         }
       }
     </script>
@@ -167,15 +189,16 @@ const speculation = JSON.stringify({
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
-    {!noindex && <link rel="canonical" href={absolute(localized(lang, path))} />}
-    {!noindex && LANGS.map(l => <link rel="alternate" hreflang={hreflang(l.code)} href={absolute(alternates[l.code] ?? url())} />)}
-    {!noindex && <link rel="alternate" hreflang="x-default" href={absolute(localized("en", path))} />}
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {!noindex && own.length > 1 && own.map(l => <link rel="alternate" hreflang={hreflang(l.code)} href={absolute(alternates[l.code] ?? url())} />)}
+    {!noindex && own.length > 1 && <link rel="alternate" hreflang="x-default" href={absolute(localized("en", path))} />}
     <meta property="og:type" content={kind} />
     <meta property="og:site_name" content={t.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={absolute(localized(lang, path))} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={LOCALES[lang]} />
+    {!noindex && own.length > 1 && localeAlternates.map(locale => <meta property="og:locale:alternate" content={locale} />)}
     <meta property="og:image" content={absolute(url("og.jpg"))} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -212,12 +235,24 @@ const speculation = JSON.stringify({
       import "~/scripts/logo";
       import "~/scripts/analytics";
     </script>
+    {/* The drawn icon, which follows the theme; a fixed one for what asks for /favicon.ico or can't read SVG; and one for a phone's home screen. */}
+    <link rel="icon" href={url("favicon.ico")} sizes="32x32" />
     <link rel="icon" href={url("favicon.svg")} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={url("apple-touch-icon.png")} />
     <link rel="alternate" type="application/rss+xml" title={t.feed} href={localized(lang, "rss.xml")} />
     <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={newsreaderItalic} as="font" type="font/woff2" crossorigin />
     {/* Arabic's font rules are a few lines: in the page, they cost no request before it is drawn. Japanese's are far larger, so linked. */}
-    {info.dir === "rtl" && <style is:inline set:html={naskh400 + naskh500} />}
+    {/*
+      On Arabic pages Naskh is asked for with the page's first bytes, and shown only if it
+      is there by the first paint (font-display: optional). Otherwise that page keeps its
+      stand-in (fonts.css), and the next has Naskh from the cache: a stand-in matches it
+      in width overall but not letter by letter, and swapping fonts under the reader would
+      rewrap the lines around the large greeting.
+    */}
+    {info.dir === "rtl" && <link rel="preload" href={naskh400File} as="font" type="font/woff2" crossorigin />}
+    {info.dir === "rtl" && <link rel="preload" href={naskh500File} as="font" type="font/woff2" crossorigin />}
+    {info.dir === "rtl" && <style is:inline set:html={(naskh400 + naskh500).replace(/font-display:\s*swap/g, "font-display: optional")} />}
     {lang === "ja" && <link rel="stylesheet" href={jp400} />}
     {lang === "ja" && <link rel="stylesheet" href={jp500} />}
   </head>
@@ -280,7 +315,7 @@ const speculation = JSON.stringify({
               }
               catch {}
 
-              const here = { key: keyOf(location.pathname), label };
+              const here = { key: keyOf(location.pathname), label, lang };
               const at = trail.findIndex(step => step.key === here.key);
 
               trail = at >= 0 ? [...trail.slice(0, at), here] : [...trail, here].slice(-50);
@@ -291,6 +326,12 @@ const speculation = JSON.stringify({
               catch {}
 
               back = trail.at(-2) ?? null;
+
+              // A page left in another language would be named in it: the crumb leads home
+              // instead. So does a step kept before the trail held languages.
+              if (back?.lang !== lang) {
+                back = null;
+              }
 
               if (!crumb) {
                 return;
@@ -334,6 +375,8 @@ const speculation = JSON.stringify({
             });
           })();
         </script>
+        {/* Without JavaScript the page is all there, but plainer: say why, once, above it. */}
+        <noscript><p class="nojs" role="note">{t.noJs}</p></noscript>
         <main id="main">
           <slot />
         </main>
