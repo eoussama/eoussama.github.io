@@ -6,10 +6,12 @@ import { track } from "./analytics";
 
 /*
  * "Copy my email": puts the address on the clipboard and says so for a moment. Where
- * the clipboard is out of reach, it opens a new email instead.
+ * the clipboard is out of reach, it opens a new email instead, through the email's
+ * short link. The shortcuts dialog on every page carries both the address and the link.
  */
 
 const button = document.querySelector<HTMLButtonElement>("[data-copy]");
+const keys = document.querySelector<HTMLElement>("#keys");
 const status = document.querySelector<HTMLElement>("[data-copy-status]");
 let timer = 0;
 
@@ -20,12 +22,12 @@ let timer = 0;
  * @returns Once the address is copied, or a new email is opened instead
  */
 export async function copyEmail(method: "button" | "menu" = "button") {
-  const email = button?.dataset.copy ?? "oussama.essamadi@gmail.com";
+  const email = button?.dataset.copy ?? keys?.dataset.address ?? "";
   const [error] = await tryCatch(() => navigator.clipboard.writeText(email));
 
   if (error) {
     track("email_write", { method: "fallback" });
-    location.href = `mailto:${email}`;
+    location.href = keys?.dataset.mail ?? `mailto:${email}`;
 
     return;
   }

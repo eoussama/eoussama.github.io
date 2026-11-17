@@ -14,6 +14,6 @@ Instead, report them privately through GitHub:
 
 2. Fill out the form with as much detail as possible, including a clear description of the vulnerability, its potential impact, and any steps to reproduce it.
 
-If you cannot use GitHub's private reporting, email oussama.essamadi@gmail.com instead.
+If you cannot use GitHub's private reporting, email hi@ouss.es instead.
 
 You can expect an initial response within a few days. Please give us reasonable time to address the issue before disclosing it publicly.

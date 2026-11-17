@@ -3,6 +3,7 @@ import type { Lang } from "~/i18n/langs";
 
 import { PROFILE } from "~/data/profile";
 import { ui } from "~/i18n/ui";
+import { getShortLinks } from "~/lib/short-links";
 
 
 
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const t = ui(Astro.props.lang);
+const links = await getShortLinks();
 
 const rows: { label: string; keys: string[] }[] = [
   { label: t.kTheme, keys: ["T"] },
@@ -28,7 +30,7 @@ const rows: { label: string; keys: string[] }[] = [
 ];
 ---
 
-<dialog class="ck kd" id="keys" aria-labelledby="kd-title" data-mail={`mailto:${PROFILE.email}`}>
+<dialog class="ck kd" id="keys" aria-labelledby="kd-title" data-address={PROFILE.email} data-mail={links.href(`mailto:${PROFILE.email}`)}>
   <div class="ck-note">
     <div class="ck-sheet">
       <span class="note-shadow" aria-hidden="true"></span>
