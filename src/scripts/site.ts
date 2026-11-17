@@ -341,6 +341,9 @@ if (hello) {
 
     const room = para.clientWidth * (matchMedia("(min-width: 701px)").matches ? 0.62 : 1);
 
+    // Measured clipped to its paragraph (global.css): on one line, a greeting can be
+    // wider than a phone's screen.
+    para.classList.add("is-fitting");
     hello.style.whiteSpace = "nowrap";
 
     // The float takes its margins too: on a right-to-left page one of them is a gap
@@ -351,6 +354,7 @@ if (hello) {
     const size = Number.parseFloat(style.fontSize);
 
     hello.style.whiteSpace = "";
+    para.classList.remove("is-fitting");
 
     if (width + margins > room) {
       hello.style.setProperty("--drop", `${(size * (room - margins) / width).toFixed(1)}px`);
