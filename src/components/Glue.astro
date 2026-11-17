@@ -1,0 +1,24 @@
+---
+import { short } from "~/lib/glue";
+
+
+
+/**
+ * A link with the punctuation that follows it kept on its line. A browser may break
+ * between a link's closing icon and the comma or full stop after it, which then starts
+ * the next line alone; the closing marks at the head of the text after the link stay
+ * with it, and the rest of that text wraps as usual. Only a short link is held so, as
+ * held it can't wrap: a long one would run past a phone's edge.
+ */
+interface Props {
+  /** The text right after the link. */
+  after: string;
+}
+
+const { after } = Astro.props;
+const link = await Astro.slots.render("default");
+const marks = /^[,.;:!?)\]、。，．！？）」』】・،؛؟…]*/u.exec(after)?.[0] ?? "";
+const rest = after.slice(marks.length);
+---
+
+{marks && short(link) ? <span class="glue"><Fragment set:html={link} />{marks}</span> : <><Fragment set:html={link} />{marks}</>}{rest}

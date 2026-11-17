@@ -1,5 +1,6 @@
 import type { AstroIntegration } from "astro";
 
+import { short } from "./glue";
 import { keepFrom } from "./tail";
 
 
@@ -203,14 +204,62 @@ function headingLinks() {
 /**
  * Lets the keyboard reach a table: on a narrow screen a wide one scrolls sideways
  * within its box, and a box that scrolls has to take focus to be scrolled without a
- * pointer, as the code blocks already do.
+ * pointer, as the code blocks already do. A table with no name of its own is named by
+ * its caption or else the heading above it, in a region around it, so that a screen
+ * reader says what it has landed on.
  */
 const scrollableTables = {
   name: "scrollable-tables",
   element: {
     filter: ["table"],
-    visit(node: Readonly<Element>): Element {
-      return { ...node, properties: { ...node.properties, tabIndex: 0 } };
+    visit(node: Readonly<Element>, ctx: { parent: (node: Readonly<Element>) => { children: Node[] } | undefined; indexOf: (node: Readonly<Element>) => number | undefined }): Element {
+      const table = { ...node, properties: { ...node.properties, tabIndex: 0 } };
+      const caption = node.children.find((child): child is Element => child.type === "element" && (child as Element).tagName === "caption");
+      const siblings = ctx.parent(node)?.children ?? [];
+      const heading = siblings.slice(0, ctx.indexOf(node) ?? 0).findLast((sibling): sibling is Element => sibling.type === "element" && /^h[1-6]$/.test((sibling as Element).tagName));
+      const name = text(caption ?? heading ?? { type: "text", value: "" }).trim();
+
+      return name ? h("div", { role: "region", ariaLabel: name }, [table]) : table;
+    },
+  },
+};
+
+/**
+ * A link and the comma or full stop right after it kept on one line, as Glue.astro does
+ * on the pages: a browser may break between a link's closing icon and the mark after
+ * it, which then starts the next line alone. Only the closing marks join the link; the
+ * rest of the text wraps as usual.
+ */
+const gluedMarks = {
+  name: "glued-marks",
+  element: {
+    filter: ["p", "li", "td", "dd", "figcaption"],
+    visit(node: Readonly<Element>): Element | void {
+      const out: Node[] = [];
+      let changed = false;
+
+      node.children.forEach((child, i) => {
+        const before = out.at(-1);
+        const marks = child.type === "text" ? /^[,.;:!?)\]、。，．！？）」』】・،؛؟…]+/u.exec((child as Text).value)?.[0] : undefined;
+
+        if (marks && i > 0 && before?.type === "element" && (before as Element).tagName === "a" && short(text(before).replace(HINT, ""))) {
+          const rest = (child as Text).value.slice(marks.length);
+
+          out[out.length - 1] = h("span", { className: ["glue"] }, [before, { type: "text", value: marks }]);
+
+          if (rest) {
+            out.push({ type: "text", value: rest });
+          }
+
+          changed = true;
+
+          return;
+        }
+
+        out.push(child);
+      });
+
+      return changed ? { ...node, children: out } : undefined;
     },
   },
 };
@@ -276,7 +325,7 @@ export default function proseLinks(site: string): AstroIntegration {
           throw new Error("prose-links: Markdown is no longer rendered by Sätteri; port the plugin.");
         }
 
-        processor.options.hastPlugins.push(external, internal, headingLinks, scrollableTables);
+        processor.options.hastPlugins.push(external, internal, headingLinks, scrollableTables, gluedMarks);
       },
     },
   };

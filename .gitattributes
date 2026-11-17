@@ -1,2 +1,2 @@
-* linguist-vendored
-*.html linguist-vendored=false
+# Let GitHub count the site's code, not its posts, case studies and pages.
+src/content/** linguist-documentation

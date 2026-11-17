@@ -43,7 +43,8 @@ function pause(): number {
 
 /** Runs the folding and unfolding on the home page's name. */
 function loop() {
-  if (!siteName || siteName.textContent?.trim() !== FULL || root.dir === "rtl") {
+  // The first-load reveal may have boxed the name's letters already: it hands it back plain.
+  if (!siteName || (siteName.textContent?.trim() !== FULL && !siteName.querySelector(".rv-name")) || root.dir === "rtl") {
     return;
   }
 

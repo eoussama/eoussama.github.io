@@ -46,7 +46,7 @@ export function repoSlug(url: string): string {
  * @param b - The other's
  * @returns Negative when a is newer
  */
-export function byVersion(a: string, b: string): number {
+function byVersion(a: string, b: string): number {
   const parse = (name: string) => {
     const match = /(\d+(?:\.\d+)*)(?:-([\w.-]+))?/.exec(name);
 

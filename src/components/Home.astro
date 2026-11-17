@@ -3,6 +3,7 @@ import type { Lang } from "~/i18n/langs";
 
 import Ext from "~/components/Ext.astro";
 import Footer from "~/components/Footer.astro";
+import Glue from "~/components/Glue.astro";
 import LinkIcon from "~/components/LinkIcon.astro";
 import ProjectName from "~/components/ProjectName.astro";
 import { PROFILE } from "~/data/profile";
@@ -11,9 +12,12 @@ import { HELLO_ORDER, langInfo } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
 import { formatDate } from "~/lib/dates";
+import { describe } from "~/lib/describe";
+import { LIST_PATHS } from "~/lib/lists";
 import { getPosts, postPath } from "~/lib/posts";
 import { getProjects, pick, projectPath } from "~/lib/projects";
 import { homeSchema } from "~/lib/schema";
+import { getShortLinks } from "~/lib/short-links";
 import { localized, url } from "~/lib/url";
 
 
@@ -25,6 +29,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = ui(lang);
+const links = await getShortLinks();
 
 // The greeting starts in the page's language and cycles through the rest.
 const start = HELLO_ORDER.indexOf(lang);
@@ -39,11 +44,25 @@ const first = hellos[0]!;
  * The intro, word by word, each in a box of its own. The words glide when the greeting
  * beside them changes size, and are boxed from the start so the lines never re-wrap:
  * boxes break a hair differently from plain text. Japanese, without spaces, is cut
- * into its words.
+ * into its words, each keeping the punctuation that closes it and the bracket that
+ * opens it: a box of its own, a comma or a full stop could start a line.
  */
+const CLOSING = /^[、。，．！？）」』】・,.!?:;)،؛؟]+$/u;
+const OPENING = /^[（「『【(]+$/u;
 const introWords = /\s/.test(t.intro.trim())
   ? t.intro.split(/(\s+)/).filter(Boolean)
-  : Array.from(new Intl.Segmenter(lang, { granularity: "word" }).segment(t.intro), part => part.segment);
+  : Array.from(new Intl.Segmenter(lang, { granularity: "word" }).segment(t.intro), part => part.segment).reduce<string[]>((words, part) => {
+      const k = words.length - 1;
+
+      if (k >= 0 && (CLOSING.test(part) || OPENING.test(words[k]!))) {
+        words[k] += part;
+      }
+      else {
+        words.push(part);
+      }
+
+      return words;
+    }, []);
 
 const projects = await getProjects();
 const featured = projects.filter(p => p.featured).slice(0, 4);
@@ -51,12 +70,12 @@ const featured = projects.filter(p => p.featured).slice(0, 4);
 const posts = await getPosts(lang);
 ---
 
-<Base lang={lang} title={`${t.name} · ${t.job}`} label={t.name} description={`${t.name}.${t.intro}`} schema={homeSchema(lang)} hello>
-  <section class="row first" aria-labelledby="whoami">
+<Base lang={lang} title={`${t.name} · ${t.job}`} label={t.name} description={describe(t.intro.trim())} schema={homeSchema(lang)} hello>
+  <section class="row first" aria-label={t.whoami}>
     <h2 class="lab hello-lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
     <div>
       <h1><span class="site-name">{t.name}</span></h1>
-      <p class="intro"><button type="button" class="link hello" lang={first.lang} dir={first.dir} aria-label={`${first.text} ${t.hiAria}`} data-hint={t.hiAria} data-hellos={JSON.stringify(hellos)}>{first.text}</button>{introWords.map(part => /^\s+$/.test(part) ? part : <span class="iw">{part}</span>)}</p>
+      <p class="intro"><button type="button" class="link hello" lang={first.lang} dir={first.dir} aria-label={`${first.text} ${t.hiAria}`} data-hint={t.hiAria} data-hellos={JSON.stringify(hellos)}>{first.text}</button><noscript><span class="hello" lang={first.lang} dir={first.dir}>{first.text}</span></noscript>{introWords.map(part => /^\s+$/.test(part) ? part : <span class="iw">{part}</span>)}</p>
       {/*
         The page opens on the day's greeting: Eid's on the days of Eid (the first three of
         Shawwal, the four from the tenth of Dhu al-Hijjah, by the browser's Umm al-Qura
@@ -65,49 +84,52 @@ const posts = await getPosts(lang);
         so the intro never rewraps around a greeting that changed under it.
         scripts/site.ts takes it from there.
       */}
-      <script is:inline define:vars={{ eid: EID[lang], day: DAY[lang], hint: t.hiAria }}>
-        const hello = document.querySelector("[data-hellos]");
-        let eidToday = false;
+      <script is:inline data-vars={JSON.stringify({ eid: EID[lang], day: DAY[lang], hint: t.hiAria })}>
+        (() => {
+          const { eid, day, hint } = JSON.parse(document.currentScript.dataset.vars);
+          const hello = document.querySelector("[data-hellos]");
+          let eidToday = false;
 
-        try {
-          const parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", { month: "numeric", day: "numeric" }).formatToParts(new Date());
-          const month = Number(parts.find(part => part.type === "month")?.value);
-          const date = Number(parts.find(part => part.type === "day")?.value);
+          try {
+            const parts = new Intl.DateTimeFormat("en-u-ca-islamic-umalqura", { month: "numeric", day: "numeric" }).formatToParts(new Date());
+            const month = Number(parts.find(part => part.type === "month")?.value);
+            const date = Number(parts.find(part => part.type === "day")?.value);
 
-          eidToday = (month === 10 && date <= 3) || (month === 12 && date >= 10 && date <= 13);
-        }
-        catch {}
-
-        const hour = new Date().getHours();
-        const special = eidToday ? eid : day[hour >= 5 && hour < 12 ? 0 : hour >= 12 && hour < 18 ? 1 : 2];
-
-        if (hello && special) {
-          hello.textContent = special;
-          hello.setAttribute("aria-label", `${special} ${hint}`);
-          hello.dataset.opening = special;
-
-          // One too wide to drop beside the text is set a size down to fit, on one line,
-          // as fit() in site.ts does again once the fonts are in.
-          const room = hello.parentElement.clientWidth * (matchMedia("(min-width: 701px)").matches ? 0.62 : 1);
-
-          hello.style.whiteSpace = "nowrap";
-
-          const width = hello.getBoundingClientRect().width;
-          const size = Number.parseFloat(getComputedStyle(hello).fontSize);
-
-          hello.style.whiteSpace = "";
-
-          if (width > room) {
-            hello.style.setProperty("--drop", `${(size * room / width).toFixed(1)}px`);
-            hello.dataset.fit = "";
+            eidToday = (month === 10 && date <= 3) || (month === 12 && date >= 10 && date <= 13);
           }
-        }
+          catch {}
+
+          const hour = new Date().getHours();
+          const special = eidToday ? eid : day[hour >= 5 && hour < 12 ? 0 : hour >= 12 && hour < 18 ? 1 : 2];
+
+          if (hello && special) {
+            hello.textContent = special;
+            hello.setAttribute("aria-label", `${special} ${hint}`);
+            hello.dataset.opening = special;
+
+            // One too wide to drop beside the text is set a size down to fit, on one line,
+            // as fit() in site.ts does again once the fonts are in.
+            const room = hello.parentElement.clientWidth * (matchMedia("(min-width: 701px)").matches ? 0.62 : 1);
+
+            hello.style.whiteSpace = "nowrap";
+
+            const width = hello.getBoundingClientRect().width;
+            const size = Number.parseFloat(getComputedStyle(hello).fontSize);
+
+            hello.style.whiteSpace = "";
+
+            if (width > room) {
+              hello.style.setProperty("--drop", `${(size * room / width).toFixed(1)}px`);
+              hello.dataset.fit = "";
+            }
+          }
+        })();
       </script>
     </div>
   </section>
 
   <div class="home">
-    <section class="row" aria-labelledby="work">
+    <section class="row" id="works" aria-label={t.work}>
       <h2 class="lab" id="work"><a class="anchor" href="#work" aria-label={t.work + t.anchor}>{t.work}</a></h2>
       <ul class="list">
         {featured.map(project => (
@@ -116,11 +138,11 @@ const posts = await getPosts(lang);
             {project.note && <p class="note">{pick(project.note, lang)}</p>}
           </li>
         ))}
-        <li><i class="dot z-star"></i><a class="link" href="?list=projects" data-drawer="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a></li>
+        <li><i class="dot z-star"></i><a class="link" href={localized(lang, LIST_PATHS.work)} data-drawer="work" data-carry="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a></li>
       </ul>
     </section>
 
-    <section class="row" aria-labelledby="writing">
+    <section class="row" id="writings" aria-label={t.writing}>
       <h2 class="lab" id="writing"><a class="anchor" href="#writing" aria-label={t.writing + t.anchor}>{t.writing}</a></h2>
       <ul class="list">
         {posts.slice(0, 2).map(post => (
@@ -130,20 +152,20 @@ const posts = await getPosts(lang);
             {post.entry.data.note && <p class="note"><span lang={post.lang} dir={langInfo(post.lang).dir}>{post.entry.data.note}</span></p>}
           </li>
         ))}
-        <li><i class="dot z-cross"></i><a class="link" href="?list=posts" data-drawer="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a></li>
+        <li><i class="dot z-cross"></i><a class="link" href={localized(lang, LIST_PATHS.writing)} data-drawer="writing" data-carry="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a></li>
       </ul>
     </section>
 
-    <section class="row" aria-labelledby="whereabouts">
+    <section class="row" aria-label={t.where}>
       <h2 class="lab" id="whereabouts"><a class="anchor" href="#whereabouts" aria-label={t.where + t.anchor}>{t.where}</a></h2>
       <div class="where">
         <ul class="list">
-          <li><i class="dot z-dia"></i><Ext href={PROFILE.github.url} hint={t.newTab}><span dir="ltr">{PROFILE.github.label}</span></Ext>{t.codeTail}</li>
-          <li><i class="dot z-dia"></i><Ext href={PROFILE.linkedin.url} hint={t.newTab}><span dir="ltr">{PROFILE.linkedin.label}</span></Ext>{t.workTail}</li>
-          <li><i class="dot z-dia"></i><Ext href={PROFILE.behance} hint={t.newTab}>Behance</Ext>{t.designSep}<Ext href={PROFILE.dribbble} hint={t.newTab}>Dribbble</Ext>{t.designAnd}<Ext href={PROFILE.figma} hint={t.newTab}>Figma</Ext>{t.designTail}</li>
-          <li><i class="dot z-dia"></i>{t.cvPre}<a class="link" href={localized(lang, "cv/")}>{t.cvLink}<LinkIcon kind="page" /></a>{t.cvOr}<a class="link" href={url(PROFILE.resume)} download="Oussama-Essamadi-CV.pdf">{t.cvPdf}<LinkIcon kind="download" /></a>{t.cvAnd}<a class="link" href={localized(lang, "now/")}>{t.nowLink}<LinkIcon kind="page" /></a>{t.cvEnd}</li>
-          <li><i class="dot z-dia"></i><button type="button" class="link copy" data-copy={PROFILE.email} data-copied={t.copied} data-copied-long={t.copiedLong}><span class="cp-win" data-copy-label><span class="cp-t">{t.copyEmail}</span></span><svg class="copy-ic" width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><g class="ic-copy" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><rect x="1.2" y="3.6" width="6.2" height="6.2" rx="1.1"></rect><path d="M3.6 3.6V2.3a1.1 1.1 0 0 1 1.1-1.1h4a1.1 1.1 0 0 1 1.1 1.1v4a1.1 1.1 0 0 1-1.1 1.1H7.4"></path></g><path class="ic-check" d="M1.8 5.9l2.5 2.4L9.2 2.8" pathLength="1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>{t.emailOr}<a class="link" href={`mailto:${PROFILE.email}`}>{t.writeMe}<LinkIcon kind="mail" /></a>{t.emailEnd}<span class="sr" aria-live="polite" data-copy-status></span></li>
-          <li><i class="dot z-dia"></i><Ext href={PROFILE.sponsors} hint={t.newTab}>{t.sponsor}</Ext>{t.supportOr}<Ext href={PROFILE.paypal} hint={t.newTab}>{t.tip}</Ext>{t.supportEnd}</li>
+          <li><i class="dot z-dia"></i><Glue after={t.codeTail}><Ext href={PROFILE.github} hint={t.newTab}><span dir="ltr">{links.text(PROFILE.github)}</span></Ext></Glue></li>
+          <li><i class="dot z-dia"></i><Glue after={t.workTail}><Ext href={PROFILE.linkedin} hint={t.newTab}><span dir="ltr">{links.text(PROFILE.linkedin)}</span></Ext></Glue></li>
+          <li><i class="dot z-dia"></i><Glue after={t.designSep}><Ext href={PROFILE.behance} hint={t.newTab}>Behance</Ext></Glue><Glue after={t.designAnd}><Ext href={PROFILE.dribbble} hint={t.newTab}>Dribbble</Ext></Glue><Glue after={t.designTail}><Ext href={PROFILE.figma} hint={t.newTab}>Figma</Ext></Glue></li>
+          <li><i class="dot z-dia"></i>{t.cvPre}<Glue after={t.cvOr}><a class="link" href={localized(lang, "cv/")}>{t.cvLink}<LinkIcon kind="page" /></a></Glue><Glue after={t.cvAnd}><a class="link" href={url(PROFILE.resume)} download="Oussama-Essamadi-CV.pdf">{t.cvPdf}<LinkIcon kind="download" /></a></Glue><Glue after={t.cvEnd}><a class="link" href={localized(lang, "now/")}>{t.nowLink}<LinkIcon kind="page" /></a></Glue></li>
+          <li><i class="dot z-dia"></i><span class="em-screen"><Glue after={t.emailOr}><button type="button" class="link copy" data-copy={PROFILE.email} data-copied={t.copied} data-copied-long={t.copiedLong}><span class="cp-win" data-copy-label><span class="cp-t">{t.copyEmail}</span></span><svg class="copy-ic" width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><g class="ic-copy" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><rect x="1.2" y="3.6" width="6.2" height="6.2" rx="1.1"></rect><path d="M3.6 3.6V2.3a1.1 1.1 0 0 1 1.1-1.1h4a1.1 1.1 0 0 1 1.1 1.1v4a1.1 1.1 0 0 1-1.1 1.1H7.4"></path></g><path class="ic-check" d="M1.8 5.9l2.5 2.4L9.2 2.8" pathLength="1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></Glue><Glue after={t.emailEnd}><a class="link" href={links.href(`mailto:${PROFILE.email}`)} data-email>{t.writeMe}<LinkIcon kind="mail" /></a></Glue></span><span class="em-print">{t.mailAt}<Glue after={t.mailAtEnd}><a class="link" href={links.href(`mailto:${PROFILE.email}`)} data-email><span dir="ltr">{PROFILE.email}</span><LinkIcon kind="mail" /></a></Glue></span><span class="sr" aria-live="polite" data-copy-status></span></li>
+          <li><i class="dot z-dia"></i><Glue after={t.supportOr}><Ext href={PROFILE.sponsors} hint={t.newTab}>{t.sponsor}</Ext></Glue><Glue after={t.supportEnd}><Ext href={PROFILE.paypal} hint={t.newTab}>{t.tip}</Ext></Glue></li>
         </ul>
         <Footer lang={lang} />
       </div>

@@ -1,0 +1,27 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import type { Lang } from "~/i18n/langs";
+import type { Part } from "~/lib/lists";
+
+import ListPart from "~/components/ListPart.astro";
+import { DEFAULT_LANG, LANGS } from "~/i18n/langs";
+import { PARTS } from "~/lib/lists";
+
+
+
+/** Only the part, without the page around it (ListPart.astro). */
+export const partial = true;
+
+/**
+ * The parts of the list of posts, in every language but English.
+ *
+ * @returns One file per language and part
+ */
+export const getStaticPaths = (() => LANGS.filter(l => l.code !== DEFAULT_LANG).flatMap(l => PARTS.map(part => ({ params: { lang: l.code, part } })))) satisfies GetStaticPaths;
+
+const lang = Astro.params.lang as Lang;
+const part = Astro.params.part as Part;
+---
+
+<ListPart lang={lang} list="writing" part={part} />

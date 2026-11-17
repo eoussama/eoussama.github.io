@@ -1,117 +1,35 @@
 ---
 import type { Lang } from "~/i18n/langs";
+import type { List } from "~/lib/lists";
 
 import LinkIcon from "~/components/LinkIcon.astro";
 import Logo from "~/components/Logo.astro";
-import ProjectName from "~/components/ProjectName.astro";
-import { langInfo } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
-import { formatDate } from "~/lib/dates";
-import { getPosts, postPath } from "~/lib/posts";
-import { getProjects, pick, projectPath } from "~/lib/projects";
+import { FACETS, LIST_PATHS, partsPath } from "~/lib/lists";
 import { localized } from "~/lib/url";
 
 
 
 /**
- * The list drawer: every project ("Works") or every post ("Writing"), on a sheet of
+ * The list drawer: every project ("Works") or every post ("Writings"), on a sheet of
  * torn paper that slides in from the side over whatever page is showing. It has a
  * search field, a filter menu and removable chips for the filters picked. The address
  * says which list is open (?list=projects, ?list=posts), so it can be linked to.
+ *
+ * Only the sheet is here, with each list's search: the lists themselves, and their
+ * filters, are in files beside their pages (ListPart.astro), fetched the first time one
+ * is wanted (scripts/lists.ts). Each list's page is where its links lead without
+ * scripts, or when its parts could not be had.
  */
 interface Props {
   lang: Lang;
 }
 
-/** A facet takes one value per item (its year) or several (its languages, tools and tags). */
-type Item = { name: string; owner?: string | null; href: string; kind: string; blurb: string; icon: "z-star" | "z-cross"; facets: Record<string, string | string[]>; lang?: Lang; dir?: "ltr" | "rtl" };
-type Group = { key: string; label: string; options: { value: string; label: string; count: number }[] };
-type Sheet = { list: "work" | "writing"; search: string; items: Item[]; groups: Group[] };
-
 const { lang } = Astro.props;
 const t = ui(lang);
-const projects = await getProjects();
-
-const projectItems: Item[] = projects.map(p => ({
-  name: p.name,
-  owner: p.owner,
-  href: localized(lang, projectPath(p)),
-  kind: t.kinds[p.kind],
-  blurb: pick(p.blurb, lang),
-  icon: "z-star",
-  facets: { language: p.languages, year: p.year ? String(p.year) : "", type: p.type, access: p.access, org: p.org ?? "", tool: p.tools, tag: p.tags },
-}));
-
-const posts = await getPosts(lang);
-const postItems: Item[] = posts.map(post => ({
-  name: post.entry.data.title,
-  href: localized(lang, postPath(post)),
-  kind: formatDate(post.entry.data.date, lang),
-  blurb: post.entry.data.summary,
-  icon: "z-cross",
-  facets: { topic: post.entry.data.tags[0] ?? "", year: String(post.entry.data.date.getUTCFullYear()) },
-  lang: post.lang === lang ? undefined : post.lang,
-  dir: post.lang === lang ? undefined : langInfo(post.lang).dir,
-}));
-
-/**
- * The filter groups for a list, each with the values its items take and how many
- * items take each. Groups with nothing to choose from are left out.
- *
- * Years run newest first; languages, tools and tags, which an item can have several
- * of, run most used first.
- *
- * @param items - The list's items
- * @param keys - The facets to filter by, with their labels
- * @param labels - Display labels for some facets' values
- * @returns The groups, in the order given
- */
-function groupsOf(items: Item[], keys: [string, string][], labels: Record<string, Record<string, string>> = {}): Group[] {
-  return keys.map(([key, label]) => {
-    const counts = new Map<string, number>();
-
-    items.forEach((item) => {
-      [item.facets[key] ?? []].flat().filter(Boolean).forEach((value) => {
-        counts.set(value, (counts.get(value) ?? 0) + 1);
-      });
-    });
-
-    const options = [...counts].map(([value, count]) => ({ value, label: labels[key]?.[value] ?? value, count }));
-
-    if (key === "year") {
-      options.sort((a, b) => Number(b.value) - Number(a.value));
-    }
-
-    if (key === "language" || key === "tool" || key === "tag") {
-      options.sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
-    }
-
-    return { key, label, options };
-  }).filter(group => group.options.length > 1);
-}
-
-/**
- * The words an item is found by: its name, sentence and kind, and every facet value
- * with its label.
- *
- * @param item - The item
- * @returns The words, lowercased
- */
-function keywords(item: Item): string {
-  const values = Object.values(item.facets).flat();
-  const named = item.facets.tag ? [item.facets.tag].flat().map(tag => t.tagNames[tag] ?? "") : [];
-
-  return [item.name, item.blurb, item.kind, ...values, ...named].join(" ").toLowerCase();
-}
-
-const sheets: Sheet[] = [
-  {
-    list: "work",
-    search: t.searchProjects,
-    items: projectItems,
-    groups: groupsOf(projectItems, [["language", t.gLanguage], ["year", t.gYear], ["type", t.gKind], ["access", t.gAccess], ["org", t.gOrg], ["tool", t.built], ["tag", t.gTags]], { type: t.types, access: t.access, tag: t.tagNames }),
-  },
-  { list: "writing", search: t.searchPosts, items: postItems, groups: groupsOf(postItems, [["topic", t.gTopic], ["year", t.gYear]]) },
+const sheets: { list: List; search: string }[] = [
+  { list: "work", search: t.searchProjects },
+  { list: "writing", search: t.searchPosts },
 ];
 ---
 
@@ -119,16 +37,19 @@ const sheets: Sheet[] = [
 <div
   class="dr"
   id="drawer"
-  role="dialog"
-  aria-modal="true"
   aria-labelledby="dr-title"
   data-list="work"
-  inert
   data-none-q={t.noMatchQ}
   data-none-f={t.noMatchF}
   data-remove={t.removeFilter}
+  data-key-sep={t.keySep}
+  data-shown-of={t.shownOf}
   data-title-work={t.work}
   data-title-writing={t.writing}
+  data-src-work={localized(lang, LIST_PATHS.work)}
+  data-src-writing={localized(lang, LIST_PATHS.writing)}
+  data-parts-work={localized(lang, partsPath("work"))}
+  data-parts-writing={localized(lang, partsPath("writing"))}
 >
   <span class="dr-tear" aria-hidden="true"><i></i><b></b></span>
   <div class="dr-scroll">
@@ -136,58 +57,47 @@ const sheets: Sheet[] = [
       <span class="dr-mark"><Logo id="lg-drawer" size={44} /></span>
       <h2 class="dr-title" id="dr-title" tabindex="-1"><span data-show="work">{t.work}</span><span data-show="writing">{t.writing}</span></h2>
       <div class="dr-tabs">
-        <a class="link" href="?list=posts" data-drawer="writing" data-show="work">{t.writing}<LinkIcon kind="switch" /></a>
-        <a class="link" href="?list=projects" data-drawer="work" data-show="writing">{t.work}<LinkIcon kind="switch" /></a>
+        <a class="link" href={localized(lang, LIST_PATHS.writing)} data-drawer="writing" data-show="work">{t.writing}<LinkIcon kind="switch" /></a>
+        <a class="link" href={localized(lang, LIST_PATHS.work)} data-drawer="work" data-show="writing">{t.work}<LinkIcon kind="switch" /></a>
         <button type="button" class="dr-x" aria-label={t.closeList} title={t.closeList} data-drawer-close>
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
         </button>
       </div>
     </div>
 
+    {/* Each names the address parameters its filters can take, known before the filters arrive. */}
     {sheets.map(sheet => (
-      <section class="dr-sheet" data-sheet={sheet.list}>
+      <section class="dr-sheet" data-sheet={sheet.list} data-keys={FACETS[sheet.list].join(" ")} aria-busy="true">
         <div class="dr-tools">
           <div class="dr-search">
             <svg class="dr-glass" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
             <input type="search" class="dr-q" placeholder={sheet.search} aria-label={sheet.search} autocomplete="off" />
-            {sheet.groups.length > 0 && (
-              <button type="button" class="dr-fbtn" aria-expanded="false" aria-controls={`dr-f-${sheet.list}`} aria-label={t.filters} title={t.filters} data-label={t.filters}>
-                <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 5h13M5 9h8M7.5 13h3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg>
-                <b class="dr-badge" hidden></b>
-              </button>
-            )}
           </div>
-          {sheet.groups.length > 0 && (
-            <div class="dr-fpop" id={`dr-f-${sheet.list}`} role="group" aria-label={t.filters} data-open="false">
-              {sheet.groups.map(group => (
-                <div class="dr-fg" data-group={group.key} data-group-label={group.label}>
-                  <p class="dr-fh">{group.label}</p>
-                  <div class="dr-fopts">
-                    {group.options.map(option => (
-                      <button type="button" class="dr-fo" aria-pressed="false" data-value={option.value} data-label={option.label}>{option.label}<em class="dr-n">{option.count}</em></button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
           <div class="dr-active" aria-label={t.filters} hidden>
             <button type="button" class="link dr-clear" data-clear>{t.clearAll}</button>
           </div>
         </div>
         <p class="dr-empty" hidden><span></span> <button type="button" class="link" data-clear>{t.clearSearch}</button></p>
-        {/* Said aloud when a search or the filters leave nothing: the list emptying is silent. */}
-        <p class="sr" role="status" data-dr-status></p>
-        <ul class="list dr-list">
-          {sheet.items.map((item, i) => (
-            <li style={`--i: ${i}`} data-kw={keywords(item)} data-facets={JSON.stringify(item.facets)}>
-              <i class:list={["dot", item.icon]}></i>
-              <span class="dr-line"><a class="link dr-name" href={item.href} lang={item.lang}><span class="hl">{item.owner === undefined ? <span dir={item.dir}>{item.name}</span> : <ProjectName owner={item.owner} name={item.name} />}</span><LinkIcon kind="page" /></a><span class="dr-kind">{item.kind}</span></span>
-              <span class="dr-desc" lang={item.lang} dir={item.dir}>{item.blurb}</span>
-            </li>
-          ))}
-        </ul>
+        {/* Until the list is in: a quiet word, and, if it never comes, a way to ask again. */}
+        <p class="dr-wait" data-dr-wait data-failed={t.listFailed}><span>{t.listWait}</span> <button type="button" class="link" data-dr-retry hidden>{t.listRetry}</button></p>
       </section>
     ))}
+    {/* Said aloud: that the list is on its way, how many it holds, how many a search or the
+        filters leave. Outside the sheets, which are busy until their list is in. */}
+    <p class="sr" role="status" data-dr-status></p>
   </div>
 </div>
+{/*
+  A dialog that opens over the page, out of reach until then: made so here, as the page
+  is read, by script. Without scripts it can't open, so it is none, and doesn't show:
+  "All projects" and "All posts" lead to the lists' own pages instead (global.css).
+*/}
+<script is:inline>
+  {
+    const dr = document.getElementById("drawer");
+
+    dr.inert = true;
+    dr.setAttribute("role", "dialog");
+    dr.setAttribute("aria-modal", "true");
+  }
+</script>

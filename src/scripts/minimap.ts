@@ -79,7 +79,7 @@ if (nav) {
     // At the page's edge, open, the list follows the reading; the card is left where
     // the reader has scrolled it.
     if (!nav.dataset.sheet && nav.matches(".mm:hover, .mm:has(:focus-visible)")) {
-      reveal(at, true);
+      reveal(at, !matchMedia("(prefers-reduced-motion: reduce)").matches);
     }
   };
 

@@ -4,6 +4,8 @@ import type { Schema } from "~/lib/schema";
 
 import naskh400 from "@fontsource/noto-naskh-arabic/arabic-400.css?inline";
 import naskh500 from "@fontsource/noto-naskh-arabic/arabic-500.css?inline";
+import naskh400File from "@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-400-normal.woff2?url";
+import naskh500File from "@fontsource/noto-naskh-arabic/files/noto-naskh-arabic-arabic-500-normal.woff2?url";
 import jp400 from "@fontsource/noto-serif-jp/400.css?url";
 import jp500 from "@fontsource/noto-serif-jp/500.css?url";
 import newsreaderItalic from "~/assets/fonts/newsreader-latin-italic.woff2?url";
@@ -15,6 +17,9 @@ import Palette from "~/components/Palette.astro";
 import Shortcuts from "~/components/Shortcuts.astro";
 import { langInfo, LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
+import { canonicalLang } from "~/lib/canonical";
+import { partsPath } from "~/lib/lists";
+import { REVEAL } from "~/lib/reveal";
 import { localized, url } from "~/lib/url";
 
 import "~/styles/fonts.css";
@@ -48,10 +53,24 @@ const t = ui(lang);
 const info = langInfo(lang);
 const alternates = Object.fromEntries(LANGS.map(l => [l.code, localized(l.code, path)]));
 const codes = LANGS.map(l => l.code);
+const listParts = { work: localized(lang, partsPath("work")), writing: localized(lang, partsPath("writing")) };
 const absolute = (href: string) => new URL(href, Astro.site).href;
 // Search engines take a language's two-letter code, which Darija has none of: they
 // know it as the Arabic of Morocco.
 const hreflang = (code: Lang) => (code === "ary" ? "ar-MA" : code);
+// The page search engines should list for this one: itself, or the English page where
+// its main text is English only (lib/canonical.ts). Only the languages that have a page
+// of their own are its alternates, and a page in one language has none.
+const canonical = absolute(localized(canonicalLang(path, lang) as Lang, path));
+const own = LANGS.filter(l => canonicalLang(path, l.code) === l.code);
+// The same languages, as a share card names them: each once (Arabic and Darija are one), the page's own left out.
+const localeAlternates = [...new Set(own.map(l => LOCALES[l.code]))].filter(locale => locale !== LOCALES[lang]);
+// The page's own text, ahead of the rest. A page of a thousand elements or more (a post
+// full of highlighted code) is heavy with markup: there the first-load entrance has each
+// block rise whole, and is told so from the start, as it begins before the page has all
+// arrived (scripts/reveal.ts).
+const content = await Astro.slots.render("default");
+const heavy = (content.match(/<[a-z]/gi) ?? []).length > 1000;
 
 /*
  * Pages of the site are prerendered as a link is pointed at (or touched), so they open
@@ -74,108 +93,145 @@ const speculation = JSON.stringify({
 ---
 
 <!doctype html>
-<html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light" data-label={noindex ? undefined : (label ?? title)}>
+<html lang={lang} dir={info.dir} data-lang={lang} data-theme="auto" data-mode="light" data-label={noindex ? undefined : (label ?? title)} data-heavy={heavy ? "" : undefined}>
   <head>
     <!-- Hello. There's a shorter way to find me: npx ouss -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#faf7f2" />
     {/*
-      Before the first paint: the saved theme (no flash), the keyboard shortcut's
-      label, whether to play the entrance again, and, on English pages, a first
-      visit that follows the browser's language.
+      Before the first paint: the saved theme (no flash), the list drawer for an
+      address that asks for it, the keyboard shortcut's label, whether to play the
+      entrance again, and, on English pages, a first visit that follows the browser's
+      language.
+
+      The page's own values ride on the script, not in it, here as in each script the
+      page carries itself: its text is then the same on every page, and so is the hash
+      the site's security policy allows it by (lib/csp.ts).
     */}
-    <script is:inline define:vars={{ lang, alternates, codes, redirect: !noindex }}>
-      const d = document.documentElement;
+    <script is:inline data-vars={JSON.stringify({ lang, alternates, codes, listParts, redirect: !noindex })}>
+      (() => {
+        const { lang, alternates, codes, listParts, redirect } = JSON.parse(document.currentScript.dataset.vars);
+        const d = document.documentElement;
 
-      function read(store, key) {
-        try {
-          return store.getItem(key);
-        }
-        catch {
-          return null;
-        }
-      }
-
-      d.classList.add("js");
-
-      let theme = read(localStorage, "theme");
-
-      if (theme !== "light" && theme !== "dark") {
-        theme = "auto";
-      }
-
-      const dark = theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
-
-      d.dataset.theme = theme;
-      d.dataset.mode = dark ? "dark" : "light";
-
-      if (dark) {
-        document.querySelector("meta[name=theme-color]").content = "#14161d";
-      }
-
-      // ?list=projects or ?list=posts opens the list drawer over the page.
-      const list = { projects: "work", posts: "writing" }[new URLSearchParams(location.search).get("list")];
-
-      if (list) {
-        d.dataset.open = list;
-      }
-
-      if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
-        d.classList.add("is-mac");
-      }
-
-      // The logo settling and the signature drawing play on every load and reload,
-      // but not when moving from one page of the site to another, or back and forth.
-      const nav = performance.getEntriesByType("navigation")[0];
-      const fromHere = !!document.referrer && new URL(document.referrer).origin === location.origin;
-
-      if (nav?.type === "back_forward" || (fromHere && nav?.type !== "reload")) {
-        d.classList.add("is-seen", "sig-drawn");
-      }
-      else if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        // The text rises in as the page first shows: hold it back until it starts.
-        d.dataset.rv = "pre";
-      }
-
-      // The 404 sends visitors on itself, keeping the address they asked for.
-      if (lang === "en" && redirect) {
-        let want = read(localStorage, "lang");
-
-        for (const tag of want ? [] : navigator.languages || [navigator.language || ""]) {
-          const full = String(tag).toLowerCase();
-
-          want = codes.find(c => c === full) || codes.find(c => c === full.split("-")[0]);
-
-          if (want) {
-            break;
+        // The storage is named, not passed: where it is blocked, even reaching it throws.
+        function read(kind, key) {
+          try {
+            return window[kind].getItem(key);
+          }
+          catch {
+            return null;
           }
         }
 
-        if (want && want !== "en" && alternates[want]) {
-          location.replace(alternates[want] + location.hash);
+        d.classList.add("js");
+
+        let theme = read("localStorage", "theme");
+
+        if (theme !== "light" && theme !== "dark") {
+          theme = "auto";
         }
-      }
+
+        const dark = theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
+
+        d.dataset.theme = theme;
+        d.dataset.mode = dark ? "dark" : "light";
+
+        if (dark) {
+          document.querySelector("meta[name=theme-color]").content = "#14161d";
+        }
+
+        // ?list=projects or ?list=posts opens the list drawer over the page.
+        const lists = { projects: "work", posts: "writing" };
+        const asked = new URLSearchParams(location.search).get("list");
+
+        // Only the two lists: not whatever else an object answers to, like ?list=toString.
+        if (Object.hasOwn(lists, asked)) {
+          d.dataset.open = lists[asked];
+
+          // The list itself, and its filters, are files of their own (ListPart.astro): asked
+          // for now, with the page's first bytes, rather than once all of the page has been
+          // read. scripts/lists.ts takes the answers from here: a preload would do in
+          // Chrome, but Safari asks again.
+          const parts = listParts[lists[asked]];
+          const items = fetch(`${parts}items/`);
+          const filters = fetch(`${parts}filters/`);
+
+          items.catch(() => {});
+          filters.catch(() => {});
+          window.listAsked = { list: lists[asked], items, filters };
+        }
+
+        // Links to the lists once named the list itself too (#list-work), for when scripts
+        // were off and the lists followed the page: the drawer opens instead, unscrolled.
+        if (location.hash.startsWith("#list-")) {
+          history.replaceState(history.state, "", location.pathname + location.search);
+        }
+
+        if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
+          d.classList.add("is-mac");
+        }
+
+        // The logo settling and the signature drawing play on every load and reload,
+        // but not when moving from one page of the site to another, or back and forth.
+        const nav = performance.getEntriesByType("navigation")[0];
+        const fromHere = !!document.referrer && new URL(document.referrer).origin === location.origin;
+
+        if (nav?.type === "back_forward" || (fromHere && nav?.type !== "reload")) {
+          d.classList.add("is-seen", "sig-drawn");
+        }
+        else if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          // The text rises in as the page first shows: hold it back until it starts.
+          d.dataset.rv = "pre";
+        }
+
+        // Only on arriving from elsewhere: a page reached from the site, by Back or Forward,
+        // or reloaded, is one the visitor chose, English included. The 404 sends visitors
+        // on itself, keeping the address they asked for.
+        if (lang === "en" && redirect && !fromHere && nav?.type !== "back_forward" && nav?.type !== "reload") {
+          let want = read("localStorage", "lang");
+
+          for (const tag of want ? [] : navigator.languages || [navigator.language || ""]) {
+            const full = String(tag).toLowerCase();
+
+            want = codes.find(c => c === full) || codes.find(c => c === full.split("-")[0]);
+
+            if (want) {
+              break;
+            }
+          }
+
+          // A stored value is checked too: only a language of the site is a page's key.
+          if (want !== "en" && codes.includes(want)) {
+            location.replace(alternates[want] + location.search + location.hash);
+          }
+        }
+      })();
     </script>
+    {/* The first-load entrance, right after the line above decides it plays: it takes the
+        page's text in as it arrives, and starts the first screenful rising as soon as it
+        is all there (scripts/reveal.ts, lib/reveal.ts). */}
+    <script is:inline set:html={REVEAL} />
     {/* For whoever opens the browser's console: the shorter way to find me. Its lavender
         is one that reads on a light console and a dark one alike (about 4:1 on both). */}
-    <script is:inline define:vars={{ hello: t.consoleHello }}>
+    <script is:inline data-hello={t.consoleHello}>
       // eslint-disable-next-line no-console -- the console is where it belongs.
-      console.log(`%c${hello}`, "font: 600 15px/1.6 Georgia, serif; color: #7c6cf0");
+      console.log(`%c${document.currentScript.dataset.hello}`, "font: 600 15px/1.6 Georgia, serif; color: #7c6cf0");
     </script>
     <script is:inline type="speculationrules" set:html={speculation} />
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
-    {!noindex && <link rel="canonical" href={absolute(localized(lang, path))} />}
-    {!noindex && LANGS.map(l => <link rel="alternate" hreflang={hreflang(l.code)} href={absolute(alternates[l.code] ?? url())} />)}
-    {!noindex && <link rel="alternate" hreflang="x-default" href={absolute(localized("en", path))} />}
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {!noindex && own.length > 1 && own.map(l => <link rel="alternate" hreflang={hreflang(l.code)} href={absolute(alternates[l.code] ?? url())} />)}
+    {!noindex && own.length > 1 && <link rel="alternate" hreflang="x-default" href={absolute(localized("en", path))} />}
     <meta property="og:type" content={kind} />
     <meta property="og:site_name" content={t.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={absolute(localized(lang, path))} />
+    <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={LOCALES[lang]} />
+    {!noindex && own.length > 1 && localeAlternates.map(locale => <meta property="og:locale:alternate" content={locale} />)}
     <meta property="og:image" content={absolute(url("og.jpg"))} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -190,36 +246,64 @@ const speculation = JSON.stringify({
       The page's scripts, in the head: a module script runs only once the page is read,
       wherever it stands, but one at the end of the body is found only after all of the
       page has been read, and is asked for then. Here it is asked for with the page's
-      first bytes, alongside the fonts, and is there sooner; the first words wait on it
-      (reveal.ts).
+      first bytes, alongside the fonts, and is there sooner. The first-load entrance does
+      not wait on it: it is in the page itself (above). What most visits never use (the
+      list drawer, the command menu, the signature's pen) waits until it is wanted:
+      scripts/lazy.ts.
     */}
     <script>
       import "~/scripts/site";
+      import "~/scripts/languages";
       import "~/scripts/copy";
-      import "~/scripts/palette";
       import "~/scripts/keys";
       import "~/scripts/tug";
-      import "~/scripts/drawer";
+      import "~/scripts/lazy";
       import "~/scripts/vt";
       import "~/scripts/prefetch";
       import "~/scripts/loading";
       import "~/scripts/top";
       import "~/scripts/minimap";
       import "~/scripts/chips";
-      import "~/scripts/reveal";
       import "~/scripts/name";
-      import "~/scripts/sign";
       import "~/scripts/logo";
       import "~/scripts/analytics";
     </script>
+    {/* The drawn icon, which follows the theme; a fixed one for what asks for /favicon.ico or can't read SVG; and one for a phone's home screen. */}
+    <link rel="icon" href={url("favicon.ico")} sizes="32x32" />
     <link rel="icon" href={url("favicon.svg")} type="image/svg+xml" />
+    <link rel="apple-touch-icon" href={url("apple-touch-icon.png")} />
     <link rel="alternate" type="application/rss+xml" title={t.feed} href={localized(lang, "rss.xml")} />
     <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={newsreaderItalic} as="font" type="font/woff2" crossorigin />
     {/* Arabic's font rules are a few lines: in the page, they cost no request before it is drawn. Japanese's are far larger, so linked. */}
-    {info.dir === "rtl" && <style is:inline set:html={naskh400 + naskh500} />}
-    {lang === "ja" && <link rel="stylesheet" href={jp400} />}
-    {lang === "ja" && <link rel="stylesheet" href={jp500} />}
+    {/*
+      On Arabic pages Naskh is asked for with the page's first bytes, and shown only if it
+      is there by the first paint (font-display: optional). Otherwise that page keeps its
+      stand-in (fonts.css), and the next has Naskh from the cache: a stand-in matches it
+      in width overall but not letter by letter, and swapping fonts under the reader would
+      rewrap the lines around the large greeting.
+    */}
+    {info.dir === "rtl" && <link rel="preload" href={naskh400File} as="font" type="font/woff2" crossorigin />}
+    {info.dir === "rtl" && <link rel="preload" href={naskh500File} as="font" type="font/woff2" crossorigin />}
+    {info.dir === "rtl" && <style is:inline set:html={(naskh400 + naskh500).replace(/font-display:\s*swap/g, "font-display: optional")} />}
+    {/*
+      They hold only font rules, so the page is drawn without them in a stand-in font, and
+      they swap in when they arrive: linked for print, they hold nothing up, and are turned
+      to the screen as each loads. Watched from just before them, rather than by an onload
+      of their own, which the security policy would not run (lib/csp.ts).
+    */}
+    {lang === "ja" && (
+      <script is:inline>
+        document.addEventListener("load", (event) => {
+          if (event.target instanceof HTMLLinkElement && event.target.hasAttribute("data-fonts")) {
+            event.target.media = "all";
+          }
+        }, true);
+      </script>
+    )}
+    {lang === "ja" && <link rel="stylesheet" href={jp400} media="print" data-fonts />}
+    {lang === "ja" && <link rel="stylesheet" href={jp500} media="print" data-fonts />}
+    {lang === "ja" && <noscript><link rel="stylesheet" href={jp400} /><link rel="stylesheet" href={jp500} /></noscript>}
   </head>
   <body>
     {/* Behind everything, always painted, for the paper to blend with: see .ground in global.css. */}
@@ -245,8 +329,9 @@ const speculation = JSON.stringify({
             is opened, and a page put back from the browser's back/forward cache (the way
             back to the home page is one) loads nothing and runs nothing, so it would
             leave the trail as the page after it had left it. */}
-        <script is:inline define:vars={{ lang, base: import.meta.env.BASE_URL, codes }}>
+        <script is:inline data-vars={JSON.stringify({ lang, base: import.meta.env.BASE_URL, codes })}>
           (() => {
+            const { lang, base, codes } = JSON.parse(document.currentScript.dataset.vars);
             const root = document.documentElement;
             const label = root.dataset.label;
 
@@ -271,6 +356,11 @@ const speculation = JSON.stringify({
             /** The page before this one on the trail, if there is one. */
             let back = null;
 
+            // What is in the tab's storage can have been put there by anything else on the
+            // origin, and a step's key becomes the crumb's address: only a path of this site
+            // (not "//host/", not "javascript:") with a label is let through.
+            const sound = step => typeof step?.key === "string" && typeof step.label === "string" && step.key.startsWith(base) && !step.key.startsWith("//") && !/[\s\\]/.test(step.key);
+
             /** Puts this page on the trail, popping what came after it, and points the crumb at the page before. */
             const walk = () => {
               let trail = [];
@@ -280,7 +370,12 @@ const speculation = JSON.stringify({
               }
               catch {}
 
-              const here = { key: keyOf(location.pathname), label };
+              // A trail with anything unsound in it is not trusted at all: it starts over.
+              if (!Array.isArray(trail) || !trail.every(sound)) {
+                trail = [];
+              }
+
+              const here = { key: keyOf(location.pathname), label, lang };
               const at = trail.findIndex(step => step.key === here.key);
 
               trail = at >= 0 ? [...trail.slice(0, at), here] : [...trail, here].slice(-50);
@@ -291,6 +386,12 @@ const speculation = JSON.stringify({
               catch {}
 
               back = trail.at(-2) ?? null;
+
+              // A page left in another language would be named in it: the crumb leads home
+              // instead. So does a step kept before the trail held languages.
+              if (back?.lang !== lang) {
+                back = null;
+              }
 
               if (!crumb) {
                 return;
@@ -334,8 +435,10 @@ const speculation = JSON.stringify({
             });
           })();
         </script>
+        {/* Without JavaScript the page is all there, but plainer: say why, once, above it. */}
+        <noscript><p class="nojs" role="note">{t.noJs}</p></noscript>
         <main id="main">
-          <slot />
+          <Fragment set:html={content} />
         </main>
         <div class="lh-foot" aria-hidden="true"><img class="lh-sig" src={url("signature.svg")} width="250" height="105" alt="" decoding="async" fetchpriority="low" /></div>
       </div>

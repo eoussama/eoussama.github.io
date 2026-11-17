@@ -6,7 +6,7 @@ type: tool
 repo: https://github.com/eoussama/eo-textdraw-editor
 live: https://eoussama.github.io/eo-textdraw-editor/
 links:
-  - https://www.figma.com/board/IP9Oa986G23BlCsVlT0X4x/EO-TextDraw-Editor?t=9RFnFx020F0nddWG-6
+  - https://www.figma.com/board/IP9Oa986G23BlCsVlT0X4x/EO-TextDraw-Editor
 blurb:
   en: An online editor for SA-MP textdraws.
   ar: محرر على الويب لعناصر textdraw في SA-MP.

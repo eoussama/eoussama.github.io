@@ -5,6 +5,7 @@ import LinkIcon from "~/components/LinkIcon.astro";
 import { DEFAULT_LANG, langInfo, LANGS } from "~/i18n/langs";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
+import { LIST_PATHS } from "~/lib/lists";
 import { getPosts } from "~/lib/posts";
 import { getProjects } from "~/lib/projects";
 import { localized } from "~/lib/url";
@@ -55,36 +56,88 @@ function split(text: string): Word[] {
   return parts.map(part => /^\s+$/.test(part) ? { space: true, chars: [part] } : { space: false, chars: rtl ? [part] : Array.from(part) });
 }
 
+/**
+ * Text set letter by letter for the hole to pull on. Screen readers skip the letters and
+ * read a hidden copy of the text, whole: letter by letter, a link would be named
+ * "t h e h o m e p a g e".
+ *
+ * @param text - The text
+ * @returns Its markup
+ */
+function letters(text: string): string {
+  const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const drawn = split(text).map(w => w.space
+    ? `<span class="nf-sp">${escape(w.chars[0]!)}</span>`
+    : `<span class="nf-w">${w.chars.map(c => `<span class="nf-ch">${escape(c)}</span>`).join("")}</span>`);
+
+  return `<span aria-hidden="true">${drawn.join("")}</span><span class="sr nf-sr">${escape(text)}</span>`;
+}
+
 const codes = LANGS.filter(l => l.code !== DEFAULT_LANG).map(l => l.code);
 ---
 
 <Base lang={lang} path="404/" title={`${t.nfTitle} · ${t.name}`} description={t.nfLead} noindex>
   {lang === DEFAULT_LANG && (
-    <script is:inline slot="head" define:vars={{ codes }}>
-      // One 404 page answers for every missing address. An address in another
-      // language, a visitor who picked one, or a browser set to one, gets that
-      // language's version, which still shows the address asked for.
-      const path = location.pathname;
-      let want = /^\/p\/([a-z]+)\//.exec(path)?.[1];
+    <script is:inline slot="head" data-codes={JSON.stringify(codes)}>
+      (() => {
+        // One 404 page answers for every missing address. An address in another
+        // language, a visitor who picked one, or a browser set to one, gets that
+        // language's version, which still shows the address asked for.
+        const codes = JSON.parse(document.currentScript.dataset.codes);
+        const path = location.pathname;
+        // The address asked for, as hole.ts shows it: a path of this site, or a short link.
+        // The short links' redirector sends one it doesn't know to /404?from=/<slug> (this
+        // site's own links come to /404.html), so that path is one of to.ouss.es's. Only
+        // those two shapes are taken from the link, or it could make the page say anything.
+        const given = new URLSearchParams(location.search).get("from") ?? "";
+        const shape = /^(?:to\.ouss\.es)?\/(?![/\\])\S{0,200}$/;
+        let asked = path;
 
-      try {
-        want ??= localStorage.getItem("lang");
-      }
-      catch {}
-
-      for (const tag of want ? [] : navigator.languages || [navigator.language || ""]) {
-        const full = String(tag).toLowerCase();
-
-        want = codes.find(c => c === full) || codes.find(c => c === full.split("-")[0]);
-
-        if (want) {
-          break;
+        if (path === "/404" && /^\/(?![/\\])\S{0,200}$/.test(given)) {
+          asked = `to.ouss.es${given}`;
         }
-      }
+        else if (shape.test(given)) {
+          asked = given;
+        }
 
-      if (codes.includes(want)) {
-        location.replace(`/p/${want}/404/?from=${encodeURIComponent(path)}`);
-      }
+        // A short link is written out in full, so a reload reads it as is; anything else
+        // given is dropped, and the page shows its own address.
+        if (given && asked !== given) {
+          history.replaceState(history.state, "", `${path}${asked === path ? "" : `?from=${encodeURIComponent(asked)}`}${location.hash}`);
+        }
+
+        // Only a language's own prefix counts: /p/projects/… is English, and asks on.
+        let want = codes.find(c => path.startsWith(`/p/${c}/`));
+
+        // Coming from another language's 404 is a choice of English: stay here.
+        let chosen = false;
+
+        try {
+          const from = new URL(document.referrer);
+
+          chosen = from.origin === location.origin && /^\/p\/[a-z]+\/404\//.test(from.pathname);
+        }
+        catch {}
+
+        try {
+          want ??= localStorage.getItem("lang");
+        }
+        catch {}
+
+        for (const tag of want ? [] : navigator.languages || [navigator.language || ""]) {
+          const full = String(tag).toLowerCase();
+
+          want = codes.find(c => c === full) || codes.find(c => c === full.split("-")[0]);
+
+          if (want) {
+            break;
+          }
+        }
+
+        if (!chosen && codes.includes(want)) {
+          location.replace(`/p/${want}/404/?from=${encodeURIComponent(asked)}`);
+        }
+      })();
     </script>
   )}
 
@@ -93,23 +146,59 @@ const codes = LANGS.filter(l => l.code !== DEFAULT_LANG).map(l => l.code);
   <canvas class="nf-sky" aria-hidden="true"></canvas>
 
   <section class="row first nf-top">
-    <h2 class="lab" id="whoops"><a class="anchor" href="#whoops" aria-label={t.nfLabel + t.anchor}>{split(t.nfLabel).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</a></h2>
+    <h2 class="lab" id="whoops"><a class="anchor" href="#whoops" aria-label={t.nfLabel + t.anchor}><Fragment set:html={letters(t.nfLabel)} /></a></h2>
     <div class="hero nf-hero">
       <div class="nf-hole" aria-hidden="true"><canvas class="nf-gl"></canvas></div>
-      <h1 class="nf-h1" aria-label={t.nfTitle}>{split(t.nfTitle).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</h1>
-      <p class="lead rise">{split(t.nfLead).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</p>
-      <p class="nf-path rise">{split(t.nfPath).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)} <code dir="ltr" class="nf-url">ouss.es</code></p>
+      <h1 class="nf-h1" aria-label={t.nfTitle}><Fragment set:html={letters(t.nfTitle)} /></h1>
+      <p class="lead rise"><Fragment set:html={letters(t.nfLead)} /></p>
+      <p class="nf-path rise"><Fragment set:html={letters(t.nfPath)} /> <code dir="ltr" class="nf-url">ouss.es</code></p>
+      {/*
+        The address asked for, written in letter by letter for the hole to pull on
+        (scripts/hole.ts) as soon as its line is read: the first-load entrance takes the
+        line in as it arrives (scripts/reveal.ts). This page's own, or the one passed on
+        from the root 404, a path of this site or a short link it didn't know (above).
+        Only those are taken from the link, or anyone could make the page say anything
+        under its address. Screen readers get it whole beside the letters: letter by
+        letter, they would spell it out.
+      */}
+      <script is:inline>
+        (() => {
+          const el = document.querySelector(".nf-url");
+          const from = new URLSearchParams(location.search).get("from");
+          const asked = from && /^(?:to\.ouss\.es)?\/(?![/\\])\S{0,200}$/.test(from) ? from : location.pathname;
+          const text = asked.startsWith("/") ? `${location.host}${asked}` : asked;
+          const drawn = document.createElement("span");
+          const read = document.createElement("span");
+
+          if (!el) {
+            return;
+          }
+
+          drawn.setAttribute("aria-hidden", "true");
+          drawn.append(...Array.from(text, (c) => {
+            const span = document.createElement("span");
+
+            span.className = "nf-ch";
+            span.textContent = c;
+
+            return span;
+          }));
+          read.className = "sr nf-sr";
+          read.textContent = text;
+          el.replaceChildren(drawn, read);
+        })();
+      </script>
     </div>
   </section>
 
   <section class="row rise" style="--d: 40ms">
-    <h2 class="lab" id="where-to"><a class="anchor" href="#where-to" aria-label={t.nfWhere + t.anchor}>{split(t.nfWhere).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</a></h2>
+    <h2 class="lab" id="where-to"><a class="anchor" href="#where-to" aria-label={t.nfWhere + t.anchor}><Fragment set:html={letters(t.nfWhere)} /></a></h2>
     <ul class="list">
-      <li><i class="dot nf-dot"></i><a class="link" href={localized(lang)}>{split(t.nfHome).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}<LinkIcon kind="page" /></a></li>
-      <li><i class="dot nf-dot"></i><a class="link" href="?list=projects" data-drawer="work">{split(t.allProjects(projects.length)).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}<LinkIcon kind="list" /></a></li>
-      <li><i class="dot nf-dot"></i><a class="link" href="?list=posts" data-drawer="writing">{split(t.allPosts(posts.length)).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}<LinkIcon kind="list" /></a></li>
-      <li><i class="dot nf-dot"></i><button type="button" class="link" data-palette-open>{split(t.nfSearch).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}</button> <span class="mut nf-kbd" dir="ltr"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></span></li>
-      <li><i class="dot nf-dot"></i><a class="link ext" href="/v/0.4/" target="_blank" rel="noopener noreferrer">{split(t.nfOld).map(w => w.space ? <span class="nf-sp">{w.chars[0]}</span> : <span class="nf-w">{w.chars.map(c => <span class="nf-ch">{c}</span>)}</span>)}<svg class="arrow" width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M2.5 8.5l6-6M3.5 2.5h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="sr">{t.newTab}</span></a></li>
+      <li><i class="dot nf-dot"></i><a class="link" href={localized(lang)}><Fragment set:html={letters(t.nfHome)} /><LinkIcon kind="page" /></a></li>
+      <li><i class="dot nf-dot"></i><a class="link" href={localized(lang, LIST_PATHS.work)} data-drawer="work" data-carry="work"><Fragment set:html={letters(t.allProjects(projects.length))} /><LinkIcon kind="list" /></a></li>
+      <li><i class="dot nf-dot"></i><a class="link" href={localized(lang, LIST_PATHS.writing)} data-drawer="writing" data-carry="writing"><Fragment set:html={letters(t.allPosts(posts.length))} /><LinkIcon kind="list" /></a></li>
+      <li><i class="dot nf-dot"></i><button type="button" class="link" data-palette-open><Fragment set:html={letters(t.nfSearch)} /></button> <span class="mut nf-kbd" dir="ltr"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></span></li>
+      <li><i class="dot nf-dot"></i><a class="link ext" href="/v/0.4/" target="_blank" rel="noopener noreferrer"><Fragment set:html={letters(t.nfOld)} /><svg class="arrow" width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M2.5 8.5l6-6M3.5 2.5h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="sr">{t.newTab}</span></a></li>
     </ul>
   </section>
 

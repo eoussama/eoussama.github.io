@@ -15,6 +15,9 @@ const localized = z.object({
   ja: z.string().optional(),
 });
 
+/** An https address only: `z.url()` alone also lets `javascript:` and `data:` through. */
+const https = z.url({ protocol: /^https$/ });
+
 /**
  * Projects, public and private, in one model. Public ones also carry their repository;
  * private ones never do, and show as case studies.
@@ -51,10 +54,10 @@ const projects = defineCollection({
     /** Filled in from GitHub (the year the repository was created) when left out. */
     year: z.number().nullable().default(null),
     /** Its repository, or a list of them when the code lives in several (the main one first). */
-    repo: z.union([z.url(), z.array(z.url()).min(1)]).nullable().default(null),
-    live: z.url().nullable().default(null),
+    repo: z.union([https, z.array(https).min(1)]).nullable().default(null),
+    live: https.nullable().default(null),
     /** Other places it lives, besides its repositories: its packages, a container image. */
-    links: z.array(z.url()).default([]),
+    links: z.array(https).default([]),
     /**
      * Topics, to filter the list by; proper names stay as they are, a few common words
      * are translated. Languages, tools, kinds and organizations have their own filters.

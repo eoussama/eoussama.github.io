@@ -3,16 +3,16 @@ name: Deploy site
 on:
   push:
     branches: [master]
-  # Weekly, so the projects' stars and languages from GitHub stay fresh.
+  # Weekly, so the projects' stars and languages from GitHub, and the short links from
+  # the redirector repository, stay fresh.
   schedule:
     - cron: "17 5 * * 1"
   # And by hand: Actions → Deploy site → Run workflow.
   workflow_dispatch:
 
+# Read-only by default; only the deploy job may publish to Pages.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -21,23 +21,23 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      # Google Analytics 4, from the repository's Actions variables (Settings →
-      # Secrets and variables → Actions → Variables). Left unset, nothing is tracked.
-      PUBLIC_GA_ID: ${{ vars.PUBLIC_GA_ID }}
-      # Read-only, for the projects' stars and languages without rate limits.
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: read
+      # For Configure Pages, which reads the site's Pages settings.
+      pages: read
     steps:
       - name: Checkout (full history and tags)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          # Nothing after this pushes or fetches; the build only reads the local history.
+          persist-credentials: false
 
       - name: Set up pnpm (the version in package.json)
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Set up Node (the version in .nvmrc)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: pnpm
@@ -56,22 +56,40 @@ jobs:
 
       - name: Build site with all versions
         run: bash scripts/build-site.sh
+        env:
+          # Google Analytics 4, from the repository's Actions variables (Settings →
+          # Secrets and variables → Actions → Variables). Left unset, nothing is tracked.
+          PUBLIC_GA_ID: ${{ vars.PUBLIC_GA_ID }}
+          # Read-only; lifts the GitHub API's rate limit for the short links and the
+          # projects' stats. Only this step gets it, and the installs inside it, the
+          # archived versions' included, run no install scripts: npm is told to skip
+          # them, and pnpm skips them unless the project allows some, which none does.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+          # Dot-folders are left out by default, and .well-known (security.txt, written at
+          # each build) is one. The archived versions' stray editor files are removed by
+          # the build.
+          include-hidden-files: true
 
   deploy:
     needs: build
+    # A run started by hand from another branch builds, as a check, but never publishes.
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

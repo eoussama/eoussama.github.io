@@ -28,10 +28,9 @@ We have a [Code of Conduct](CODE_OF_CONDUCT.md) that we expect all contributors 
 
 3. Make your changes, keeping each commit focused on a single concern.
 
-4. Run the checks the site is held to:
+4. Run the checks the site is held to (audit, lint, types and a build; the build reads the short links and the projects' stats from the GitHub API, so it needs a connection):
 
    ```bash
-   pnpm lint
    pnpm check
    ```
 
