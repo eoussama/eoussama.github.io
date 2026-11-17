@@ -42,13 +42,3 @@ export const HELLO_ORDER: Lang[] = ["en", "fr", "es", "it", "ja", "ar", "ary"];
 export function langInfo(code: Lang) {
   return LANGS.find(l => l.code === code) ?? LANGS[2];
 }
-
-/**
- * Whether a value is one of the site's language codes.
- *
- * @param value - The value to check
- * @returns True for a supported language code
- */
-export function isLang(value: unknown): value is Lang {
-  return LANGS.some(l => l.code === value);
-}

@@ -143,7 +143,8 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
-  if (event.key === "?") {
+  // The question mark wherever the layout puts it: Arabic keyboards type "؟" there.
+  if (event.key === "?" || event.key === "؟" || (event.code === "Slash" && event.shiftKey)) {
     event.preventDefault();
 
     if (keys?.open && !keys.classList.contains("is-closing")) {

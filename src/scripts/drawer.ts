@@ -17,7 +17,20 @@ const drawer = document.querySelector<HTMLElement>("#drawer");
 
 if (drawer) {
   const root = document.documentElement;
-  const page = document.querySelector<HTMLElement>(".page")!;
+  /**
+   * Puts the page out of reach while a list is open, and what stands beside it too
+   * (the skip link, the section map, the way back up, the consent banner), so that
+   * the keyboard stays in the drawer. The drawer, its scrim and the dialogs are left be.
+   *
+   * @param away - Whether a list is open
+   */
+  const behind = (away: boolean) => {
+    for (const el of document.body.children) {
+      if (el instanceof HTMLElement && el !== drawer && !el.matches("dialog, script, style, .dr-scrim, .ground, .sky")) {
+        el.inert = away;
+      }
+    }
+  };
   const pageTitle = document.title;
   const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
   let opener: HTMLElement | null = null;
@@ -63,11 +76,35 @@ if (drawer) {
     return `${location.pathname}${query ? `?${query}` : ""}${location.hash}`;
   };
 
-  /** Points the language links at the same page, with the drawer as it is, elsewhere. */
+  /**
+   * Points the language links at the same page, with the drawer as it is, elsewhere. A
+   * missing page passes on the address asked for, so the one in another language shows
+   * it too: only a path of this site, as a link could put anything there.
+   */
   const syncLanguageLinks = () => {
+    const missing = !!document.querySelector(".nf-hole");
+    const asked = new URLSearchParams(location.search).get("from") ?? location.pathname;
+    // Or a short link it didn't know, as the root 404 marks it (NotFound.astro).
+    const from = /^(?:to\.ouss\.es)?\/(?![/\\])\S{0,200}$/.test(asked) ? asked : "";
+
     document.querySelectorAll<HTMLAnchorElement>("a[data-lang-link]").forEach((link) => {
       link.dataset.base ??= link.getAttribute("href") ?? "";
-      link.href = link.dataset.base + location.search;
+
+      const next = new URL(link.dataset.base, location.href);
+
+      next.search = location.search;
+      // A short link's UTM tags belong to the page it led to (analytics.ts): carried on,
+      // GA would count the next page as a new visit through it.
+      [...next.searchParams.keys()].filter(key => key.startsWith("utm_")).forEach(key => next.searchParams.delete(key));
+
+      if (missing && from) {
+        next.searchParams.set("from", from);
+      }
+      else if (missing) {
+        next.searchParams.delete("from");
+      }
+
+      link.href = `${next.pathname}${next.search}`;
     });
   };
 
@@ -205,8 +242,14 @@ if (drawer) {
       },
       closeMenu: () => {
         const wasOpen = menu?.dataset.open === "true";
+        // Focus in the menu would be lost with it: it goes back to the menu's button.
+        const inside = !!menu?.contains(document.activeElement);
 
         setMenu(false);
+
+        if (inside) {
+          button?.focus();
+        }
 
         return wasOpen;
       },
@@ -405,7 +448,7 @@ if (drawer) {
     }
 
     drawer.inert = !list;
-    page.inert = !!list;
+    behind(!!list);
     document.title = titleFor(list);
 
     if (list) {
@@ -427,8 +470,21 @@ if (drawer) {
       // a touch screen that would raise the keyboard over the list: the title takes it.
       const search = drawer.querySelector<HTMLInputElement>(`[data-sheet="${list}"] .dr-q`);
       const touch = matchMedia("(hover: none) and (pointer: coarse)").matches;
+      const focus = () => (touch ? drawer.querySelector<HTMLElement>(".dr-title") : search)?.focus({ preventScroll: true });
+      // Picked from the command menu, still folding away: until it closes, nothing
+      // outside it takes focus, and closing hands focus back to what had it before.
+      const menu = document.querySelector<HTMLDialogElement>("dialog.ck[open]");
 
-      (touch ? drawer.querySelector<HTMLElement>(".dr-title") : search)?.focus({ preventScroll: true });
+      if (menu) {
+        menu.addEventListener("close", () => {
+          if (current() === list) {
+            focus();
+          }
+        }, { once: true });
+      }
+      else {
+        focus();
+      }
     }
     else {
       const flights = [fly(pageLogo(), from.logo, false), fly(pageLabel(was), from.label, true, fontSize(drawerTitle(was)))];
@@ -446,7 +502,9 @@ if (drawer) {
 
   const open = (list: List, from: HTMLElement | null) => {
     if (current() === "") {
-      opener = from;
+      // Opened by a key, or from the command menu, focus goes back where it was: on
+      // nothing in particular, the page itself, rather than to a link of the page's.
+      opener = from ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
       show(list);
       history.pushState({ drawer: true }, "", addressFor(list));
     }
@@ -473,7 +531,9 @@ if (drawer) {
   // Back and forward bring the drawer in line with the address.
   window.addEventListener("popstate", () => {
     const search = new URLSearchParams(location.search);
-    const list = LIST_OF[search.get("list") ?? ""] ?? "";
+    const asked = search.get("list") ?? "";
+    // Only the two lists: not whatever else an object answers to, like ?list=toString.
+    const list = Object.hasOwn(LIST_OF, asked) ? LIST_OF[asked]! : "";
 
     if (list) {
       sheets.get(list)?.restore(search);
@@ -567,7 +627,7 @@ if (drawer) {
     sheets.get(initial)?.restore(new URLSearchParams(location.search));
     drawer.dataset.list = initial;
     drawer.inert = false;
-    page.inert = true;
+    behind(true);
     document.title = titleFor(initial);
   }
 

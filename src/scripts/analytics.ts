@@ -11,6 +11,11 @@ import { tryCatchSync } from "@eoussama/core";
  * visitor can find: the CV downloaded (cv_download), the email copied (email_copy) or
  * written to (email_write), a page printed (page_print) and the Lakama rain
  * (lakama_rain). Each says how it was reached, where there are several ways (method).
+ * And the short links at to.ouss.es opened from the site (short_link, with its slug).
+ *
+ * A visit through a short link to this site arrives with UTM tags (the redirector adds
+ * them), which GA reads as its source. Once the visitor has answered, they leave the
+ * address bar, so an address copied from it doesn't count as that short link again.
  */
 
 type Gtag = (...args: unknown[]) => void;
@@ -21,12 +26,45 @@ const KEY = "consent";
 const FOLD = 340;
 
 let gtag: Gtag | null = null;
+// Whether the visitor allowed counting, on this page: set as GA loads, cleared on a "no".
+let allowed = false;
 
 const stored = () => tryCatchSync(() => localStorage.getItem(KEY))[1];
 
-/** Loads Google's script and starts counting. */
+/** Takes the UTM tags out of the page's address, keeping the rest of it. */
+function untag() {
+  const address = new URL(location.href);
+  const tags = [...address.searchParams.keys()].filter(key => key.startsWith("utm_"));
+
+  if (tags.length) {
+    tags.forEach(key => address.searchParams.delete(key));
+    history.replaceState(history.state, "", address);
+  }
+}
+
+/**
+ * Turns GA's own switch: off, it sends nothing at all, its enhanced measurement (scrolls,
+ * outbound links) included, even once its script has loaded.
+ *
+ * @param on - Whether counting is allowed
+ */
+function counting(on: boolean) {
+  allowed = on;
+  (window as unknown as Record<string, boolean>)[`ga-disable-${id}`] = !on;
+}
+
+/** Loads Google's script and starts counting, or starts again after a "no". */
 function load() {
-  if (gtag || !id) {
+  if (!id) {
+    return;
+  }
+
+  counting(true);
+
+  if (gtag) {
+    gtag("consent", "update", { analytics_storage: "granted" });
+    untag();
+
     return;
   }
 
@@ -41,13 +79,16 @@ function load() {
   gtag = w.gtag;
   gtag("consent", "default", { analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
   gtag("js", new Date());
-  gtag("config", id, { site_version: banner?.dataset.version ?? "" });
+  // The address as it is now, tags and all: GA reads its source from it once its
+  // script has loaded, and by then the tags are gone from the address bar.
+  gtag("config", id, { site_version: banner?.dataset.version ?? "", page_location: location.href });
 
   const script = document.createElement("script");
 
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
   document.head.append(script);
+  untag();
 }
 
 /**
@@ -57,7 +98,9 @@ function load() {
  * @param params - What to record with it
  */
 export function track(name: string, params: Record<string, string> = {}) {
-  gtag?.("event", name, params);
+  if (allowed) {
+    gtag?.("event", name, params);
+  }
 }
 
 /**
@@ -75,8 +118,14 @@ function answer(answer: string) {
     return;
   }
 
-  // Withdrawn: stop counting and remove what was stored.
+  stop();
+}
+
+/** Stops counting, as when consent is withdrawn, and removes what GA stored. */
+function stop() {
   gtag?.("consent", "update", { analytics_storage: "denied" });
+  counting(false);
+  untag();
   document.cookie.split(";").map(c => c.split("=")[0]!.trim()).filter(name => name.startsWith("_ga")).forEach((name) => {
     document.cookie = `${name}=; Max-Age=0; path=/; domain=.${location.hostname}`;
     document.cookie = `${name}=; Max-Age=0; path=/`;
@@ -91,6 +140,7 @@ function fold() {
 
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
     banner.hidden = true;
+    room(false);
 
     return;
   }
@@ -101,8 +151,53 @@ function fold() {
     if (banner.classList.contains("is-closing")) {
       banner.classList.remove("is-closing");
       banner.hidden = true;
+      room(false);
     }
   }, FOLD);
+}
+
+/**
+ * Makes room at the page's foot for the note while it shows, and keeps focus clear of
+ * it; or takes both back.
+ *
+ * @param open - Whether the note shows
+ */
+function room(open: boolean) {
+  const root = document.documentElement;
+
+  if (open && banner) {
+    root.style.setProperty("--consent-room", `${Math.ceil(banner.getBoundingClientRect().height) + 32}px`);
+    document.addEventListener("focusin", clear);
+  }
+  else {
+    root.style.removeProperty("--consent-room");
+    document.removeEventListener("focusin", clear);
+  }
+}
+
+/**
+ * Keeps what the keyboard moves to in sight: whatever lands under the note, where the
+ * page stands behind it, is scrolled up clear of it. Measured once the browser has
+ * scrolled it into the window itself.
+ *
+ * @param event - The focus moving
+ */
+function clear(event: FocusEvent) {
+  const target = event.target;
+
+  // Behind an open list or dialog, the note is out of sight (global.css).
+  if (!banner || banner.hidden || banner.inert || !(target instanceof Element) || banner.contains(target) || target.closest("dialog")) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    const note = banner.getBoundingClientRect();
+    const box = target.getBoundingClientRect();
+
+    if (box.bottom > note.top && box.top < note.bottom && box.right > note.left && box.left < note.right) {
+      window.scrollBy({ top: box.bottom - note.top + 16, behavior: "instant" });
+    }
+  });
 }
 
 /**
@@ -117,6 +212,7 @@ function show(focus = false) {
 
   banner.classList.remove("is-closing");
   banner.hidden = false;
+  room(true);
 
   if (focus) {
     banner.querySelector<HTMLButtonElement>("[data-consent]")?.focus();
@@ -178,7 +274,10 @@ if (banner && id) {
     if (decided === "granted") {
       load();
     }
-    else if (decided !== "denied") {
+    else if (decided === "denied") {
+      untag();
+    }
+    else {
       settled().then(() => {
         // Answered meanwhile, from the command menu.
         if (!stored()) {
@@ -196,7 +295,8 @@ if (banner && id) {
   }
 
   // A page put back from the browser's back/forward cache, after the question was
-  // answered on another page: it no longer asks, and counts if that was allowed.
+  // answered on another page: it no longer asks, and counts only if that was allowed,
+  // GA's script there included.
   addEventListener("pageshow", (event) => {
     const decided = stored();
 
@@ -205,9 +305,13 @@ if (banner && id) {
     }
 
     banner.hidden = true;
+    room(false);
 
     if (decided === "granted") {
       load();
+    }
+    else {
+      stop();
     }
   });
 
@@ -225,8 +329,13 @@ if (banner && id) {
       track("cv_download", { method: link.closest(".ck") ? "menu" : "link" });
     }
 
-    if (link?.protocol === "mailto:") {
+    // A link to write an email (data-email), which opens it through its short link.
+    if (link?.hasAttribute("data-email")) {
       track("email_write", { method: "link" });
+    }
+    // Any other short link: a profile, a project's code or its live site.
+    else if (link?.hostname === "to.ouss.es") {
+      track("short_link", { slug: link.pathname.replace(/^\/|\/$/g, ""), method: link.closest(".ck") ? "menu" : "link" });
     }
 
     // Picking the language the page is already in changes nothing (site.ts).

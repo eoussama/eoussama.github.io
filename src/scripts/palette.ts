@@ -67,10 +67,13 @@ if (dialog) {
     });
 
     const none = visible().length === 0;
+    // Put in as it was typed: a "$&" in the search is not a replacement pattern. Empty, the
+    // line takes no room; it stays in place so that what it says is read out.
+    const says = none ? (dialog.dataset.none ?? "").replace("%", () => input.value.trim()) : "";
 
-    empty.hidden = !none;
-    // Put in as it was typed: a "$&" in the search is not a replacement pattern.
-    empty.textContent = none ? (dialog.dataset.none ?? "").replace("%", () => input.value.trim()) : "";
+    if (empty.textContent !== says) {
+      empty.textContent = says;
+    }
     select(visible()[0] ?? null);
     list.scrollTop = 0;
   };

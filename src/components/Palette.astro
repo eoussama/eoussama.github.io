@@ -9,6 +9,7 @@ import { formatDate } from "~/lib/dates";
 import { getPage, PAGES } from "~/lib/pages";
 import { getPosts, postPath } from "~/lib/posts";
 import { getProjects, pick, projectPath } from "~/lib/projects";
+import { getShortLinks } from "~/lib/short-links";
 import { localized, url } from "~/lib/url";
 import { versions } from "~/lib/versions";
 
@@ -57,6 +58,7 @@ const { lang, path, hello, consent } = Astro.props;
 const t = ui(lang);
 const projects = await getProjects();
 const posts = await getPosts(lang);
+const links = await getShortLinks();
 const pages = await Promise.all(PAGES.map(async id => ({ id, data: (await getPage(id, lang)).entry.data })));
 
 const groups: { label: string; items: Item[] }[] = [
@@ -119,8 +121,8 @@ const groups: { label: string; items: Item[] }[] = [
   {
     label: t.cWhere,
     items: [
-      { label: t.cGh, tail: "out", href: PROFILE.github.url, external: true, keywords: "code eoussama github" },
-      { label: t.cLi, tail: "out", href: PROFILE.linkedin.url, external: true, keywords: "work history eoussama linkedin" },
+      { label: t.cGh, tail: "out", href: PROFILE.github, external: true, keywords: "code eoussama github" },
+      { label: t.cLi, tail: "out", href: PROFILE.linkedin, external: true, keywords: "work history eoussama linkedin" },
       { label: t.cCv, tail: "download", href: url(PROFILE.resume), download: "Oussama-Essamadi-CV.pdf", keywords: "resume cv pdf download" },
       { label: t.cMail, action: "copy", tail: "copy", keywords: "contact write mail email" },
       { label: t.cSponsor, tail: "out", href: PROFILE.sponsors, external: true, keywords: "support sponsor donate github sponsors" },
@@ -161,7 +163,8 @@ let n = 0;
           <input type="text" class="ck-q" role="combobox" aria-expanded="true" aria-controls="ck-list" aria-autocomplete="list" aria-label={t.palPh} placeholder={t.palPh} autocomplete="off" spellcheck="false" />
           <button type="button" class="ck-esc" aria-label={t.palClose} data-palette-close><kbd class="ck-kbd" dir="ltr">esc</kbd></button>
         </div>
-        <div class="ck-list" id="ck-list" role="listbox" aria-label={t.palTitle}>
+        {/* Not a stop of its own for Tab, though it scrolls: the arrow keys move through it from the search. */}
+        <div class="ck-list" id="ck-list" role="listbox" aria-label={t.palTitle} tabindex="-1">
           {groups.map((group, g) => (
             <div class="ck-group" role="group" aria-labelledby={`ck-g${g}`}>
               <p class="ck-h" id={`ck-g${g}`}>{group.label}</p>
@@ -179,18 +182,22 @@ let n = 0;
                     {item.tail === "copy" && <svg class="ck-tail" width="13" height="13" viewBox="0 0 11 11" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><rect x="1.2" y="3.6" width="6.2" height="6.2" rx="1.1"></rect><path d="M3.6 3.6V2.3a1.1 1.1 0 0 1 1.1-1.1h4a1.1 1.1 0 0 1 1.1 1.1v4a1.1 1.1 0 0 1-1.1 1.1H7.4"></path></g></svg>}
                     {item.tail === "download" && <svg class="ck-tail" width="13" height="13" viewBox="0 0 11 11" aria-hidden="true"><path d="M5.5 1.6v5.4M3.1 4.7l2.4 2.4 2.4-2.4M2 9.4h7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>}
                     {item.tail === "out" && <svg class="ck-tail ck-out" width="13" height="13" viewBox="0 0 11 11" aria-hidden="true"><path d="M2.5 8.5l6-6M3.5 2.5h5v5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>}
+                    {/* Said, as the site's other links out say it (Ext.astro); the search reads data-kw, not this. */}
+                    {item.external && <span class="sr">{t.newTab}</span>}
                     {item.key && <kbd class="ck-kbd ck-key" dir="ltr" aria-hidden="true">{item.key}</kbd>}
                   </Fragment>
                 );
 
                 return item.href
-                  ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} download={item.download} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} aria-keyshortcuts={item.key} data-keyshortcut={item.key} data-kw={keywords}>{inner}</a>
+                  ? <a class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" href={item.external ? links.href(item.href) : item.href} target={item.external ? "_blank" : undefined} rel={item.external ? "noopener noreferrer" : undefined} download={item.download} hreflang={item.langLink} data-lang-link={item.langLink} data-drawer={item.drawer} aria-keyshortcuts={item.key} data-keyshortcut={item.key} data-kw={keywords}>{inner}</a>
                   : <button type="button" class="ck-item" id={id} role="option" aria-selected="false" tabindex="-1" data-action={item.action} data-value={item.value} aria-keyshortcuts={item.key} data-keyshortcut={item.key} data-kw={keywords} data-off={item.action === "shortcuts" ? t.keysOff : undefined} data-on={item.action === "shortcuts" ? t.keysOn : undefined}>{inner}</button>;
               })}
             </div>
           ))}
-          <p class="ck-empty" hidden></p>
         </div>
+        {/* Outside the list, which holds only options, and read out as it changes: so it is
+            always there, and empty while something matches (scripts/palette.ts). */}
+        <p class="ck-empty" role="status"></p>
         <p class="ck-foot"><span><kbd class="ck-kbd">↑</kbd><kbd class="ck-kbd">↓</kbd> {t.move}</span><span><kbd class="ck-kbd">↵</kbd> {t.run}</span><span><kbd class="ck-kbd">esc</kbd> {t.close}</span></p>
       </div>
       <span class="note-tear" aria-hidden="true"><i></i></span>

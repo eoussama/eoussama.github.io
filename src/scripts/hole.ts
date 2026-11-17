@@ -58,12 +58,14 @@ function opening(t: number): { grow: number; appear: number } {
 }
 
 /**
- * Sets up the shader that draws the hole.
+ * Sets up the shader that draws the hole. Compiling it takes the graphics driver a
+ * fifth of a second or so: where the browser can, it compiles beside the page, and
+ * is waited for a frame at a time rather than blocking the page while it does.
  *
  * @param canvas - Its canvas
  * @returns The program and its inputs, or null where WebGL is unavailable
  */
-function holeGL(canvas: HTMLCanvasElement | null): GL | null {
+async function holeGL(canvas: HTMLCanvasElement | null): Promise<GL | null> {
   const gl = canvas?.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
 
   if (!canvas || !gl) {
@@ -76,22 +78,25 @@ function holeGL(canvas: HTMLCanvasElement | null): GL | null {
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
 
-    return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null;
+    return shader;
   };
   const vs = make(gl.VERTEX_SHADER, "attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}");
   const fs = make(gl.FRAGMENT_SHADER, fragment);
-
-  if (!vs || !fs) {
-    return null;
-  }
-
   const program = gl.createProgram()!;
 
   gl.attachShader(program, vs);
   gl.attachShader(program, fs);
   gl.linkProgram(program);
 
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+  const parallel = gl.getExtension("KHR_parallel_shader_compile") as { COMPLETION_STATUS_KHR: number } | null;
+
+  if (parallel) {
+    while (!gl.getProgramParameter(program, parallel.COMPLETION_STATUS_KHR)) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+  }
+
+  if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS) || !gl.getShaderParameter(fs, gl.COMPILE_STATUS) || !gl.getProgramParameter(program, gl.LINK_STATUS)) {
     return null;
   }
 
@@ -116,13 +121,19 @@ function holeGL(canvas: HTMLCanvasElement | null): GL | null {
 }
 
 /**
- * Text cut into letters, each in its own span the hole can pull on.
+ * Text cut into letters, each in its own span the hole can pull on. Screen readers get
+ * the text whole beside them, as the page's own text does (NotFound.astro): letter by
+ * letter, they would spell it out.
  *
  * @param el - Where to put them
  * @param text - The text
  */
 function letters(el: HTMLElement, text: string) {
-  el.replaceChildren(...Array.from(text).map((c) => {
+  const drawn = document.createElement("span");
+  const read = document.createElement("span");
+
+  drawn.setAttribute("aria-hidden", "true");
+  drawn.append(...Array.from(text).map((c) => {
     const span = document.createElement("span");
 
     span.className = "nf-ch";
@@ -130,6 +141,9 @@ function letters(el: HTMLElement, text: string) {
 
     return span;
   }));
+  read.className = "sr nf-sr";
+  read.textContent = text;
+  el.replaceChildren(drawn, read);
 }
 
 /** Starts the hole. */
@@ -141,17 +155,32 @@ function start() {
     return;
   }
 
-  // The address asked for: this page's own, or the one passed on from the root 404.
-  const asked = new URLSearchParams(location.search).get("from") ?? location.pathname;
+  // The address asked for: this page's own, or the one passed on from the root 404, a
+  // path of this site or a short link it didn't know (NotFound.astro). Only those are
+  // taken from the link, or anyone could make the page say anything under its address.
+  const from = new URLSearchParams(location.search).get("from");
+  const asked = from && /^(?:to\.ouss\.es)?\/(?![/\\])\S{0,200}$/.test(from) ? from : location.pathname;
   const urlEl = document.querySelector<HTMLElement>(".nf-url");
 
   if (urlEl) {
-    letters(urlEl, `${location.host}${asked}`);
+    letters(urlEl, asked.startsWith("/") ? `${location.host}${asked}` : asked);
   }
 
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const GLX = holeGL(hole.querySelector("canvas"));
-  const H = { last: performance.now(), open: 0, torn: false, T: 0, flow: 0, life: 0, pull: 1, prox: 0, pulse: 0, pv: 0, calm: 0, m: [0, 0], cd: [1, 0], mx: null as number | null, my: null as number | null, stir: [] as Stir[], waves: [] as Wave[], q: Math.min(2, devicePixelRatio || 1), slow: 0, n: 0, stirT: 0, sl: null as number[] | null, tilt: null as [number, number] | null, scan: 0, chars: null as Leaner[] | null, map: null as Map<HTMLElement, Leaner> | null, bar: null as HTMLElement | null };
+  // The shader, set up once the page has been drawn: until then (and where WebGL is
+  // missing) the hole has no drawing of its own, and the plain disc waits for the answer.
+  let GLX: GL | null = null;
+  let glDone = false;
+
+  requestAnimationFrame(() => window.setTimeout(() => {
+    holeGL(hole.querySelector("canvas")).then((gl) => {
+      GLX = gl;
+      glDone = true;
+    }, () => {
+      glDone = true;
+    });
+  }, 0));
+  const H = { last: performance.now(), open: 0, torn: false, T: 0, flow: 0, life: 0, pull: 1, prox: 0, pulse: 0, pv: 0, calm: 0, m: [0, 0], cd: [1, 0], mx: null as number | null, my: null as number | null, stir: [] as Stir[], waves: [] as Wave[], q: Math.min(2, devicePixelRatio || 1), slow: 0, n: 0, stirT: 0, sl: null as number[] | null, tilt: null as [number, number] | null, stale: true, chars: null as Leaner[] | null, map: null as Map<HTMLElement, Leaner> | null, bar: null as HTMLElement | null };
   let seed = 7;
   const rnd = () => {
     seed = (seed * 16807) % 2147483647;
@@ -180,6 +209,30 @@ function start() {
 
     return cache[value];
   };
+
+  // Read once, and again whenever the theme changes: the switch, or the system's own
+  // for the automatic theme.
+  let bg = "";
+  let ink = "";
+  let acc = "";
+  let dark = false;
+  const colours = () => {
+    const cs = getComputedStyle(root);
+
+    bg = cs.getPropertyValue("--bg").trim() || "#faf7f2";
+    ink = cs.getPropertyValue("--ink").trim() || "#1e2230";
+    acc = cs.getPropertyValue("--acc").trim() || "#b5a9f0";
+    dark = root.dataset.mode === "dark";
+  };
+
+  colours();
+  // The entrance's words, coming and going, can move the letters a hair: they are
+  // measured again then too.
+  new MutationObserver(() => {
+    colours();
+    H.stale = true;
+  }).observe(root, { attributeFilter: ["data-mode", "data-theme", "data-rv"] });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", colours);
 
   // Dust, scraps of paper and the letters of the missing address, all falling in.
   const word = asked.split("/").filter(Boolean).pop()?.slice(0, 20) ?? "an-old-page";
@@ -233,8 +286,27 @@ function start() {
     parts.push(spawn(blank("glyph", { ch: c }), true));
   }
 
+  // The shader's inputs, filled afresh each frame.
+  const st = new Float32Array(32);
+  const wv = new Float32Array(12);
+
+  // The sky covers the window, so it is measured again only when that changes size;
+  // the letters that lean, whenever they may have moved.
+  let rr = sky.getBoundingClientRect();
+  const moved = () => {
+    H.stale = true;
+  };
+  const sized = new ResizeObserver(() => {
+    rr = sky.getBoundingClientRect();
+    moved();
+  });
+
+  sized.observe(sky);
+  sized.observe(document.body);
+  addEventListener("scroll", moved, { passive: true });
+  document.fonts.addEventListener("loadingdone", moved);
+
   const geo = () => {
-    const rr = sky.getBoundingClientRect();
     const pr = hole.getBoundingClientRect();
 
     return { ox: rr.left, oy: rr.top, W: rr.width, Hh: rr.height, pw: pr.width, phh: pr.height, cx: pr.left - rr.left + pr.width / 2, cy: pr.top - rr.top + pr.height / 2, half: Math.min(pr.width, pr.height) / 2 };
@@ -301,9 +373,18 @@ function start() {
     }
   }
 
+  /*
+   * Nothing moves while the hole is out of sight: the tab in the background, or the page
+   * scrolled further from the hole than its pull reaches. It picks up where it left off,
+   * the time away left out.
+   */
+  let seen = true;
+  let running = false;
+  const away = () => !seen || document.hidden;
+
   // A click tears a few scraps off where it lands, and the hole gulps.
   document.addEventListener("pointerdown", (e) => {
-    if (reduce) {
+    if (reduce || away()) {
       return;
     }
 
@@ -336,6 +417,12 @@ function start() {
   });
 
   const frame = (now: number) => {
+    if (away()) {
+      running = false;
+
+      return;
+    }
+
     const raw = (now - H.last) / 1000;
 
     H.last = now;
@@ -459,11 +546,6 @@ function start() {
 
     H.stir = H.stir.filter(s => s.zt > 0.02);
 
-    const cs = getComputedStyle(root);
-    const bg = cs.getPropertyValue("--bg").trim() || "#faf7f2";
-    const ink = cs.getPropertyValue("--ink").trim() || "#1e2230";
-    const acc = cs.getPropertyValue("--acc").trim() || "#b5a9f0";
-    const dark = root.dataset.mode === "dark";
     const dpr = Math.min(2, devicePixelRatio || 1);
 
     // 1. The hole itself, on its own canvas.
@@ -482,8 +564,8 @@ function start() {
 
       const B = rgb(bg)!;
       const A = rgb(acc)!;
-      const st = new Float32Array(32);
 
+      st.fill(0);
       H.stir.forEach((s, i) => st.set([s.r, s.a, s.z, s.w], i * 4));
 
       const cl = Math.hypot(H.cd[0]!, H.cd[1]!) || 1;
@@ -505,8 +587,7 @@ function start() {
       gl.uniform3f(u.uAcc!, A[0]!, A[1]!, A[2]!);
       gl.uniform4fv(u.uStir!, st);
 
-      const wv = new Float32Array(12);
-
+      wv.fill(0);
       H.waves.slice(-6).forEach((w, i) => wv.set([(w.rad || 0) / R, w.amp || 0], i * 2));
       gl.uniform2fv(u.uWave!, wv);
       gl.clearColor(0, 0, 0, 0);
@@ -536,7 +617,7 @@ function start() {
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.clearRect(0, 0, W, Hh);
 
-    if (!GLX && hr > 0.5) {
+    if (!GLX && glDone && hr > 0.5) {
       // Without WebGL, a plain dark disc stands in for the hole.
       const v = g.createRadialGradient(cx, cy, 0, cx, cy, hr);
 
@@ -765,9 +846,10 @@ function start() {
     }
 
     // 3. The page's own letters, and the header, lean toward the hole: strongly
-    // nearby, less with distance.
-    if (!H.chars || now - H.scan > 600) {
-      H.scan = now;
+    // nearby, less with distance. Where they stand is measured before any is moved
+    // this frame, and only when something may have moved them.
+    if (!H.chars || H.stale) {
+      H.stale = false;
 
       const old = H.map;
       const els = [...document.querySelectorAll<HTMLElement>(".page .nf-ch, .bar .logo, .bar .crumb, .bar .pill-btn, .bar .theme")];
@@ -859,7 +941,20 @@ function start() {
     requestAnimationFrame(frame);
   };
 
-  requestAnimationFrame(frame);
+  const resume = () => {
+    if (!running && !away()) {
+      running = true;
+      H.last = performance.now();
+      requestAnimationFrame(frame);
+    }
+  };
+
+  new IntersectionObserver(([entry]) => {
+    seen = !!entry?.isIntersecting;
+    resume();
+  }, { rootMargin: "420px" }).observe(hole);
+  document.addEventListener("visibilitychange", resume);
+  resume();
 }
 
 start();

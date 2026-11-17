@@ -119,11 +119,8 @@ const sheets: Sheet[] = [
 <div
   class="dr"
   id="drawer"
-  role="dialog"
-  aria-modal="true"
   aria-labelledby="dr-title"
   data-list="work"
-  inert
   data-none-q={t.noMatchQ}
   data-none-f={t.noMatchF}
   data-remove={t.removeFilter}
@@ -145,7 +142,9 @@ const sheets: Sheet[] = [
     </div>
 
     {sheets.map(sheet => (
-      <section class="dr-sheet" data-sheet={sheet.list}>
+      <section class="dr-sheet" id={`list-${sheet.list}`} data-sheet={sheet.list}>
+        {/* Shown only without scripts, where the lists follow the page as an index. */}
+        <h3 class="dr-sh">{sheet.list === "work" ? t.work : t.writing}</h3>
         <div class="dr-tools">
           <div class="dr-search">
             <svg class="dr-glass" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
@@ -191,3 +190,17 @@ const sheets: Sheet[] = [
     ))}
   </div>
 </div>
+{/*
+  A dialog that opens over the page, out of reach until then: made so here, as the page
+  is read, by script. Without scripts it can't open, so it is none: its lists follow
+  the page as an index instead, where "All projects" and "All posts" lead (global.css).
+*/}
+<script is:inline>
+  {
+    const dr = document.getElementById("drawer");
+
+    dr.inert = true;
+    dr.setAttribute("role", "dialog");
+    dr.setAttribute("aria-modal", "true");
+  }
+</script>
