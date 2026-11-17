@@ -28,6 +28,15 @@ cd "$ROOT"
 
 fail() { echo "build-site: $*" >&2; exit 1; }
 
+# The manifest's values end up in paths, git commands and injected HTML, so each must
+# look like what it should be. The ref may be empty (the current version has none).
+check_entry() {
+	local version="$1" ref="$2" build="$3"
+	[[ "$version" =~ ^[0-9]+\.[0-9]+$ ]] || fail "bad version '$version' in $MANIFEST"
+	[[ -z "$ref" || "$ref" =~ ^[A-Za-z0-9][A-Za-z0-9._/^~-]*$ ]] || fail "bad ref '$ref' for $version in $MANIFEST"
+	[[ "$build" =~ ^(static|next|astro)$ ]] || fail "bad build '$build' for $version in $MANIFEST"
+}
+
 # Copies the site files of a git ref (or the working tree, for HEAD) into a directory.
 export_ref() {
 	local ref="$1" dest="$2"
@@ -64,7 +73,8 @@ build_next() {
 	export_ref "$ref" "$work"
 	(
 		cd "$work"
-		npm ci --no-audit --no-fund --loglevel=error
+		# No install scripts: the build gets the token, and nothing here needs them.
+		npm ci --ignore-scripts --no-audit --no-fund --loglevel=error
 		NEXT_TELEMETRY_DISABLED=1 BASE_PATH="/v/$version" npm run build
 	) >&2 || fail "build of $ref failed"
 	[[ -f "$work/out/index.html" ]] || fail "build of $ref produced no out/index.html"
@@ -125,6 +135,7 @@ patch_html() {
 }
 
 [[ -f "$MANIFEST" ]] || fail "missing $MANIFEST"
+[[ -z "$GA_ID" || "$GA_ID" =~ ^G-[A-Z0-9]+$ ]] || fail "PUBLIC_GA_ID '$GA_ID' is not a Google Analytics 4 ID (G-XXXXXXXXXX)"
 
 rm -rf "$OUT"
 mkdir -p "$OUT"
@@ -134,6 +145,7 @@ IFS=$'\t' read -r current_version current_build < <(perl -MJSON::PP -0777 -ne '
 	my ($c) = grep { $_->{current} } @{ decode_json($_) };
 	print join("\t", $c->{version}, $c->{build} // "static"), "\n" if $c;
 ' "$MANIFEST") || fail "no current version in $MANIFEST"
+check_entry "$current_version" "" "$current_build"
 
 case "$current_build" in
 	static)
@@ -152,6 +164,10 @@ echo "built /  (working tree, v$current_version, $current_build)"
 
 # Every archived version under /v/<version>/.
 while IFS=$'\t' read -r version ref build; do
+	# A tab splits fields as whitespace, so a missing ref comes as "-" rather than as a gap.
+	[[ "$ref" == "-" ]] && ref=""
+	check_entry "$version" "$ref" "$build"
+	[[ -n "$ref" ]] || fail "version $version has no ref in $MANIFEST"
 	dest="$OUT/v/$version"
 	case "$build" in
 		static)
@@ -175,7 +191,7 @@ while IFS=$'\t' read -r version ref build; do
 	done < <(find "$dest" -name '*.html' -print0)
 	echo "built /v/$version/  ($ref, $build)"
 done < <(perl -MJSON::PP -0777 -ne '
-	print join("\t", $_->{version}, $_->{ref}, $_->{build} // "static"), "\n" for @{ decode_json($_) };
+	print join("\t", $_->{version}, $_->{ref} // "-", $_->{build} // "static"), "\n" for @{ decode_json($_) };
 ' "$MANIFEST")
 
 # /v/ itself has no page of its own; send visitors to the current site.

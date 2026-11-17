@@ -21,4 +21,4 @@ Closes #
 - [ ] I have performed a self-review of my changes
 - [ ] I have checked the change in the light and dark themes, and on a phone-sized screen
 - [ ] I have updated every language the change touches
-- [ ] `pnpm lint` and `pnpm check` pass locally
+- [ ] `pnpm check` passes locally
