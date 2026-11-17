@@ -15,7 +15,24 @@ type GL = { gl: WebGLRenderingContext; u: Record<string, WebGLUniformLocation | 
 type Part = { kind: "dust" | "flake" | "glyph"; ch?: string; temp?: boolean; r: number; a: number; rot: number; spin: number; flip: number; fs: number; born: number; k: number; sz: number; dx: number; dy: number; vx: number; vy: number; pts?: [number, number][] };
 type Stir = { r: number; a: number; z: number; zt: number; w: number };
 type Wave = { t: number; s: number; rad: number; amp: number };
-type Leaner = { el: HTMLElement; bar: boolean; unit: boolean; on: boolean; x: number; y: number; ph: number; off: [number, number] };
+type Leaner = { el: HTMLElement; bar: boolean; unit: boolean; own: boolean; on: boolean; x: number; y: number; ph: number; off: [number, number] };
+
+/**
+ * Lets a leaning letter or icon stand straight again. An icon keeps a transform of its
+ * own (flipped on a right-to-left page, nudged on hover, spun while its page loads), so
+ * it leans through the separate translate, rotate and scale properties, which add to
+ * that transform rather than replace it.
+ *
+ * @param c - The letter or icon
+ */
+function straighten(c: Leaner) {
+  if (c.own) {
+    c.el.style.translate = c.el.style.rotate = c.el.style.scale = "";
+  }
+  else {
+    c.el.style.transform = "";
+  }
+}
 
 const root = document.documentElement;
 
@@ -852,19 +869,20 @@ function start() {
       H.stale = false;
 
       const old = H.map;
-      const els = [...document.querySelectorAll<HTMLElement>(".page .nf-ch, .bar .logo, .bar .crumb, .bar .pill-btn, .bar .theme")];
+      // The letters, and what stands in their lines: the links' icons and the shortcut.
+      const els = [...document.querySelectorAll<HTMLElement>(".page .nf-ch, main :is(.lk-ic, .arrow, .nf-kbd), .bar .logo, .bar .crumb, .bar .pill-btn, .bar .theme")];
 
       H.chars = els.map((el, i) => {
         const prev = old?.get(el);
         const off = prev ? prev.off : [0, 0] as [number, number];
         const r = el.getBoundingClientRect();
 
-        return { el, bar: !!el.closest(".bar"), unit: !el.classList.contains("nf-ch"), on: prev?.on ?? false, x: r.left + r.width / 2 - off[0], y: r.top + r.height / 2 - off[1], ph: (i * 1.618) % 6.283, off };
+        return { el, bar: !!el.closest(".bar"), unit: !el.classList.contains("nf-ch"), own: el.matches(".lk-ic, .arrow"), on: prev?.on ?? false, x: r.left + r.width / 2 - off[0], y: r.top + r.height / 2 - off[1], ph: (i * 1.618) % 6.283, off };
       });
       H.map = new Map(H.chars.map(c => [c.el, c]));
       old?.forEach((c, el) => {
         if (!H.map!.has(el) && c.on) {
-          el.style.transform = "";
+          straighten(c);
         }
       });
       H.bar = document.querySelector(".bar");
@@ -911,7 +929,7 @@ function start() {
 
       if (f < 0.002 && wave < 0.01) {
         if (c.on) {
-          c.el.style.transform = "";
+          straighten(c);
           c.on = false;
           c.off = [0, 0];
         }
@@ -935,7 +953,15 @@ function start() {
 
       c.off = [ox, oy];
       c.on = true;
-      c.el.style.transform = `translate(${ox.toFixed(2)}px,${(oy - wave * 0.9).toFixed(2)}px) rotate(${ang.toFixed(1)}deg) scale(${((1 + sq) * lift).toFixed(3)},${((1 - sq * 0.35) * lift).toFixed(3)}) rotate(${(-ang + k * 3.2 * w2 + tilt).toFixed(1)}deg)`;
+      if (c.own) {
+        // Stretched along the screen's axes rather than toward the hole: too small to tell.
+        c.el.style.translate = `${ox.toFixed(2)}px ${(oy - wave * 0.9).toFixed(2)}px`;
+        c.el.style.rotate = `${(k * 3.2 * w2 + tilt).toFixed(1)}deg`;
+        c.el.style.scale = ((1 + sq * 0.3) * lift).toFixed(3);
+      }
+      else {
+        c.el.style.transform = `translate(${ox.toFixed(2)}px,${(oy - wave * 0.9).toFixed(2)}px) rotate(${ang.toFixed(1)}deg) scale(${((1 + sq) * lift).toFixed(3)},${((1 - sq * 0.35) * lift).toFixed(3)}) rotate(${(-ang + k * 3.2 * w2 + tilt).toFixed(1)}deg)`;
+      }
     }
 
     requestAnimationFrame(frame);

@@ -4755,6 +4755,8 @@ a.anchor .rv-i,
 }
 
 .nf-kbd {
+  /* A box, so it can lean toward the hole with the letters beside it. */
+  display: inline-block;
   font-size: 15px;
 }
 
