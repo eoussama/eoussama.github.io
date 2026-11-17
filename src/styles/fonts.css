@@ -87,29 +87,111 @@
 }
 
 /*
+ * The home page's big greeting (36 to 70px) gets stand-ins of its own: there
+ * Newsreader is drawn for display, and wider again than for titles, so the words
+ * beside it wrap the same before and after it arrives. It opens on the day's greeting,
+ * so each language's is measured, at 500 and at 57px, the size it is set at on a wide
+ * screen: Newsreader sets 1.011 of Georgia's width for "Good morning!", "Good
+ * afternoon!" and "Good evening!", 0.986 for "Bonjour !" and "Bonsoir !" (0.99 from
+ * 60px, where French's is often set), 0.980 for Spanish's (its "¡" is narrow) and
+ * 0.999 for Italian's. Set smaller, to fit a phone, it narrows by about 2% (at 46px),
+ * and scripts/site.ts fits it again the moment it arrives. The ascent and descent are
+ * Newsreader's (0.74em and 0.26em), given before the size.
+ */
+@font-face {
+  font-family: "Newsreader Greeting Fallback";
+  font-style: normal;
+  font-weight: 400 600;
+  src: local("Georgia");
+  size-adjust: 100%;
+  ascent-override: 74%;
+  descent-override: 26%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Newsreader Greeting Fallback EN";
+  font-style: normal;
+  font-weight: 400 600;
+  src: local("Georgia");
+  size-adjust: 101.1%;
+  ascent-override: 73.2%;
+  descent-override: 25.7%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Newsreader Greeting Fallback FR";
+  font-style: normal;
+  font-weight: 400 600;
+  src: local("Georgia");
+  size-adjust: 99%;
+  ascent-override: 74.7%;
+  descent-override: 26.3%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Newsreader Greeting Fallback ES";
+  font-style: normal;
+  font-weight: 400 600;
+  src: local("Georgia");
+  size-adjust: 98%;
+  ascent-override: 75.5%;
+  descent-override: 26.5%;
+  line-gap-override: 0%;
+}
+
+/*
  * Arabic's stand-in until Noto Naskh Arabic arrives: the system's Arabic, given Naskh's
  * tall ascent (1.07em) and deep descent (0.63em), which set the height of every line
  * that mixes Arabic with Latin, and sized to Naskh's width: Geeza Pro on Apple's
  * systems, Arial on Windows. Only Arabic letters: Latin keeps its own stand-in.
+ * Measured on the site's own Arabic text at 20px, Naskh sets 2.5% wider than Geeza Pro
+ * and 3.6% wider than Arial, and its 500 a little wider again, which neither stand-in
+ * has: each weight gets its own size, so the words wrap alike before and after Naskh
+ * arrives. The ascent and descent are given before the size is applied.
  */
 @font-face {
   font-family: "Naskh Fallback";
-  font-weight: 400 600;
+  font-weight: 400 450;
   src: local("Geeza Pro"), local("GeezaPro");
-  size-adjust: 101%;
-  ascent-override: 106%;
-  descent-override: 62.4%;
+  size-adjust: 103.5%;
+  ascent-override: 103.4%;
+  descent-override: 60.9%;
+  line-gap-override: 0%;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "Naskh Fallback";
+  font-weight: 451 600;
+  src: local("Geeza Pro"), local("GeezaPro");
+  size-adjust: 104.7%;
+  ascent-override: 102.2%;
+  descent-override: 60.2%;
   line-gap-override: 0%;
   unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 
 @font-face {
   font-family: "Naskh Fallback Arial";
-  font-weight: 400 600;
+  font-weight: 400 450;
   src: local("Arial");
-  size-adjust: 107.6%;
-  ascent-override: 99.4%;
-  descent-override: 58.6%;
+  size-adjust: 111.5%;
+  ascent-override: 96.0%;
+  descent-override: 56.5%;
+  line-gap-override: 0%;
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+  font-family: "Naskh Fallback Arial";
+  font-weight: 451 600;
+  src: local("Arial");
+  size-adjust: 112.8%;
+  ascent-override: 94.9%;
+  descent-override: 55.9%;
   line-gap-override: 0%;
   unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }

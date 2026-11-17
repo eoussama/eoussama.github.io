@@ -343,16 +343,48 @@ if (hello) {
 
     hello.style.whiteSpace = "nowrap";
 
+    // The float takes its margins too: on a right-to-left page one of them is a gap
+    // after the greeting, which can tip a greeting that just fits onto two lines.
+    const style = getComputedStyle(hello);
     const width = hello.getBoundingClientRect().width;
-    const size = Number.parseFloat(getComputedStyle(hello).fontSize);
+    const margins = Number.parseFloat(style.marginLeft) + Number.parseFloat(style.marginRight);
+    const size = Number.parseFloat(style.fontSize);
 
     hello.style.whiteSpace = "";
 
-    if (width > room) {
-      hello.style.setProperty("--drop", `${(size * room / width).toFixed(1)}px`);
+    if (width + margins > room) {
+      hello.style.setProperty("--drop", `${(size * (room - margins) / width).toFixed(1)}px`);
       hello.dataset.fit = "";
     }
   };
+
+  // The intro never gets shorter as the greetings change, so what follows it stays put:
+  // a shorter greeting leaves room under its words rather than pull the page up under
+  // the reader. A new width starts afresh.
+  let tallest = 0;
+  let heldAt = 0;
+
+  // At a new width the intro wraps anew: what was held no longer applies.
+  const release = () => {
+    if (para.clientWidth !== heldAt) {
+      heldAt = para.clientWidth;
+      tallest = 0;
+      para.style.removeProperty("min-height");
+    }
+  };
+
+  const hold = () => {
+    release();
+
+    const height = para.getBoundingClientRect().height;
+
+    if (height > tallest) {
+      tallest = height;
+      para.style.minHeight = `${height}px`;
+    }
+  };
+
+  addEventListener("resize", release, { passive: true });
 
   // The page opens on the day's greeting, before its words rise. It shows only once:
   // moving on starts the round of plain hellos at the page's own, which never brings it
@@ -360,8 +392,20 @@ if (hello) {
   if (special) {
     index = -1;
     fit();
+    // Fitted again the moment Newsreader is in, before a frame is drawn with it: drawn
+    // at the stand-in's size first, the words beside it would wrap anew, then back.
+    document.fonts.load(`500 16px "Newsreader Variable"`, hello.textContent ?? "").then(fit, () => {});
     document.fonts.ready.then(fit, () => {});
     addEventListener("resize", fit, { passive: true });
+    // And whenever its own size changes for another reason, such as a reader's own
+    // letter and word spacing: measured again, a frame later (fitting changes the size
+    // being watched), it settles on the size that fits.
+    let frame = 0;
+
+    new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(fit);
+    }).observe(hello);
   }
 
   /**
@@ -408,6 +452,9 @@ if (hello) {
       return;
     }
 
+    // Held at its height before the change, and after it, whichever is taller.
+    hold();
+
     const glide = settle();
 
     hello.textContent = greeting.text;
@@ -415,6 +462,7 @@ if (hello) {
     hello.dir = greeting.dir;
     hello.setAttribute("aria-label", `${greeting.text} ${hint}`);
     fit();
+    hold();
     hello.dataset.g = index % 2 ? "a" : "b";
     glide();
   };

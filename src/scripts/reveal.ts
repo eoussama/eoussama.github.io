@@ -3,7 +3,8 @@
  * as each line comes into view. On the home page the name first reads "EOussama".
  * The signature draws itself and the copyright fades in under it; then Oussama slides
  * left and the E unfolds into Essamadi. Anything the visitor does settles the page at
- * once, and the page's own text is put back exactly as it was.
+ * once, and the page's own text is put back exactly as it was. On a page heavy with
+ * markup, such as a post full of code, each block rises whole instead.
  *
  * It plays on a fresh load or a reload, not when moving between pages of the site,
  * and never with reduced motion: the page's head decides (data-rv="pre").
@@ -33,6 +34,14 @@ const DUR = 720;
 const STEP = 85;
 const WSTEP = 16;
 const HIDDEN = "translateY(108%)";
+/**
+ * How long after the first line the last line of the first screenful starts to rise:
+ * a screen of lines a full step apart would keep the reader waiting for its last.
+ */
+const FIRST = 320;
+/** Punctuation that closes what comes before it, and brackets that open what follows. */
+const CLOSING = /^[、。，．！？）」』】・,.!?:;)،؛؟]+$/u;
+const OPENING = /^[（「『【(]+$/u;
 
 /**
  * A word in a little window, sitting below it until it rises.
@@ -52,6 +61,29 @@ function wordEl(text: string): HTMLElement {
   return window_;
 }
 
+/**
+ * Japanese cut into characters, each keeping the punctuation that closes it and the
+ * bracket that opens it: each piece is a box of its own, and a full stop in a box of
+ * its own could start a line.
+ *
+ * @param text - The text
+ * @returns Its pieces
+ */
+function characters(text: string): string[] {
+  return Array.from(text).reduce<string[]>((pieces, char) => {
+    const k = pieces.length - 1;
+
+    if (k >= 0 && (CLOSING.test(char) || OPENING.test(pieces[k]!))) {
+      pieces[k] += char;
+    }
+    else {
+      pieces.push(char);
+    }
+
+    return pieces;
+  }, []);
+}
+
 /** Plays the reveal on this page. */
 function reveal() {
   const col = document.querySelector<HTMLElement>(".col");
@@ -67,6 +99,8 @@ function reveal() {
   const texts: { orig: Text; span: HTMLElement }[] = [];
   const anims = new Set<Animation>();
   const timers: number[] = [];
+  // The heading named in full while its letters are boxed apart (see setUpName).
+  let labelled: HTMLElement | null = null;
   let cursor = 0;
   let finished = false;
 
@@ -83,7 +117,7 @@ function reveal() {
   const rtl = root.dir === "rtl";
 
   // 1. The visible text, block by block.
-  const skip = (el: Element | null) => !el || !!el.closest("svg, script, style, .sr, .note, .small, .sig, .bar .tools, .slot, .ck, .dr, .kbd, .chip, pre, code.no-rv");
+  const skip = (el: Element | null) => !el || !!el.closest("svg, script, style, noscript, .sr, .note, .small, .sig, .bar .tools, .slot, .ck, .dr, .kbd, .chip, pre, code.no-rv");
   const BLOCK = "h1, h2, h3, p, li, dt, dd, figcaption, blockquote, .crumb, .nf-path";
   const blocks = new Map<Element, Text[]>();
   const walker = document.createTreeWalker(col, NodeFilter.SHOW_TEXT, { acceptNode: node => (node.nodeValue?.trim() && !skip(node.parentElement)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
@@ -93,29 +127,74 @@ function reveal() {
     nodes.push(walker.currentNode as Text);
   }
 
-  // Only text within the first few screens rises: a long post has thousands of words
+  // Only a page's first words rise, in page order: a long post has thousands of words
   // further down, each its own animated box, enough to stall the page; read there, it
-  // is simply text.
-  const reach = innerHeight * 3;
-  const near = (el: Element) => el.getBoundingClientRect().top + scrollY < reach;
+  // is simply text. The budget is in words rather than screens, so a page of a thousand
+  // words or so (the CV, a project's story) rises whole on any screen, a phone's too.
+  // It runs out at the end of a block, never part way through one.
+  const BUDGET = 1200;
+  const piece = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]|[^\s\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]+/gu;
+  let counted = 0;
+  // The first text left as it is, once the budget has run out.
+  let stop: Text | null = null;
+  // Whether something is drawn at all, asked of its style alone where the browser can:
+  // its boxes would have the whole page laid out first, only for the words boxed next
+  // to lay it out again.
+  const shown = (el: Element) => typeof el.checkVisibility === "function" ? el.checkVisibility() : el.getClientRects().length > 0;
 
-  nodes.forEach((node) => {
+  for (const node of nodes) {
     const el = node.parentElement!;
 
-    if (!el.getClientRects().length || !near(el)) {
-      return;
+    if (!shown(el)) {
+      continue;
     }
 
     const block = el.closest(BLOCK) ?? el;
 
+    if (counted >= BUDGET && !blocks.has(block)) {
+      stop = node;
+      break;
+    }
+
     blocks.set(block, [...(blocks.get(block) ?? []), node]);
-  });
+    counted += node.nodeValue?.match(piece)?.length ?? 0;
+  }
+
+  // Whether something comes before the text left as it is, and so rises with the rest.
+  const near = (el: Element) => !stop || !!(el.compareDocumentPosition(stop) & Node.DOCUMENT_POSITION_FOLLOWING);
 
   const cjk = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u;
   const arabic = /[\p{Script=Arabic}\p{Script=Hebrew}]/u;
   const name = col.querySelector(".site-name");
+  // A page heavy with markup (a post full of highlighted code) has too many pieces for
+  // each word to rise in a box of its own without the frames stuttering on a phone:
+  // there each block rises whole instead, as a block of code does. The name keeps its
+  // trick.
+  const whole = col.getElementsByTagName("*").length > 1000;
+  const risesWhole = (block: Element): block is HTMLElement => whole && block instanceof HTMLElement && !(name && block.contains(name));
+
+  // Everything to be measured is measured before any text is boxed: measured after a
+  // change, the page is laid out again, block after block. A link's own icon is one of
+  // a block's marks where it shows without a hover (touch screens); hidden until
+  // hovered, it is left alone, or it would flash.
+  const marksOf = new Map<Element, HTMLElement[]>();
+
+  blocks.forEach((_, block) => {
+    if (!risesWhole(block)) {
+      marksOf.set(block, [...block.querySelectorAll<HTMLElement>(".dot, .arrow, .nf-dot, code, .lk-ic, .copy-ic")]
+        .filter(atom => !atom.matches(".lk-ic, .copy-ic") || getComputedStyle(atom).opacity !== "0"));
+    }
+  });
+
+  const chipRows = [...col.querySelectorAll<HTMLElement>(".chips")].map(row => ({ row, chips: [...row.querySelectorAll<HTMLElement>(".chip")].filter(shown) }));
 
   blocks.forEach((list, block) => {
+    if (risesWhole(block)) {
+      units.push({ block, words: [], atoms: [block] });
+
+      return;
+    }
+
     const own: Unit[] = [{ block, words: [], atoms: [] }];
     const last = () => own[own.length - 1]!;
 
@@ -163,7 +242,7 @@ function reveal() {
 
         // Japanese rises character by character, except a word already boxed on its
         // own (the home intro's), which rises whole so its box keeps its width.
-        const pieces = !rtl && cjk.test(part) && !node.parentElement?.closest(".iw") ? Array.from(part) : [part];
+        const pieces = !rtl && cjk.test(part) && !node.parentElement?.closest(".iw") ? characters(part) : [part];
 
         pieces.forEach((piece) => {
           const word = wordEl(piece);
@@ -183,15 +262,10 @@ function reveal() {
     });
 
     // Bullets, arrows and other marks arrive with the sentence they sit in: a bullet,
-    // before every word, with the first; a link's arrow with the words it ends.
+    // before every word, with the first; a link's arrow (or icon) with the words it ends.
     const before = (word: HTMLElement, atom: HTMLElement) => !!(word.compareDocumentPosition(atom) & Node.DOCUMENT_POSITION_FOLLOWING);
 
-    // A link's own icon too, where it shows without a hover (touch screens): it waits
-    // for its link's words. Hidden until hovered, it is left alone, or it would flash.
-    const marks = [...block.querySelectorAll<HTMLElement>(".dot, .arrow, .nf-dot, code, .lk-ic, .copy-ic")]
-      .filter(atom => !atom.matches(".lk-ic, .copy-ic") || getComputedStyle(atom).opacity !== "0");
-
-    marks.forEach((atom) => {
+    marksOf.get(block)!.forEach((atom) => {
       const unit = own.findLast(u => u.words[0] && before(u.words[0], atom)) ?? own[0]!;
       const words = unit.words.filter(word => before(word, atom)).length;
 
@@ -221,9 +295,9 @@ function reveal() {
 
   // A row of chips arrives chip by chip, each whole, in its place in the page's order;
   // those folded away are left out, or the ones after them would wait on them.
-  col.querySelectorAll<HTMLElement>(".chips").forEach((row) => {
+  chipRows.forEach(({ row, chips }) => {
     const at = units.findIndex(u => row.compareDocumentPosition(u.block) & Node.DOCUMENT_POSITION_FOLLOWING);
-    const unit: Unit = { block: row, words: [], atoms: [...row.querySelectorAll<HTMLElement>(".chip")].filter(chip => chip.getClientRects().length), stagger: 25 };
+    const unit: Unit = { block: row, words: [], atoms: chips, stagger: 25 };
 
     units.splice(at < 0 ? units.length : at, 0, unit);
   });
@@ -233,11 +307,11 @@ function reveal() {
 
 
   units.forEach((unit) => {
-    // A list item's own bullet or number is no element to hide: it waits with the
-    // item, held back by a class (global.css), and comes in with its first words.
-    if (unit.block.localName === "li") {
-      unit.block.classList.add("rv-mk");
-    }
+    // Marks drawn by the stylesheet are no elements to hide: a list item's bullet or
+    // number, a dot between items, the back link's chevron. They wait with their
+    // block, held back by a class (global.css), and come in with its first words,
+    // rather than stand alone where the words have yet to rise.
+    unit.block.classList.add("rv-mk");
 
     unit.words.forEach((word) => {
       word.style.transform = HIDDEN;
@@ -276,6 +350,16 @@ function reveal() {
     Array.from("ssamadi").forEach(letter => rest.append(wordEl(letter)));
     e.append(rest);
     box.append(ew, o, document.createTextNode(" "), e);
+
+    // Its letters, each in a box, would be read as "E Oussama s s a m a d i": the
+    // heading carries the name whole until they are gone.
+    const heading = node.parentElement?.closest("h1");
+
+    if (heading && !heading.hasAttribute("aria-label")) {
+      heading.setAttribute("aria-label", node.nodeValue!.trim());
+      labelled = heading;
+    }
+
     node.parentNode!.replaceChild(box, node);
     texts.push({ orig: node, span: box });
 
@@ -386,22 +470,36 @@ function reveal() {
     lastEnd = Math.max(lastEnd, t0 + DUR + Math.min(unit.words.length * WSTEP, 220) + unit.atoms.length * (unit.stagger ?? 0));
   };
 
-  // 3. Lines are released in page order, a step apart, as they come into view.
+  // 3. Lines are released in page order, a step apart, as they come into view. Those
+  // of the first screenful come closer together the more of them there are, the gaps
+  // narrowing down the screen, so that the last of them starts within FIRST.
   let nameDone = false;
+  let opened = false;
 
   const pump = () => {
     const t = now();
     const waiting = (u: Unit) => !u.played && u.seen;
+    const lines = units.filter(u => waiting(u) && !u.sig && !u.after);
+    const n = lines.filter(u => !u.fadeOnly).length;
+    const first = !opened && n > 1;
+    const at = (i: number) => first ? Math.min(i * STEP, FIRST * (i / (n - 1)) ** 0.7) : i * STEP;
+    let i = 0;
 
     cursor = Math.max(cursor, t);
+    opened ||= n > 0;
 
-    for (const unit of units) {
-      if (!waiting(unit) || unit.sig || unit.after) {
-        continue;
+    const from = cursor;
+
+    lines.forEach((unit) => {
+      run(unit, from + at(i));
+
+      if (!unit.fadeOnly) {
+        i++;
       }
+    });
 
-      run(unit, cursor);
-      cursor += unit.fadeOnly ? 0 : STEP;
+    if (n) {
+      cursor = from + at(n - 1) + STEP;
     }
 
     // Once everything in view has arrived, the signature draws itself.
@@ -457,8 +555,33 @@ function reveal() {
 
   units.forEach(unit => byBlock.set(unit.block, [...(byBlock.get(unit.block) ?? []), unit]));
 
-  const io = new IntersectionObserver((entries) => {
+  // The page's last lines can sit in the strip along the bottom that does not count as
+  // in view, even with the page scrolled to its end (the copyright, on a phone): there,
+  // whatever shows at all has come into view.
+  const atEnd = () => {
+    if (innerHeight + scrollY < root.scrollHeight - 2) {
+      return false;
+    }
+
     let any = false;
+
+    units.forEach((unit) => {
+      if (!unit.seen && unit.block.getBoundingClientRect().top < innerHeight) {
+        unit.seen = true;
+        any = true;
+      }
+    });
+
+    return any;
+  };
+  const scrolled = () => {
+    if (atEnd()) {
+      pump();
+    }
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    let any = atEnd();
 
     entries.forEach((entry) => {
       if (!entry.isIntersecting) {
@@ -480,6 +603,7 @@ function reveal() {
   }, { rootMargin: "0px 0px -6% 0px", threshold: 0 });
 
   new Set(units.map(u => u.block)).forEach(block => io.observe(block));
+  addEventListener("scroll", scrolled, { passive: true });
 
   // Anything the visitor does settles the page at once, so nothing is left half-written.
   const settle = () => finish(false);
@@ -528,6 +652,7 @@ function reveal() {
     removeEventListener("pointerdown", settle, true);
     removeEventListener("keydown", settle, true);
     removeEventListener("beforeprint", settle);
+    removeEventListener("scroll", scrolled);
     done();
 
     let restored = false;
@@ -535,6 +660,7 @@ function reveal() {
       if (!restored) {
         restored = true;
         texts.forEach(({ orig, span }) => span.parentNode?.replaceChild(orig, span));
+        labelled?.removeAttribute("aria-label");
       }
     };
 
