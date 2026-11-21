@@ -298,6 +298,21 @@
         "date": "2026-10-16T14:08:26Z"
       }
     },
+    "eoussama/swift-todo": {
+      "stars": 1,
+      "forks": 0,
+      "language": "TypeScript",
+      "created": "2018-05-21T18:22:02Z",
+      "pushed": "2026-11-21T15:48:25Z",
+      "description": "A quick to-do list in your browser toolbar, synced with your browser account.",
+      "homepage": "https://swift-todo.ouss.es/",
+      "archived": false,
+      "started": "2018-05-21T17:21:44Z",
+      "tag": {
+        "name": "v2.0.0",
+        "date": "2026-11-21T00:48:15Z"
+      }
+    },
     "eoussama/temmejs": {
       "stars": 11,
       "forks": 0,
