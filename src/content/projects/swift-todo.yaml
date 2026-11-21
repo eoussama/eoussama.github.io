@@ -1,0 +1,46 @@
+name: Swift TODO
+order: 33
+kind: open-source
+type: extension
+repo: https://github.com/eoussama/swift-todo
+live: https://swift-todo.ouss.es/
+languages:
+  - TypeScript
+tools:
+  - Svelte
+  - WXT
+  - Vite
+  - Tailwind CSS
+  - Vitest
+  - Playwright
+tags:
+  - Productivity
+  - Web
+role:
+  en: Author and maintainer
+blurb:
+  en: A quick to-do list in your browser toolbar, synced with your browser account.
+  ar: قائمة مهام سريعة في شريط أدوات متصفحك، متزامنة مع حساب متصفحك.
+  ary: ليستة ديال المهام سريعة ف البار ديال المتصفح، متزامنة مع الحساب ديال المتصفح ديالك.
+  fr: Une liste de tâches rapide dans la barre d’outils de votre navigateur, synchronisée avec votre compte.
+  es: Una lista de tareas rápida en la barra de tu navegador, sincronizada con tu cuenta del navegador.
+  it: Una lista di cose da fare rapida nella barra del browser, sincronizzata con il tuo account.
+  ja: ブラウザのツールバーに置ける、ブラウザのアカウントと同期するすばやいToDoリスト。
+desc:
+  en: a quick to-do list in your browser toolbar, synced with your browser account.
+  ar: قائمة مهام سريعة في شريط أدوات متصفحك، متزامنة مع حسابك.
+  ary: ليستة ديال المهام سريعة ف البار ديال المتصفح، متزامنة مع الحساب ديالك.
+  fr: une liste de tâches rapide dans la barre d’outils du navigateur, synchronisée avec votre compte.
+  es: una lista de tareas rápida en la barra del navegador, sincronizada con tu cuenta.
+  it: una lista di cose da fare rapida nella barra del browser, sincronizzata con il tuo account.
+  ja: ブラウザのツールバーにある、アカウントと同期するすばやいToDoリスト。
+note:
+  en: Open source. A browser extension for Chrome, Edge and Firefox. No sign-up, no servers, no tracking.
+  ar: مفتوح المصدر. إضافة متصفح لـ Chrome وEdge وFirefox. بلا تسجيل ولا خوادم ولا تتبّع.
+  ary: مفتوح المصدر. إضافة ديال المتصفح ل Chrome وEdge وFirefox. بلا تسجيل، بلا سيرفورات وبلا تتبّع.
+  fr: Open source. Une extension pour Chrome, Edge et Firefox. Sans inscription, sans serveur, sans pistage.
+  es: Código abierto. Una extensión para Chrome, Edge y Firefox. Sin registro, sin servidores ni rastreo.
+  it: Open source. Un’estensione per Chrome, Edge e Firefox. Niente registrazione, niente server, niente tracciamento.
+  ja: オープンソース。Chrome、Edge、Firefox向けのブラウザ拡張機能。登録不要、サーバーなし、トラッキングなし。
+long:
+  en: Swift TODO keeps a to-do list one click away. Click the toolbar icon or press a shortcut, type, press Enter and get back to what you were doing. It sorts to-dos into lists and tags, reads dates and repeats typed naturally (“call Sam tomorrow 3pm”), and has a Today view, a focus mode with a timer, and five skins in light and dark. Everything syncs through your browser account, with no server of its own.
