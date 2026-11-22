@@ -40,7 +40,7 @@
 }
 
 :root[data-mode="dark"] {
-  --bg: #14161d;
+  --bg: #0f1116;
   --ink: #eceaf3;
   --mut: #a2a7b6;
   --acc: #8d82d6;
@@ -49,8 +49,11 @@
   --sel: #4a4283;
   --line: rgba(236, 234, 243, 0.18);
   --lg-acc: #b8aef5;
-  --paper-a: 0.8;
-  --paper-b: 0.55;
+  /* A faint grain: soft-light on the dark ground picks out its every fleck, and any
+     stronger it pulls the eye off the text. The dark flecks were also what made the
+     page read as dark, so the ground itself is deeper to make up for them. */
+  --paper-a: 0.3;
+  --paper-b: 0.2;
   --shade-near: rgba(0, 0, 0, 0.55);
   --shade-far: rgba(0, 0, 0, 0.6);
   --shade-reach: 12px;
@@ -2791,7 +2794,7 @@ html:has(.ck[open]) {
 }
 
 :root[data-mode="dark"] :is(.ck, .dr-scrim) {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%2314161d' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%23eceaf3' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, pointer;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%230f1116' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M7 7l10 10M17 7L7 17' fill='none' stroke='%23eceaf3' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, pointer;
 }
 
 .ck-note {
@@ -3343,12 +3346,16 @@ html {
   display: block;
 }
 
+/*
+ * Over the page's paper grain, not under it: the drawer is a sheet of its own, and
+ * carries its own grain (below), as the notes do.
+ */
 .dr {
   position: fixed;
   top: 0;
   bottom: 0;
   inset-inline-end: 0;
-  z-index: 7;
+  z-index: 61;
   width: 540px;
   max-width: 100%;
   background: var(--bg);
@@ -3464,6 +3471,43 @@ html {
   background: var(--bg);
   -webkit-mask-image: url("../assets/tear-edge.svg");
   mask-image: url("../assets/tear-edge.svg");
+}
+
+/*
+ * The drawer's own grain, both of the page's layers, set off from the page's so the
+ * sheet doesn't read as a window onto it. Over everything in the drawer, as the page's
+ * is over the page, from the torn edge (cut to its shape) to the paper past the
+ * screen's edge.
+ */
+.dr::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: -23px;
+  inset-inline-end: -24px;
+  z-index: 11;
+  background-image: url("../assets/paper-light.webp"), url("../assets/paper-light.webp");
+  background-position: 517px 293px, 871px 541px;
+  background-size: 1024px 1024px, 1408px 1408px;
+  opacity: var(--paper-a);
+  pointer-events: none;
+  -webkit-mask:
+    url("../assets/tear-edge.svg") 0 0 / 24px 480px repeat-y,
+    linear-gradient(#000 0 0) 23px 0 / calc(100% - 23px) 100% no-repeat;
+  mask:
+    url("../assets/tear-edge.svg") 0 0 / 24px 480px repeat-y,
+    linear-gradient(#000 0 0) 23px 0 / calc(100% - 23px) 100% no-repeat;
+}
+
+/* The tear is on the other side, mirrored: so is its grain. */
+[dir="rtl"] .dr::before {
+  transform: scaleX(-1);
+}
+
+:root[data-mode="dark"] .dr::before {
+  background-image: url("../assets/paper.webp"), url("../assets/paper.webp");
+  mix-blend-mode: soft-light;
 }
 
 .dr-head {
