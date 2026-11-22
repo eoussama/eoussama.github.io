@@ -1,6 +1,7 @@
 /*
  * The first load. Text rises out of its baseline sentence by sentence, in page order,
- * as each line comes into view. On the home page the name first reads "EOussama".
+ * as each line comes into view (on a phone, the home page's first screenful only: the
+ * rest is there when it is scrolled to). On the home page the name first reads "EOussama".
  * The signature draws itself and the copyright fades in under it; then Oussama slides
  * left and the E unfolds into Essamadi. Anything the visitor does settles the page at
  * once, and the page's own text is put back exactly as it was. On a page heavy with
@@ -1133,7 +1134,35 @@ function reveal(): () => void {
 
     return any;
   };
+  // The strip along the bottom is for lines on their way in, as the page scrolls. Until
+  // it has, what shows is the first screenful, all of it: on a screen a little shorter
+  // than the page, its last line sits in the strip, and would wait there, blank, for a
+  // scroll that nothing asks for.
+  let moved = false;
+  // As wide as the page's phone layout (global.css).
+  const narrow = matchMedia("(max-width: 700px)");
+  const onScreen = () => {
+    if (moved) {
+      return false;
+    }
+
+    let any = false;
+    const fresh = units.filter(u => !u.seen && !u.played);
+    // Measured first, then changed, so the page is laid out once.
+    const boxes = fresh.map(u => u.block.getBoundingClientRect());
+
+    fresh.forEach((unit, k) => {
+      if (boxes[k]!.top < innerHeight && boxes[k]!.bottom > 0) {
+        unit.seen = true;
+        any = true;
+      }
+    });
+
+    return any;
+  };
   const scrolled = () => {
+    moved = true;
+
     if (atEnd()) {
       pump();
     }
@@ -1148,9 +1177,28 @@ function reveal(): () => void {
     root.setAttribute("data-rv", "run");
 
     const watch = new IntersectionObserver((entries) => {
-      let any = atEnd();
+      // Both, not either: each marks its own lines.
+      const shown = onScreen();
+      let any = atEnd() || shown;
+      // On a phone the home page runs past its first screenful, and its own words rise
+      // on that one only: what lies below is simply there when it is scrolled to.
+      const quiet = narrow.matches && document.querySelector(".home") !== null;
 
       entries.forEach((entry) => {
+        if (!entry.isIntersecting && quiet && entry.boundingClientRect.top >= innerHeight) {
+          (byBlock.get(entry.target) ?? []).forEach((unit) => {
+            if (!unit.played) {
+              still(unit);
+              unit.seen = true;
+              unit.played = true;
+              any = true;
+            }
+          });
+          watch.unobserve(entry.target);
+
+          return;
+        }
+
         if (!entry.isIntersecting) {
           return;
         }
