@@ -6,7 +6,7 @@ year: 2024
 repo:
   - https://github.com/eoussama/fireguard
   - https://github.com/eoussama/firemitt
-live: https://ouss.es/firemitt/
+live: https://ouss.es/fireguard/
 languages:
   - TypeScript
 tools:
@@ -19,6 +19,7 @@ tools:
 tags:
   - Web
 links:
+  - https://ouss.es/firemitt/
   - https://www.npmjs.com/package/@eoussama/firemitt
   - https://npmx.dev/package/@eoussama/firemitt
 role:
