@@ -172,4 +172,70 @@ const posts = await getPosts(lang);
     </section>
   </div>
 
+  {/*
+    On a screen wider than a phone the page keeps to one screenful: its type steps down
+    a size at a few heights, and its spacing follows the height in between (global.css).
+    How much text there is changes with the language, the greeting and the width, so
+    where the page still runs a little past the bottom, its spacing is taken in by that
+    much (--fit, a share of it), and no more. Where taking in all but the last of it
+    still wouldn't do, it is left as it is, to scroll. Measured again whenever the page
+    or the window changes size: fonts arriving, the greeting holding a taller intro,
+    room made for the consent note.
+  */}
+  <script is:inline>
+    (() => {
+      const col = document.querySelector(".col");
+      const page = document.querySelector(".page");
+      const wide = matchMedia("(min-width: 701px)");
+      // Below this share of its spacing the page reads cramped: it scrolls instead.
+      const least = 0.4;
+
+      if (!col || !page) {
+        return;
+      }
+
+      // How far the page runs past the bottom of the window (less than 0 when it ends above).
+      const over = () => page.getBoundingClientRect().bottom + scrollY - innerHeight;
+
+      const fit = () => {
+        col.style.removeProperty("--fit");
+
+        if (!wide.matches) {
+          return;
+        }
+
+        const full = over();
+
+        if (full <= 0) {
+          return;
+        }
+
+        // The spacing scales as one, so the room it takes is measured with none of it.
+        col.style.setProperty("--fit", "0");
+
+        const room = full - over();
+        // A pixel to spare, for the rounding of what it lays out.
+        const share = room > 0 ? 1 - (full + 1) / room : 0;
+
+        if (share >= least) {
+          col.style.setProperty("--fit", share.toFixed(3));
+        }
+        else {
+          col.style.removeProperty("--fit");
+        }
+      };
+
+      let frame = 0;
+      const later = () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(fit);
+      };
+
+      fit();
+      addEventListener("resize", later, { passive: true });
+      // A size this sets settles at once: measured again, it comes out the same.
+      new ResizeObserver(later).observe(page);
+    })();
+  </script>
+
 </Base>
