@@ -62,8 +62,8 @@ export async function getPosts(lang: Lang): Promise<Post[]> {
  * A post's path inside the site, before the language prefix.
  *
  * @param post - The post
- * @returns Its path, such as "blog/hello/"
+ * @returns Its path, such as "posts/hello/"
  */
 export function postPath(post: Post): string {
-  return `blog/${post.slug}/`;
+  return `posts/${post.slug}/`;
 }

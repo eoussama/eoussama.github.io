@@ -521,7 +521,7 @@ const speculation = JSON.stringify({
           document.documentElement.classList.add("vt-arrive");
         }
 
-        const page = /\/(projects|blog)\/([^/]+)\/$/;
+        const page = /\/(projects|posts)\/([^/]+)\/$/;
         const from = globalThis.navigation?.activation?.from?.url;
         const match = from && page.exec(new URL(from).pathname);
 

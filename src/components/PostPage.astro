@@ -50,7 +50,7 @@ const own = { lang: post.lang, dir: langInfo(post.lang).dir };
   <a slot="crumb" class="crumb" href={localized(lang)}>{t.name}</a>
   {outline.length >= 3 && <Minimap slot="aside" lang={lang} own={post.lang} headings={outline} />}
 
-  <article class="post" style={`--vt-name: vt-name-blog-${slug}`}>
+  <article class="post" style={`--vt-name: vt-name-posts-${slug}`}>
     <section class="row first">
       <h2 class="lab" id="writing"><a class="anchor" href="#writing" aria-label={t.writing + t.anchor}>{t.writing}</a></h2>
       <div>

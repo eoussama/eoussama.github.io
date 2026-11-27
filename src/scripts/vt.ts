@@ -14,7 +14,7 @@ type Activation = { entry?: { url: string } | null; from?: { url: string } | nul
 type SwapEvent = Event & { viewTransition: ViewTransition | null; activation: Activation | null };
 
 /**
- * The project or post a page address is about, as "projects-<id>" or "blog-<slug>".
+ * The project or post a page address is about, as "projects-<id>" or "posts-<slug>".
  *
  * @param url - A page address
  * @returns Its key, or null when it is neither
@@ -24,7 +24,7 @@ function itemOf(url: string | undefined | null): string | null {
     return null;
   }
 
-  const match = /\/(projects|blog)\/([^/]+)\/$/.exec(new URL(url).pathname);
+  const match = /\/(projects|posts)\/([^/]+)\/$/.exec(new URL(url).pathname);
 
   return match ? `${match[1]}-${match[2]}` : null;
 }

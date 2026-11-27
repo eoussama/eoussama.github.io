@@ -20,7 +20,7 @@ import { localized } from "./url";
 export type List = "work" | "writing";
 
 /** Each list's page, inside the site, before the language prefix. */
-export const LIST_PATHS: Record<List, string> = { work: "projects/", writing: "blog/" };
+export const LIST_PATHS: Record<List, string> = { work: "projects/", writing: "posts/" };
 
 /**
  * A list's parts, each a file of its own at <list's page>parts/<part>/: its items, which

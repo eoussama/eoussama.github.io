@@ -61,7 +61,7 @@ function leadIn(id: string, lang: string): boolean {
 /**
  * The language whose page is the original of a page.
  *
- * @param path - The page's path inside the site, without the language ("blog/x/")
+ * @param path - The page's path inside the site, without the language ("posts/x/")
  * @param lang - The page's language
  * @returns The page's own language, or "en" when its main text is only in English
  */
@@ -70,7 +70,7 @@ export function canonicalLang(path: string, lang: string): string {
     return lang;
   }
 
-  const post = /^blog\/([^/]+)\/$/.exec(path)?.[1];
+  const post = /^posts\/([^/]+)\/$/.exec(path)?.[1];
 
   if (post) {
     return has("posts", post, `${lang}.md`) ? lang : "en";

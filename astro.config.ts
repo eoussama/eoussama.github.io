@@ -37,7 +37,7 @@ const PREFIXED = new Set(["ar", "ary", "fr", "es", "it", "ja"]);
  * @returns True to list it
  */
 function listed(page: string): boolean {
-  if (/\/404\/?$/.test(page) || /\/(?:projects|blog)\/parts\/[^/]+\/$/.test(page)) {
+  if (/\/404\/?$/.test(page) || /\/(?:projects|posts)\/parts\/[^/]+\/$/.test(page)) {
     return false;
   }
 
@@ -72,6 +72,15 @@ export default defineConfig({
   },
   devToolbar: {
     enabled: false,
+  },
+  // The posts were once at /p/blog/: each old address leads to its new one, for the
+  // links and search results that still have it. Built as pages that send visitors on
+  // and name the new address as the page's own, which search engines take as a move.
+  redirects: {
+    "/p/blog": "/p/posts",
+    "/p/blog/[slug]": "/p/posts/[slug]",
+    "/p/[lang]/blog": "/p/[lang]/posts",
+    "/p/[lang]/blog/[slug]": "/p/[lang]/posts/[slug]",
   },
   integrations: [
     // Every page meant to be found: not the 404s, the lists' parts, nor the English-only pages in other languages.

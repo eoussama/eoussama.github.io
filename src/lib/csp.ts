@@ -28,7 +28,8 @@ import { fileURLToPath } from "node:url";
  * part, opened by itself, runs nothing, so it carries none, and must not need one: a
  * part that holds a script, a style or anything else that runs or loads fails the build,
  * and so does one without a noindex, which keeps it out of search, as a page that lost
- * its <html> would be.
+ * its <html> would be. The pages Astro writes for moved addresses have no <html> either:
+ * one that only sends the visitor on, within the site, passes as a part.
  *
  * Not in `astro dev`, whose pages are put together in other ways; `astro preview` shows
  * the policy as the site has it.
@@ -314,7 +315,12 @@ function sameOrigin(value: string): boolean {
  * @param tags - Its tags
  */
 function checkPart(file: string, html: string, tags: Tag[]) {
-  const loads = tags.find(tag => !tag.closing && (LOADS.has(tag.name) || (tag.name === "meta" && attr(tag, "http-equiv") !== null)));
+  // A moved address's page (astro.config.ts, redirects) is one too: it sends the visitor
+  // on to another page of the site and names it as its own, which runs and loads nothing.
+  const sendsOn = (tag: Tag) => tag.name === "meta" && (attr(tag, "http-equiv") ?? "").trim().toLowerCase() === "refresh"
+    && sameOrigin((attr(tag, "content") ?? "").replace(/^\s*\d+\s*;\s*url\s*=\s*/i, ""));
+  const names = (tag: Tag) => tag.name === "link" && (attr(tag, "rel") ?? "").trim().toLowerCase() === "canonical";
+  const loads = tags.find(tag => !tag.closing && !sendsOn(tag) && !names(tag) && (LOADS.has(tag.name) || (tag.name === "meta" && attr(tag, "http-equiv") !== null)));
 
   if (loads) {
     throw new Error(`${file} is a part of a page (it has no <html>), which carries no security policy, so nothing in it may run or load: ${html.slice(loads.start, loads.end).slice(0, 200)}`);
