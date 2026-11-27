@@ -76,12 +76,18 @@ export default defineConfig({
   // The posts were once at /p/blog/: each old address leads to its new one, for the
   // links and search results that still have it. Built as pages that send visitors on
   // and name the new address as the page's own, which search engines take as a move.
-  redirects: {
-    "/p/blog": "/p/posts",
-    "/p/blog/[slug]": "/p/posts/[slug]",
-    "/p/[lang]/blog": "/p/[lang]/posts",
-    "/p/[lang]/blog/[slug]": "/p/[lang]/posts/[slug]",
-  },
+  // Only at the root: Astro puts the base before where they are but not where they
+  // lead, so in an archived version they would lead out of it, to the live site. And
+  // no archived version has old addresses to keep: those before the move have no
+  // /p/blog/ to redirect, and those after it never had one.
+  redirects: base === "/"
+    ? {
+        "/p/blog": "/p/posts",
+        "/p/blog/[slug]": "/p/posts/[slug]",
+        "/p/[lang]/blog": "/p/[lang]/posts",
+        "/p/[lang]/blog/[slug]": "/p/[lang]/posts/[slug]",
+      }
+    : {},
   integrations: [
     // Every page meant to be found: not the 404s, the lists' parts, nor the English-only pages in other languages.
     sitemap({ filter: listed }),
