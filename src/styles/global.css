@@ -4378,6 +4378,12 @@ button.chip {
   display: none;
 }
 
+/* The menu's place under the search allows for the drawer's padding above it (12px),
+   which the page has none of. */
+.lp-sheet .dr-fpop {
+  top: 50px;
+}
+
 :root:not(.js) .lp-sheet .dr-tools {
   display: none;
 }

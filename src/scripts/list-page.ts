@@ -1,3 +1,4 @@
+import { syncLanguageLinks } from "./languages";
 import { makeSheet } from "./sheet";
 
 
@@ -56,6 +57,8 @@ if (element && list && template) {
       const query = next.toString();
 
       history.replaceState(history.state, "", `${location.pathname}${query ? `?${query}` : ""}${location.hash}`);
+      // The language menu leads to the same list, searched and filtered as this one.
+      syncLanguageLinks();
     },
     // Said once the page is in: not, as it comes, how many the whole list holds.
     showing: () => ready,
@@ -71,9 +74,10 @@ if (element && list && template) {
 
   // Escape closes the filter menu; with it closed, it leaves the search or the filters,
   // keeping what was typed (a search field would clear itself first). Not while the
-  // drawer or a dialog is open over the page: Escape closes those.
+  // drawer or a dialog is open over the page: Escape closes those. Nor once something
+  // else has taken this Escape, such as a list opening before its code was in.
   document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || root.dataset.open || document.querySelector("dialog[open]")) {
+    if (event.key !== "Escape" || event.defaultPrevented || root.dataset.open || document.querySelector("dialog[open]")) {
       return;
     }
 
