@@ -4458,12 +4458,10 @@ button.chip {
   }
 
   :root:has(.page-cv) .lh-head {
+    --qr: 66px;
+
     margin-bottom: 22px;
     padding-bottom: 12px;
-  }
-
-  :root:has(.page-cv) .lh-head {
-    --qr: 66px;
   }
 
   :root:has(.page-cv) .lh-name {
