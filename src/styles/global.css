@@ -4007,9 +4007,10 @@ html {
   view-transition-name: site-name;
 }
 
-/* The home page's name, its heading, right beside the logo and a size up from the way
-   home other pages have there. Where the bar has no room for it beside the controls
-   (a phone), it is left to screen readers. */
+/* The home page's name, right beside the logo and a size up from the way home other
+   pages have there. The page's heading is in its main content, for screen readers
+   (Home.astro); this is the name as seen, so where the bar has no room for it beside
+   the controls (a phone), it goes, and nothing travels from it to the next page. */
 .bar-name {
   margin: 0;
   margin-inline-start: 16px;
@@ -4023,12 +4024,7 @@ html {
 
 @media (max-width: 700px) {
   .bar-name {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
+    display: none;
   }
 }
 
