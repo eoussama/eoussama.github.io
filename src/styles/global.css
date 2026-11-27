@@ -4433,6 +4433,10 @@ button.chip {
     padding-bottom: 12px;
   }
 
+  :root:has(.page-cv) .lh-head {
+    --qr: 66px;
+  }
+
   :root:has(.page-cv) .lh-name {
     font-size: 24px;
   }
@@ -5550,18 +5554,55 @@ a.anchor .rv-i,
     display: inline;
   }
 
+  /* The logo and the name at the head's start; the code at its end, the address
+     centered under it. The code's white border (4 of its 45 modules, which a scanner
+     needs) is pulled out past the margin, so its dark squares line up with the page's
+     edge and the rule; the border is the gap between the code and the address. */
   .lh-head {
-    display: block;
-    margin: 0 0 52px;
-    padding-bottom: 18px;
+    --qr: 76px;
+    --qz: calc(var(--qr) * 4 / 45);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 36px;
+    padding-bottom: 12px;
     border-bottom: 1px solid var(--line);
   }
 
+  .lh-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
   .lh-name {
-    margin: 0;
     font-size: 28px;
     font-weight: 500;
     line-height: 1.2;
+  }
+
+  .lh-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-block-start: calc(-1 * var(--qz));
+    margin-inline-end: calc(-1 * var(--qz));
+  }
+
+  .lh-qr {
+    display: block;
+    width: var(--qr);
+    height: var(--qr);
+  }
+
+  .lh-addr {
+    margin-top: -2px;
+    color: var(--mut);
+    font-size: 13px;
+    line-height: 1.2;
+    text-decoration: none;
+    background: none;
   }
 
   /* The signature follows the last section, a gap below it, and prefers to stay with it

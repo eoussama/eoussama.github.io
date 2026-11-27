@@ -3,28 +3,61 @@
  * The eclipse mark, drawn from the brand logo: a disc with an off-centre hole, a
  * lavender crescent inside the hole, and a wedge pointing in.
  * `id` keeps the clip and mask ids unique when it appears twice.
+ *
+ * `flat` draws the same shapes without masks, for paper: Chrome prints a mask as a
+ * small picture rather than as shapes, which PDF viewers can show cut off. The hole is
+ * cut from the disc by its outline (even-odd), and the crescent is the inner ellipse cut
+ * from the outer one, clipped to it. A flat mark cannot settle in, as the hole has no
+ * shape of its own to move.
  */
 interface Props {
   id: string;
   size?: number;
+  flat?: boolean;
 }
 
-const { id, size = 52 } = Astro.props;
+const { id, size = 52, flat = false } = Astro.props;
+
+/**
+ * An ellipse as a path: two half arcs from its left end.
+ *
+ * @param cx - Its center's x
+ * @param cy - Its center's y
+ * @param rx - Its horizontal radius
+ * @param ry - Its vertical radius
+ * @returns The path's data
+ */
+const ellipse = (cx: number, cy: number, rx: number, ry: number) =>
+  `M${cx - rx} ${cy}a${rx} ${ry} 0 1 0 ${2 * rx} 0a${rx} ${ry} 0 1 0 ${-2 * rx} 0Z`;
 ---
 
-<svg class="logo-mark" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
-  <clipPath id={`${id}-clip`}><circle cx="32" cy="32" r="31.81"></circle></clipPath>
-  <mask id={`${id}-cut`} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
-    <rect x="0" y="0" width="64" height="64" fill="#fff"></rect>
-    <ellipse class="lg-hole" cx="38.7" cy="32" rx="24.77" ry="24.05" fill="#000"></ellipse>
-  </mask>
-  <mask id={`${id}-moon`} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
-    <rect x="0" y="0" width="64" height="64" fill="#fff"></rect>
-    <ellipse cx="34.42" cy="32" rx="20.99" ry="19.8" fill="#000"></ellipse>
-  </mask>
-  <g class="lg-disc"><circle cx="32" cy="32" r="31.81" fill="var(--lg-a)" mask={`url(#${id}-cut)`}></circle></g>
-  <g clip-path={`url(#${id}-clip)`}>
-    <g class="lg-moon"><ellipse cx="38.7" cy="32" rx="24.54" ry="23.83" fill="var(--lg-b)" mask={`url(#${id}-moon)`}></ellipse></g>
-    <path class="lg-wedge" fill="var(--lg-a)" d="M-1 23.8L44.1 32L-1 40.2Z"></path>
-  </g>
-</svg>
+{flat
+  ? (
+      <svg class="logo-mark" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
+        <clipPath id={`${id}-clip`}><circle cx="32" cy="32" r="31.81"></circle></clipPath>
+        <clipPath id={`${id}-ring`}><ellipse cx="38.7" cy="32" rx="24.54" ry="23.83"></ellipse></clipPath>
+        <path fill="var(--lg-a)" fill-rule="evenodd" d={ellipse(32, 32, 31.81, 31.81) + ellipse(38.7, 32, 24.77, 24.05)}></path>
+        <g clip-path={`url(#${id}-clip)`}>
+          <path fill="var(--lg-b)" fill-rule="evenodd" clip-path={`url(#${id}-ring)`} d={`M0 0H64V64H0Z${ellipse(34.42, 32, 20.99, 19.8)}`}></path>
+          <path fill="var(--lg-a)" d="M-1 23.8L44.1 32L-1 40.2Z"></path>
+        </g>
+      </svg>
+    )
+  : (
+      <svg class="logo-mark" width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
+        <clipPath id={`${id}-clip`}><circle cx="32" cy="32" r="31.81"></circle></clipPath>
+        <mask id={`${id}-cut`} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+          <rect x="0" y="0" width="64" height="64" fill="#fff"></rect>
+          <ellipse class="lg-hole" cx="38.7" cy="32" rx="24.77" ry="24.05" fill="#000"></ellipse>
+        </mask>
+        <mask id={`${id}-moon`} maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+          <rect x="0" y="0" width="64" height="64" fill="#fff"></rect>
+          <ellipse cx="34.42" cy="32" rx="20.99" ry="19.8" fill="#000"></ellipse>
+        </mask>
+        <g class="lg-disc"><circle cx="32" cy="32" r="31.81" fill="var(--lg-a)" mask={`url(#${id}-cut)`}></circle></g>
+        <g clip-path={`url(#${id}-clip)`}>
+          <g class="lg-moon"><ellipse cx="38.7" cy="32" rx="24.54" ry="23.83" fill="var(--lg-b)" mask={`url(#${id}-moon)`}></ellipse></g>
+          <path class="lg-wedge" fill="var(--lg-a)" d="M-1 23.8L44.1 32L-1 40.2Z"></path>
+        </g>
+      </svg>
+    )}

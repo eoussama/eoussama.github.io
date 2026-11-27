@@ -13,6 +13,7 @@ import newsreaderLatin from "~/assets/fonts/newsreader-latin-normal.woff2?url";
 import Consent from "~/components/Consent.astro";
 import Drawer from "~/components/Drawer.astro";
 import Header from "~/components/Header.astro";
+import Logo from "~/components/Logo.astro";
 import Palette from "~/components/Palette.astro";
 import Shortcuts from "~/components/Shortcuts.astro";
 import { langInfo, LANGS } from "~/i18n/langs";
@@ -311,9 +312,12 @@ const speculation = JSON.stringify({
     <a class="skip" href="#main">{t.skip}</a>
     <div class="page">
       <div class="col">
-        {/* Printed, the page is a letter: the name at its head, the signature at its
-            foot. Neither shows on screen. */}
-        <div class="lh-head" aria-hidden="true"><p class="lh-name">{t.name}</p></div>
+        {/* Printed, the page is a letter: the logo and the name at its head, and across
+            from them the site's QR code (to.ouss.es/portfolio/live.qr, kept in public/)
+            and address; the signature at its foot. Neither shows on screen. The name is
+            plain text, not .site-name, so the home page's name never folds it into
+            "EOussama" (scripts/name.ts). */}
+        <div class="lh-head" aria-hidden="true"><div class="lh-brand"><Logo id="lg-print" size={48} flat /><span class="lh-name">{t.name}</span></div><div class="lh-mark"><img class="lh-qr" src={url("portfolio-qr.svg")} width="45" height="45" alt="" decoding="async" /><a class="lh-addr" href="https://ouss.es" tabindex="-1">ouss.es</a></div></div>
         <Header lang={lang} path={path}>
           <slot name="crumb" slot="crumb" />
         </Header>
