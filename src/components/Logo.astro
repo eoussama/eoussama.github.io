@@ -27,8 +27,9 @@ const { id, size = 52, flat = false } = Astro.props;
  * @param ry - Its vertical radius
  * @returns The path's data
  */
-const ellipse = (cx: number, cy: number, rx: number, ry: number) =>
-  `M${cx - rx} ${cy}a${rx} ${ry} 0 1 0 ${2 * rx} 0a${rx} ${ry} 0 1 0 ${-2 * rx} 0Z`;
+function ellipse(cx: number, cy: number, rx: number, ry: number): string {
+  return `M${cx - rx} ${cy}a${rx} ${ry} 0 1 0 ${2 * rx} 0a${rx} ${ry} 0 1 0 ${-2 * rx} 0Z`;
+}
 ---
 
 {flat
