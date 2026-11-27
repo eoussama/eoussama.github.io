@@ -4355,8 +4355,37 @@ button.chip {
 
 /* The list sits under the title, as the drawer sets it out: its items' names, kinds
    and sentences, the margin left to the title's label. */
-.page-list .dr-list {
+.page-list .lp-sheet {
   grid-column: 2;
+  min-width: 0;
+}
+
+/* Over it, with scripts, the drawer's search and filters, in the page's flow rather
+   than held at the top of a sheet that scrolls; the filter menu opens under the
+   search, as it does there. Without scripts they could do nothing, and on paper there
+   is nothing to search. */
+.lp-sheet .dr-tools {
+  position: relative;
+  top: auto;
+  max-width: 560px;
+  margin: 0 0 26px;
+  padding: 0;
+  background: none;
+  border-image: none;
+}
+
+.lp-sheet .dr-tools::after {
+  display: none;
+}
+
+:root:not(.js) .lp-sheet .dr-tools {
+  display: none;
+}
+
+@media print {
+  .lp-sheet :is(.dr-tools, .dr-empty) {
+    display: none !important;
+  }
 }
 
 /* ---------- The CV and the now page ---------- */

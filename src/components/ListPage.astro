@@ -3,11 +3,12 @@ import type { Lang } from "~/i18n/langs";
 import type { List } from "~/lib/lists";
 
 import LinkIcon from "~/components/LinkIcon.astro";
+import ListFilters from "~/components/ListFilters.astro";
 import ListItems from "~/components/ListItems.astro";
 import { ui } from "~/i18n/ui";
 import Base from "~/layouts/Base.astro";
 import { describe } from "~/lib/describe";
-import { getList, LIST_PATHS } from "~/lib/lists";
+import { FACETS, getList, LIST_PATHS } from "~/lib/lists";
 import { listSchema } from "~/lib/schema";
 import { localized } from "~/lib/url";
 
@@ -18,6 +19,10 @@ import { localized } from "~/lib/url";
  * sentence, readable as it is. The list drawer and the command menu take the same list
  * from a file of its own beside this page, with the drawer's filters in another
  * (ListPart.astro): fetching this whole page would bring its styles along too.
+ *
+ * With scripts, the page has the drawer's search and filters over its list too, which
+ * the address keeps (?q=type&language=TypeScript), so a list narrowed down can be
+ * linked to (scripts/list-page.ts). Without, it is the whole list.
  */
 interface Props {
   lang: Lang;
@@ -28,7 +33,7 @@ const { lang, list } = Astro.props;
 const t = ui(lang);
 const work = list === "work";
 const other: List = work ? "writing" : "work";
-const { items } = await getList(list, lang);
+const { items, groups } = await getList(list, lang);
 const others = (await getList(other, lang)).items.length;
 const path = LIST_PATHS[list];
 const label = work ? t.work : t.writing;
@@ -55,7 +60,31 @@ const names = items.map(item => ({ name: item.owner ? `${item.owner}/${item.name
     </section>
 
     <section class="row rise" style="--d: 30ms">
-      <ListItems lang={lang} list={list} items={items} />
+      <div
+        class="dr-sheet lp-sheet"
+        data-sheet={list}
+        data-keys={FACETS[list].join(" ")}
+        data-none-q={t.noMatchQ}
+        data-none-f={t.noMatchF}
+        data-remove={t.removeFilter}
+        data-key-sep={t.keySep}
+        data-shown-of={t.shownOf}
+      >
+        <div class="dr-tools">
+          <div class="dr-search">
+            <svg class="dr-glass" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+            <input type="search" class="dr-q" placeholder={work ? t.searchProjects : t.searchPosts} aria-label={work ? t.searchProjects : t.searchPosts} autocomplete="off" />
+          </div>
+          <div class="dr-active" aria-label={t.filters} hidden>
+            <button type="button" class="link dr-clear" data-clear>{t.clearAll}</button>
+          </div>
+        </div>
+        <p class="dr-empty" hidden><span></span> <button type="button" class="link" data-clear>{t.clearSearch}</button></p>
+        <ListItems lang={lang} list={list} items={items} />
+        <ListFilters lang={lang} list={list} groups={groups} prefix="lp" />
+        {/* Said aloud: how many a search or the filters leave. */}
+        <p class="sr" role="status" data-lp-status></p>
+      </div>
     </section>
 
     <section class="row">
@@ -64,3 +93,7 @@ const names = items.map(item => ({ name: item.owner ? `${item.owner}/${item.name
     </section>
   </article>
 </Base>
+
+<script>
+  import "~/scripts/list-page";
+</script>

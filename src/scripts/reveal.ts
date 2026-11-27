@@ -914,6 +914,10 @@ function reveal(): () => void {
     // long post's code would be thousands of pieces.
     fresh("pre").filter(near).forEach(pre => insert({ block: pre, words: [], atoms: [pre] }));
 
+    // A list page's search and filters arrive whole too, after its lead and before the
+    // list they narrow, rather than stand there while the words around them rise.
+    fresh(".lp-sheet > .dr-tools").forEach(tools => insert({ block: tools, words: [], atoms: [tools] }));
+
     // A row of chips arrives chip by chip, each whole, in its place in the page's order;
     // those folded away are left out, or the ones after them would wait on them.
     chipRows.forEach(({ row, chips }) => insert({ block: row, words: [], atoms: chips, stagger: 25 }));
