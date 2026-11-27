@@ -76,16 +76,19 @@ const heavy = (content.match(/<[a-z]/gi) ?? []).length > 1000;
 /*
  * Pages of the site are prerendered as a link is pointed at (or touched), so they open
  * at once. Not the lists (they open over the page), new tabs, files, or other versions.
+ * Files are told apart by how their links end, not by an address pattern: Google reads
+ * anything shaped like a path in a page's scripts as a page to crawl, and an address
+ * pattern ("/*.(pdf|xml)") reads as one that isn't there.
  */
 const base = import.meta.env.BASE_URL;
+const FILES = ["pdf", "xml", "txt", "svg", "jpg"].map(ext => `[href$=".${ext}" i]`).join(", ");
 const speculation = JSON.stringify({
   prerender: [{
     where: {
       and: [
         { href_matches: `${base}*` },
-        { not: { selector_matches: "[data-drawer], [target=_blank], [download]" } },
-        { not: { href_matches: `${base}*.(pdf|xml|txt|svg|jpg)` } },
-        ...(base === "/" ? [{ not: { href_matches: "/v/*" } }] : []),
+        { not: { selector_matches: `[data-drawer], [target=_blank], [download], ${FILES}` } },
+        ...(base === "/" ? [{ not: { selector_matches: "[href^=\"/v/\"]" } }] : []),
       ],
     },
     eagerness: "moderate",
