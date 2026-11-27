@@ -4426,7 +4426,7 @@ button.chip {
      a CV is, on pages with narrower margins than a letter's, with each post's heading
      kept with what follows it. */
   @page cv {
-    margin: 14mm 15mm;
+    margin: 10mm 15mm 14mm;
   }
 
   :root:has(.page-cv) .col {
@@ -5453,8 +5453,16 @@ a.anchor .rv-i,
 }
 
 @media print {
+  /* The top margin's own boxes, set empty: where a browser draws them (Chrome), it
+     leaves out its header (the date and the title), which the letter's head stands in
+     for, and keeps its footer (the address and the page number). With no header to
+     hold, the top margin is a narrow one. */
   @page {
-    margin: 18mm 16mm;
+    margin: 10mm 16mm 18mm;
+
+    @top-left { content: ""; }
+    @top-center { content: ""; }
+    @top-right { content: ""; }
   }
 
   /* Still: Safari lays a page out afresh to print it and restarts its animations,
@@ -5533,6 +5541,13 @@ a.anchor .rv-i,
   /* The home page's spacing as it is, not as taken in to fit the screen. */
   .col:has(.home) {
     --fit: 1 !important;
+  }
+
+  /* A sheet is narrow enough for the phone's layout, whose home page sets its own
+     space above and below the column (more particular than the rule above): the page's
+     margins are the only space on paper. */
+  .col:has(.home) {
+    padding-block: 0;
   }
 
   /* On a narrow sheet (a phone's print) the greeting, the name and the bullets hang a few
