@@ -32,7 +32,7 @@ body:
     attributes:
       label: Page
       description: Which page is it on? The version shows in the header's version menu.
-      placeholder: ex. https://ouss.es/p/fr/blog/string-manipulation/, v0.5
+      placeholder: ex. https://ouss.es/p/fr/posts/string-manipulation/, v0.5
     validations:
       required: true
   - type: textarea
