@@ -66,8 +66,8 @@ const groups: { label: string; items: Item[]; list?: List }[] = [
     label: t.cGo,
     items: [
       { label: t.cHome, href: localized(lang), key: "H", keywords: "home" },
-      { label: t.allProjectsLabel, href: localized(lang, LIST_PATHS.work), drawer: "work", key: "P", keywords: "projects work list" },
-      { label: t.allPostsLabel, href: localized(lang, LIST_PATHS.writing), drawer: "writing", key: "W", keywords: "posts writing blog list" },
+      { label: t.allWorksLabel, href: localized(lang, LIST_PATHS.work), drawer: "work", key: "P", keywords: "projects work list" },
+      { label: t.allWritingsLabel, href: localized(lang, LIST_PATHS.writing), drawer: "writing", key: "W", keywords: "posts writing blog list" },
       ...pages.map(({ id, data }) => ({ label: data.label, href: localized(lang, `${id}/`), keywords: `${id} ${data.title} ${data.description}` })),
     ],
   },

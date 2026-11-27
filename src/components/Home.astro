@@ -140,7 +140,7 @@ const posts = await getPosts(lang);
             {project.note && <p class="note">{pick(project.note, lang)}</p>}
           </li>
         ))}
-        <li><i class="dot z-star"></i><a class="link" href={localized(lang, LIST_PATHS.work)} data-drawer="work" data-carry="work">{t.allProjects(projects.length)}<LinkIcon kind="list" /></a></li>
+        <li><i class="dot z-star"></i><a class="link" href={localized(lang, LIST_PATHS.work)} data-drawer="work" data-carry="work">{t.allWorks(projects.length)}<LinkIcon kind="list" /></a></li>
       </ul>
     </section>
 
@@ -154,7 +154,7 @@ const posts = await getPosts(lang);
             {post.entry.data.note && <p class="note"><span lang={post.lang} dir={langInfo(post.lang).dir}>{post.entry.data.note}</span></p>}
           </li>
         ))}
-        <li><i class="dot z-cross"></i><a class="link" href={localized(lang, LIST_PATHS.writing)} data-drawer="writing" data-carry="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a></li>
+        <li><i class="dot z-cross"></i><a class="link" href={localized(lang, LIST_PATHS.writing)} data-drawer="writing" data-carry="writing">{t.allWritings(posts.length)}<LinkIcon kind="list" /></a></li>
       </ul>
     </section>
 

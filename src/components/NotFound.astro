@@ -24,9 +24,9 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = ui(lang);
-const rtl = langInfo(lang).dir === "rtl";
 const projects = await getProjects();
 const posts = await getPosts(lang);
+const rtl = langInfo(lang).dir === "rtl";
 
 type Word = { space: boolean; chars: string[] };
 
@@ -195,8 +195,8 @@ const codes = LANGS.filter(l => l.code !== DEFAULT_LANG).map(l => l.code);
     <h2 class="lab" id="where-to"><a class="anchor" href="#where-to" aria-label={t.nfWhere + t.anchor}><Fragment set:html={letters(t.nfWhere)} /></a></h2>
     <ul class="list">
       <li><i class="dot nf-dot"></i><a class="link" href={localized(lang)}><Fragment set:html={letters(t.nfHome)} /><LinkIcon kind="page" /></a></li>
-      <li><i class="dot nf-dot"></i><a class="link" href={localized(lang, LIST_PATHS.work)} data-drawer="work" data-carry="work"><Fragment set:html={letters(t.allProjects(projects.length))} /><LinkIcon kind="list" /></a></li>
-      <li><i class="dot nf-dot"></i><a class="link" href={localized(lang, LIST_PATHS.writing)} data-drawer="writing" data-carry="writing"><Fragment set:html={letters(t.allPosts(posts.length))} /><LinkIcon kind="list" /></a></li>
+      <li><i class="dot nf-dot"></i><a class="link" href={localized(lang, LIST_PATHS.work)} data-drawer="work" data-carry="work"><Fragment set:html={letters(t.allWorks(projects.length))} /><LinkIcon kind="list" /></a></li>
+      <li><i class="dot nf-dot"></i><a class="link" href={localized(lang, LIST_PATHS.writing)} data-drawer="writing" data-carry="writing"><Fragment set:html={letters(t.allWritings(posts.length))} /><LinkIcon kind="list" /></a></li>
       <li><i class="dot nf-dot"></i><button type="button" class="link" data-palette-open><Fragment set:html={letters(t.nfSearch)} /></button> <span class="mut nf-kbd" dir="ltr"><span class="k-pc">Ctrl K</span><span class="k-mac">⌘K</span></span></li>
       <li><i class="dot nf-dot"></i><a class="link ext" href="/v/0.4/" target="_blank" rel="noopener noreferrer"><Fragment set:html={letters(t.nfOld)} /><svg class="arrow" width="11" height="11" viewBox="0 0 11 11" aria-hidden="true"><path d="M2.5 8.5l6-6M3.5 2.5h5v5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="sr">{t.newTab}</span></a></li>
     </ul>

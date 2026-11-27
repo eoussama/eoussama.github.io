@@ -78,7 +78,7 @@ const own = { lang: post.lang, dir: langInfo(post.lang).dir };
       <section class="row tight">
         <h2 class="lab" id="next"><a class="anchor" href="#next" aria-label={t.next + t.anchor}>{t.next}</a></h2>
         <p class="val">
-          <a class="next" href={localized(lang, postPath(next))}><span lang={next.lang}><span class="hl" dir={langInfo(next.lang).dir}>{next.entry.data.title}</span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href={localized(lang, LIST_PATHS.writing)} data-drawer="writing">{t.allPosts(posts.length)}<LinkIcon kind="list" /></a><span class="or">{t.or}</span><a class="link" href={localized(lang)}>{t.cHome}<LinkIcon kind="page" /></a>
+          <a class="next" href={localized(lang, postPath(next))}><span lang={next.lang}><span class="hl" dir={langInfo(next.lang).dir}>{next.entry.data.title}</span><LinkIcon kind="page" /></span></a><span class="or">{t.or}</span><a class="link" href={localized(lang, LIST_PATHS.writing)} data-drawer="writing">{t.allWritings(posts.length)}<LinkIcon kind="list" /></a><span class="or">{t.or}</span><a class="link" href={localized(lang)}>{t.cHome}<LinkIcon kind="page" /></a>
         </p>
       </section>
     )}
