@@ -71,10 +71,12 @@ const posts = await getPosts(lang);
 ---
 
 <Base lang={lang} title={`${t.name} · ${t.job}`} label={t.name} description={describe(t.intro.trim())} schema={homeSchema(lang)} hello>
+  {/* The name beside the logo, where every other page has its way home. Not a .crumb:
+      the trail (Base.astro) renames that after the page before. */}
+  <h1 slot="crumb" class="bar-name"><span class="site-name">{t.name}</span></h1>
   <section class="row first" aria-label={t.whoami}>
-    <h2 class="lab hello-lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
+    <h2 class="lab" id="whoami"><a class="anchor" href="#whoami" aria-label={t.whoami + t.anchor}>{t.whoami}</a></h2>
     <div>
-      <h1><span class="site-name">{t.name}</span></h1>
       <p class="intro"><button type="button" class="link hello" lang={first.lang} dir={first.dir} aria-label={`${first.text} ${t.hiAria}`} data-hint={t.hiAria} data-hellos={JSON.stringify(hellos)}>{first.text}</button><span class="hello hello-print" lang={first.lang} dir={first.dir} aria-hidden="true">{first.text}</span><noscript><span class="hello" lang={first.lang} dir={first.dir}>{first.text}</span></noscript>{introWords.map(part => /^\s+$/.test(part) ? part : <span class="iw">{part}</span>)}</p>
       {/*
         The page opens on the day's greeting: Eid's on the days of Eid (the first three of

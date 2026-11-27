@@ -234,15 +234,6 @@ p {
   scroll-margin-top: 24px;
 }
 
-/* Whoami sits on the name's first line as the other labels sit on theirs: both are
-   trimmed to their capitals, so the tops of their letters meet whatever the script. */
-@media (min-width: 701px) {
-  .lab.hello-lab,
-  .row.first:has(.intro) h1 {
-    text-box: trim-start cap alphabetic;
-  }
-}
-
 h1 {
   margin: 0 0 26px;
   font-family: var(--display);
@@ -2060,11 +2051,6 @@ a[data-loading] > .lk-ic,
   --outdent: 26px;
 }
 
-/* The name stands out in the same column as the greeting under it. */
-.row.first:has(.intro) h1 {
-  margin-inline-start: calc(-1 * var(--outdent));
-}
-
 /*
  * Newsreader's capitals stand 0.705em tall, under an ascent of 0.74em. So a greeting
  * whose capitals span from the first line's cap line to the second line's baseline is
@@ -2458,7 +2444,6 @@ a[data-loading] > .lk-ic,
     --sp-bottom: clamp(16px, 4vh - 8px, 62px);
     --sp-first: clamp(10px, 4vh - 10px, 32px);
     --sp-row: clamp(16px, 6vh - 20px, 46px);
-    --sp-name: clamp(10px, 3.4vh - 8px, 26px);
     --sp-item: clamp(2px, 1.4vh - 4px, 9px);
 
     padding-top: calc(var(--sp-top) * var(--fit, 1));
@@ -2471,10 +2456,6 @@ a[data-loading] > .lk-ic,
 
   .col:has(.home) .row.first {
     margin-top: calc(var(--sp-first) * var(--fit, 1));
-  }
-
-  .col:has(.home) h1 {
-    margin-bottom: calc(var(--sp-name) * var(--fit, 1));
   }
 
   .home .list > li {
@@ -2534,10 +2515,6 @@ a[data-loading] > .lk-ic,
     line-height: 24px;
   }
 
-  .col:has(.home) h1 {
-    font-size: 40px;
-  }
-
   .col:has(.home) .intro {
     font-size: 19px;
     line-height: 27px;
@@ -2548,12 +2525,7 @@ a[data-loading] > .lk-ic,
   .col:has(.home) {
     --sp-first: 6px;
     --sp-row: 10px;
-    --sp-name: 6px;
     --sp-item: 0px;
-  }
-
-  .col:has(.home) h1 {
-    font-size: 36px;
   }
 }
 
@@ -2594,10 +2566,6 @@ a[data-loading] > .lk-ic,
     margin-bottom: 2px;
     font-size: 17px;
     line-height: 26px;
-  }
-
-  .col:has(.home) h1 {
-    margin-bottom: 10px;
   }
 
   .home .list > li {
@@ -4037,6 +4005,31 @@ html {
   white-space: nowrap;
   text-decoration: none;
   view-transition-name: site-name;
+}
+
+/* The home page's name, its heading, right beside the logo and a size up from the way
+   home other pages have there. Where the bar has no room for it beside the controls
+   (a phone), it is left to screen readers. */
+.bar-name {
+  margin: 0;
+  margin-inline-start: 16px;
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 52px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .bar-name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
 }
 
 .crumb:hover,
