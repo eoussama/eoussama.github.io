@@ -2091,6 +2091,11 @@ a[data-loading] > .lk-ic,
   cursor: pointer;
 }
 
+/* The greeting as printed, the page's language's plain hello (in print, below). */
+.intro .hello-print {
+  display: none;
+}
+
 /* The intro's words, once cut apart to glide when the greeting changes size. */
 .intro .iw {
   display: inline-block;
@@ -5603,6 +5608,22 @@ a.anchor .rv-i,
     line-height: 1.2;
     text-decoration: none;
     background: none;
+  }
+
+  /* On paper the greeting is the page's language's plain hello (Home.astro), never the
+     time of day's, a holiday's or another language's it has moved on to, and only a
+     word, not a button's underline. */
+  .intro .hello:not(.hello-print) {
+    display: none;
+  }
+
+  .intro .hello-print {
+    display: inline-block;
+  }
+
+  .hello,
+  .hello .rv-i {
+    text-decoration: none !important;
   }
 
   /* The signature follows the last section, a gap below it, and prefers to stay with it
