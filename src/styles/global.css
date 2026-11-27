@@ -5645,10 +5645,13 @@ a.anchor .rv-i,
     break-inside: avoid;
   }
 
+  /* Signed at the far side, as a letter is: the right, or the left on a right-to-left
+     page. */
   .lh-sig {
     display: block;
     width: min(210px, 55%);
     height: auto;
+    margin-inline-start: auto;
   }
 
   .row:not(:has(.prose)),
